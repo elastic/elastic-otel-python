@@ -1,0 +1,12 @@
+LICENSE
+README.md
+pyproject.toml
+src/elastic_opentelemetry.egg-info/PKG-INFO
+src/elastic_opentelemetry.egg-info/SOURCES.txt
+src/elastic_opentelemetry.egg-info/dependency_links.txt
+src/elastic_opentelemetry.egg-info/entry_points.txt
+src/elastic_opentelemetry.egg-info/requires.txt
+src/elastic_opentelemetry.egg-info/top_level.txt
+src/elasticotel/distro/__init__.py
+src/elasticotel/distro/py.typed
+src/elasticotel/distro/version.py

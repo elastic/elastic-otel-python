@@ -1,0 +1,5 @@
+[opentelemetry_configurator]
+configurator = elasticotel.distro:ElasticOpenTelemetryConfigurator
+
+[opentelemetry_distro]
+distro = elasticotel.distro:ElasticOpenTelemetryDistro
