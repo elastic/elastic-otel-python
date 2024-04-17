@@ -54,3 +54,13 @@ version = {attr = "elasticotel.distro.version.__version__"}
 [build-system]
 requires = ["setuptools>=61.2"]
 build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+target-version = "py38"
+line-length = 120
+
+[tool.ruff.lint.isort]
+known-third-party = [
+  "opentelemetry",
+]
+known-first-party = ["elasticotel"]
