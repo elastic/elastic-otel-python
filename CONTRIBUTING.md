@@ -37,7 +37,6 @@ Once your changes are ready to submit for review:
     This project uses some tools to maintain a consistent code style:
 
     -   [ruff](https://docs.astral.sh/ruff/) for code formatting and linting
-    -   License header check via custom script
 
     The easiest way to make sure your pull request adheres to the code style
     is to install [pre-commit](https://pre-commit.com/).
