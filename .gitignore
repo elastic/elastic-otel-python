@@ -30,7 +30,6 @@ coverage.xml
 tests/*-junit.xml
 *.code-workspace
 .pytest_cache/
-.python-version
 .env
 .aws
 .arn-file.md
