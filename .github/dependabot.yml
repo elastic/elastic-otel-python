@@ -1,0 +1,41 @@
+---
+version: 2
+updates:
+  # Enable version updates for python
+  - package-ecosystem: "pip"
+    directory: "/"
+    # Check for updates once a week
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "22:00"
+    reviewers:
+      - "elastic/apm-agent-python"
+
+  # GitHub actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    reviewers:
+      - "elastic/observablt-ci"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "22:00"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
+  # GitHub composite actions
+  - package-ecosystem: "github-actions"
+    directory: "/.github/actions/env-install"
+    reviewers:
+      - "elastic/observablt-ci"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "22:00"
+    groups:
+      github-actions:
+        patterns:
+          - "*"

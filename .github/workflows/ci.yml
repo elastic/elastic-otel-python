@@ -1,0 +1,19 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/env-install
+    - uses: pre-commit/action@v3.0.1
+
