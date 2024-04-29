@@ -29,7 +29,7 @@ For details about the authentication format see the chapter below.
 
 ```bash
 OTEL_RESOURCE_ATTRIBUTES=service.name=<app-name>
-OTEL_EXPORTER_OTLP_HEADERS="Authorization=<url encoded apikey header value>
+OTEL_EXPORTER_OTLP_HEADERS="Authorization=<url encoded apikey header value>"
 OTEL_EXPORTER_OTLP_ENDPOINT=<your elastic cloud url>
 ```
 
