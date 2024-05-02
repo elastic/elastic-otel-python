@@ -17,3 +17,9 @@ jobs:
     - uses: ./.github/actions/env-install
     - uses: pre-commit/action@v3.0.1
 
+  pip-installable:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/env-install
+    - run: pip install -e .
