@@ -20,7 +20,10 @@ from opentelemetry.environment_variables import (
 )
 from opentelemetry.instrumentation.distro import BaseDistro
 from opentelemetry.sdk._configuration import _OTelSDKConfigurator
-from opentelemetry.sdk.environment_variables import OTEL_EXPORTER_OTLP_PROTOCOL
+from opentelemetry.sdk.environment_variables import (
+    OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
+    OTEL_EXPORTER_OTLP_PROTOCOL,
+)
 
 
 class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
@@ -32,3 +35,4 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         os.environ.setdefault(OTEL_TRACES_EXPORTER, "otlp")
         os.environ.setdefault(OTEL_METRICS_EXPORTER, "otlp")
         os.environ.setdefault(OTEL_EXPORTER_OTLP_PROTOCOL, "grpc")
+        os.environ.setdefault(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS, "process_runtime,otel")
