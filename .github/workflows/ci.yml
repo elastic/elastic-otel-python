@@ -23,3 +23,24 @@ jobs:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/env-install
     - run: pip install -e .
+
+  unittest:
+    runs-on: ubuntu-latest
+    env:
+      py38: 3.8
+      py39: 3.9
+      py310: "3.10"
+      py311: "3.11"
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [py38, py39, py310, py311]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ env[matrix.python-version] }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env[matrix.python-version] }}
+        architecture: "x64"
+    - run: pip install -r dev-requirements.txt
+    - run: pytest
