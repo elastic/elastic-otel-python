@@ -60,6 +60,23 @@ In the end it will look something like the following:
 
 "ApiKey%20RM2sVN55Su49RgCYNI7SvYoeyWCyt3sbdFirjvmtin6IavUfZrBXCInwao%3D%3D"
 
+## Configuration
+
+The distribution supports all the configuration variables from OpenTelemetry Python project version 1.24.0.
+
+### Default configuration variables
+
+This distribution sets the following defaults:
+
+- `OTEL_TRACES_EXPORTER`: `otlp`
+- `OTEL_METRICS_EXPORTER`: `otlp`
+- `OTEL_EXPORTER_OTLP_PROTOCOL`: `grpc`
+- `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS`: `process_runtime,otel`
+
+### Distribution specific configuration variables
+
+- `ELASTIC_OTEL_SYSTEM_METRICS_ENABLED` (default: `false`): when sets to `true` sends *system namespace* metrics.
+
 ## License
 
 This software is licensed under the Apache License, version 2 ("Apache-2.0").
