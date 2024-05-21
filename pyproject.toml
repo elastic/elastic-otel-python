@@ -28,6 +28,9 @@ dependencies = [
     "opentelemetry-exporter-otlp == 1.24.0",
 ]
 
+[project.optional-dependencies]
+dev = ["pytest", "pip-tools"]
+
 [project.entry-points.opentelemetry_configurator]
 configurator = "elasticotel.distro:ElasticOpenTelemetryConfigurator"
 
@@ -41,6 +44,9 @@ content-type = "text/markdown"
 [project.urls]
 Homepage = "https://github.com/elastic/elastic-otel-python"
 "Bug Tracker" = "https://github.com/elastic/elastic-otel-python/issues"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
 
 [tool.setuptools]
 include-package-data = true
