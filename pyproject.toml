@@ -37,6 +37,9 @@ configurator = "elasticotel.distro:ElasticOpenTelemetryConfigurator"
 [project.entry-points.opentelemetry_distro]
 distro = "elasticotel.distro:ElasticOpenTelemetryDistro"
 
+[project.entry-points.opentelemetry_resource_detector]
+process_runtime = "elasticotel.sdk.resources:ProcessRuntimeResourceDetector"
+
 [project.readme]
 file = "README.md"
 content-type = "text/markdown"
