@@ -95,7 +95,7 @@ tomli==2.0.1
     #   build
     #   pip-tools
     #   pytest
-typing-extensions==4.11.0
+typing-extensions==4.12.0
     # via opentelemetry-sdk
 urllib3==2.2.1
     # via requests
