@@ -15,7 +15,7 @@
 # limitations under the License.
 
 import os
-from unittest import TestCase
+from unittest import TestCase, mock
 
 from elasticotel.distro import ElasticOpenTelemetryDistro
 from opentelemetry.environment_variables import (
@@ -29,12 +29,9 @@ from opentelemetry.sdk.environment_variables import (
 
 
 class TestDistribution(TestCase):
+    @mock.patch.dict("os.environ", {}, clear=True)
     def test_default_configuration(self):
         distro = ElasticOpenTelemetryDistro()
-        self.assertIsNone(os.environ.get(OTEL_TRACES_EXPORTER))
-        self.assertIsNone(os.environ.get(OTEL_METRICS_EXPORTER))
-        self.assertIsNone(os.environ.get(OTEL_EXPORTER_OTLP_PROTOCOL))
-        self.assertIsNone(os.environ.get(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS))
         distro.configure()
         self.assertEqual("otlp", os.environ.get(OTEL_TRACES_EXPORTER))
         self.assertEqual("otlp", os.environ.get(OTEL_METRICS_EXPORTER))
