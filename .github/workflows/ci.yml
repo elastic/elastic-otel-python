@@ -24,6 +24,15 @@ jobs:
     - uses: ./.github/actions/env-install
     - run: pip install -e .
 
+  pip-licenses:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/env-install
+    - run: pip install -e .
+    - run: pip install pip-licenses
+    - run: pip-licenses
+
   unittest:
     runs-on: ubuntu-latest
     env:
