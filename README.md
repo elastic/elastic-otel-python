@@ -59,3 +59,7 @@ quote("ApiKey <your api key>)
 In the end it will look something like the following:
 
 "ApiKey%20RM2sVN55Su49RgCYNI7SvYoeyWCyt3sbdFirjvmtin6IavUfZrBXCInwao%3D%3D"
+
+## License
+
+This software is licensed under the Apache License, version 2 ("Apache-2.0").
