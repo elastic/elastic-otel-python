@@ -17,6 +17,12 @@ jobs:
     - uses: ./.github/actions/env-install
     - uses: pre-commit/action@v3.0.1
 
+  license-header-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - run: ./scripts/license_headers_check.sh
+
   pip-installable:
     runs-on: ubuntu-latest
     steps:
