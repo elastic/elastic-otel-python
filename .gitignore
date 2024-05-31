@@ -33,3 +33,4 @@ tests/*-junit.xml
 .env
 .aws
 .arn-file.md
+__pycache__
