@@ -2,8 +2,8 @@ name: Release
 
 on:
   push:
-    # tags:
-    #   - "v*.*.*"
+    tags:
+      - "v*.*.*"
     branches:
       - main
 
@@ -15,12 +15,14 @@ jobs:
     permissions:
       attestations: write
       id-token: write
-      contents: write
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # TODO: Add package steps
+      - run: pip install build<2
+
+      - run: python -m build
 
       - name: generate build provenance
         uses: actions/attest-build-provenance@173725a1209d09b31f9d30a3890cf2757ebbff0d # v1.1.2
@@ -50,15 +52,8 @@ jobs:
           name: packages
           path: dist
 
-      # TODO: Uncomment after build steps
-      # - name: Upload pypi.org
-      #   if: startsWith(github.ref, 'refs/tags')
-      #   uses: pypa/gh-action-pypi-publish@81e9d935c883d0b210363ab89cf05f3894778450
-      #   with:
-      #     repository-url: https://upload.pypi.org/legacy/
-
-      # - name: Upload test.pypi.org
-      #   if: ${{ ! startsWith(github.ref, 'refs/tags') }}
-      #   uses: pypa/gh-action-pypi-publish@81e9d935c883d0b210363ab89cf05f3894778450
-      #   with:
-      #     repository-url: https://test.pypi.org/legacy/
+      - name: Upload pypi.org
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@81e9d935c883d0b210363ab89cf05f3894778450
+        with:
+          repository-url: https://upload.pypi.org/legacy/
