@@ -16,6 +16,7 @@
 
 import sys
 
+from opentelemetry.semconv._incubating.attributes import telemetry_attributes
 from opentelemetry.sdk.resources import (
     Resource,
     ResourceDetector,
@@ -23,6 +24,8 @@ from opentelemetry.sdk.resources import (
     PROCESS_RUNTIME_NAME,
     PROCESS_RUNTIME_VERSION,
 )
+
+from elasticotel.distro import version
 
 
 class ProcessRuntimeResourceDetector(ResourceDetector):
@@ -43,5 +46,16 @@ class ProcessRuntimeResourceDetector(ResourceDetector):
             PROCESS_RUNTIME_DESCRIPTION: sys.version,
             PROCESS_RUNTIME_NAME: sys.implementation.name,
             PROCESS_RUNTIME_VERSION: runtime_version,
+        }
+        return Resource(resource_info)
+
+
+class TelemetryDistroResourceDetector(ResourceDetector):
+    """Resource detector to fill telemetry.distro attributes"""
+
+    def detect(self) -> "Resource":
+        resource_info = {
+            telemetry_attributes.TELEMETRY_DISTRO_NAME: "elastic",
+            telemetry_attributes.TELEMETRY_DISTRO_VERSION: version.__version__,
         }
         return Resource(resource_info)

@@ -16,7 +16,7 @@
 
 from unittest import TestCase
 
-from elasticotel.sdk.resources import ProcessRuntimeResourceDetector
+from elasticotel.sdk.resources import ProcessRuntimeResourceDetector, TelemetryDistroResourceDetector
 from opentelemetry.sdk.resources import (
     PROCESS_RUNTIME_NAME,
     PROCESS_RUNTIME_DESCRIPTION,
@@ -24,6 +24,8 @@ from opentelemetry.sdk.resources import (
     Resource,
     get_aggregated_resources,
 )
+
+from elasticotel.distro import version
 
 
 class TestProcessRuntimeDetector(TestCase):
@@ -35,3 +37,18 @@ class TestProcessRuntimeDetector(TestCase):
             sorted(aggregated_resource.attributes.keys()),
             [PROCESS_RUNTIME_DESCRIPTION, PROCESS_RUNTIME_NAME, PROCESS_RUNTIME_VERSION],
         )
+
+
+class TestTelemetryDistroDetector(TestCase):
+    def test_telemetry_distro_detector(self):
+        initial_resource = Resource(attributes={})
+        aggregated_resource = get_aggregated_resources([TelemetryDistroResourceDetector()], initial_resource)
+
+        self.assertEqual(
+            aggregated_resource.attributes,
+            {
+                "telemetry.distro.name": "elastic",
+                "telemetry.distro.version": version.__version__,
+            },
+        )
+        self.assertTrue(isinstance(aggregated_resource.attributes["telemetry.distro.version"], str))

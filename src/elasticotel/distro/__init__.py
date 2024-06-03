@@ -57,4 +57,4 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         os.environ.setdefault(OTEL_TRACES_EXPORTER, "otlp")
         os.environ.setdefault(OTEL_METRICS_EXPORTER, "otlp")
         os.environ.setdefault(OTEL_EXPORTER_OTLP_PROTOCOL, "grpc")
-        os.environ.setdefault(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS, "process_runtime,otel")
+        os.environ.setdefault(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS, "process_runtime,otel,telemetry_distro")

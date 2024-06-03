@@ -62,7 +62,7 @@ In the end it will look something like the following:
 
 ## Configuration
 
-The distribution supports all the configuration variables from OpenTelemetry Python project version 1.24.0.
+The distribution supports all the configuration variables from OpenTelemetry Python project version 1.25.0.
 
 ### Default configuration variables
 
@@ -71,7 +71,7 @@ This distribution sets the following defaults:
 - `OTEL_TRACES_EXPORTER`: `otlp`
 - `OTEL_METRICS_EXPORTER`: `otlp`
 - `OTEL_EXPORTER_OTLP_PROTOCOL`: `grpc`
-- `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS`: `process_runtime,otel`
+- `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS`: `process_runtime,otel,telemetry_distro`
 
 ### Distribution specific configuration variables
 

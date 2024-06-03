@@ -37,7 +37,7 @@ class TestDistribution(TestCase):
         self.assertEqual("otlp", os.environ.get(OTEL_TRACES_EXPORTER))
         self.assertEqual("otlp", os.environ.get(OTEL_METRICS_EXPORTER))
         self.assertEqual("grpc", os.environ.get(OTEL_EXPORTER_OTLP_PROTOCOL))
-        self.assertEqual("process_runtime,otel", os.environ.get(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS))
+        self.assertEqual("process_runtime,otel,telemetry_distro", os.environ.get(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS))
 
     @mock.patch.dict("os.environ", {}, clear=True)
     def test_load_instrumentor_call_with_default_kwargs_for_SystemMetricsInstrumentor(self):
