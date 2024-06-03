@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - run: pip install build<2
+      - run: pip install build==1.2.1
 
       - run: python -m build
 
