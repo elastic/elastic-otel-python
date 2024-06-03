@@ -39,7 +39,7 @@ jobs:
     - run: pip install pip-licenses
     - run: pip-licenses
 
-  unittest:
+  test:
     runs-on: ubuntu-latest
     env:
       py38: 3.8
@@ -58,4 +58,4 @@ jobs:
         python-version: ${{ env[matrix.python-version] }}
         architecture: "x64"
     - run: pip install -r dev-requirements.txt
-    - run: pytest
+    - run: pytest --with-integration-tests
