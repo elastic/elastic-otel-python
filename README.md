@@ -11,7 +11,7 @@ pip install elastic-opentelemetry
 ## Usage
 
 Our distribution does not install any instrumentation package by default, instead it relies on the
-`opentrelemetry-bootstrap` command to scan the installed packages and install the available instrumentation.
+`opentelemetry-bootstrap` command to scan the installed packages and install the available instrumentation.
 The following command will install all the instrumentations available for libraries found installed
 in your environment:
 
