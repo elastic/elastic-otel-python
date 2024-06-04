@@ -15,9 +15,10 @@
 # limitations under the License.
 
 import os
-from unittest import TestCase
+from unittest import TestCase, mock
 
 from elasticotel.distro import ElasticOpenTelemetryDistro
+from elasticotel.distro.environment_variables import ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
 from opentelemetry.environment_variables import (
     OTEL_METRICS_EXPORTER,
     OTEL_TRACES_EXPORTER,
@@ -29,14 +30,54 @@ from opentelemetry.sdk.environment_variables import (
 
 
 class TestDistribution(TestCase):
+    @mock.patch.dict("os.environ", {}, clear=True)
     def test_default_configuration(self):
         distro = ElasticOpenTelemetryDistro()
-        self.assertIsNone(os.environ.get(OTEL_TRACES_EXPORTER))
-        self.assertIsNone(os.environ.get(OTEL_METRICS_EXPORTER))
-        self.assertIsNone(os.environ.get(OTEL_EXPORTER_OTLP_PROTOCOL))
-        self.assertIsNone(os.environ.get(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS))
         distro.configure()
         self.assertEqual("otlp", os.environ.get(OTEL_TRACES_EXPORTER))
         self.assertEqual("otlp", os.environ.get(OTEL_METRICS_EXPORTER))
         self.assertEqual("grpc", os.environ.get(OTEL_EXPORTER_OTLP_PROTOCOL))
         self.assertEqual("process_runtime,otel", os.environ.get(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS))
+
+    @mock.patch.dict("os.environ", {}, clear=True)
+    def test_load_instrumentor_call_with_default_kwargs_for_SystemMetricsInstrumentor(self):
+        distro = ElasticOpenTelemetryDistro()
+        instrumentor_mock = mock.Mock()
+        instrumentor_mock.__eq__ = lambda self, other: True
+        entryPoint_mock = mock.Mock()
+        entryPoint_mock.load.return_value = instrumentor_mock
+
+        distro.load_instrumentor(entryPoint_mock)
+
+        instrumentor_mock.assert_called_once_with(
+            config={
+                "process.runtime.memory": ["rss", "vms"],
+                "process.runtime.cpu.time": ["user", "system"],
+                "process.runtime.gc_count": None,
+                "process.runtime.thread_count": None,
+                "process.runtime.cpu.utilization": None,
+                "process.runtime.context_switches": ["involuntary", "voluntary"],
+            }
+        )
+
+    @mock.patch.dict("os.environ", {ELASTIC_OTEL_SYSTEM_METRICS_ENABLED: "true"}, clear=True)
+    def test_load_instrumentor_call_with_system_metrics_configuration_enabled(self):
+        distro = ElasticOpenTelemetryDistro()
+        instrumentor_mock = mock.Mock()
+        instrumentor_mock.__eq__ = lambda self, other: True
+        entryPoint_mock = mock.Mock()
+        entryPoint_mock.load.return_value = instrumentor_mock
+
+        distro.load_instrumentor(entryPoint_mock)
+
+        instrumentor_mock.assert_called_once_with()
+
+    def test_load_instrumentor_default_kwargs_for_instrumentors(self):
+        distro = ElasticOpenTelemetryDistro()
+        instrumentor_mock = mock.Mock()
+        entryPoint_mock = mock.Mock()
+        entryPoint_mock.load.return_value = instrumentor_mock
+
+        distro.load_instrumentor(entryPoint_mock)
+
+        instrumentor_mock.assert_called_once_with()
