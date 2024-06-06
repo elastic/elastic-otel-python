@@ -26,11 +26,12 @@ classifiers = [
 ]
 
 dependencies = [
-    "opentelemetry-api == 1.24.0",
-    "opentelemetry-instrumentation == 0.45b0",
-    "opentelemetry-instrumentation-system-metrics == 0.45b0",
-    "opentelemetry-sdk == 1.24.0",
-    "opentelemetry-exporter-otlp == 1.24.0",
+    "opentelemetry-api == 1.25.0",
+    "opentelemetry-exporter-otlp == 1.25.0",
+    "opentelemetry-instrumentation == 0.46b0",
+    "opentelemetry-instrumentation-system-metrics == 0.46b0",
+    "opentelemetry-semantic-conventions == 0.46b0",
+    "opentelemetry-sdk == 1.25.0",
 ]
 
 [project.optional-dependencies]
@@ -44,6 +45,7 @@ distro = "elasticotel.distro:ElasticOpenTelemetryDistro"
 
 [project.entry-points.opentelemetry_resource_detector]
 process_runtime = "elasticotel.sdk.resources:ProcessRuntimeResourceDetector"
+telemetry_distro = "elasticotel.sdk.resources:TelemetryDistroResourceDetector"
 
 [project.readme]
 file = "README.md"
