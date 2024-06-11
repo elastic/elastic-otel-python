@@ -77,16 +77,10 @@ Once your changes are ready to submit for review:
 
 To run local unit tests, you can install requirements and then run `pytest` from the project root:
 
-    pip install -r tests/requirements.txt
+    pip install -r dev-requirements.txt
     pytest
 
-Pytest will automatically discover all the tests and skip the ones for which
-dependencies are not met.
-
-If you want to go above and beyond and run the full test suite,
-you need to install several databases (Elasticsearch, PostgreSQL, MySQL, Cassandra, Redis).
-This can be quite a hassle, so we recommend to use our dockerized test setup.
-See [Running tests](https://www.elastic.co/guide/en/apm/agent/python/main/run-tests-locally.html) for detailed instructions.
+Pytest will automatically discover tests.
 
 #### Pytest
 
@@ -117,20 +111,19 @@ Then make sure you have SSO figured out for the key you are using to push to git
 
 If you have commit access, the process is as follows:
 
-1. Update the version in `elasticapm/version.py` according to the scale of the change. (major, minor or patch)
-1. Update `CHANGELOG.asciidoc`. Rename the `Unreleased` section to the correct version (`vX.X.X`), and nest under the appropriate sub-heading, e.g., `Python Agent version 5.x`.
-1. For Majors: [Create an issue](https://github.com/elastic/website-requests/issues/new) to request an update of the [EOL table](https://www.elastic.co/support/eol).
-1. For Majors: Add the new major version to `conf.yaml` in the [elastic/docs](https://github.com/elastic/docs) repo.
+1. Update the version in `src/elasticotel/distro/version.py` according to the scale of the change (major, minor or patch).
+1. Update `CHANGELOG.mdx` as necessary.
+1. For Majors: Follow [website-requests README](https://github.com/elastic/website-requests/) to request an update of the [EOL table](https://www.elastic.co/support/eol).
 1. Commit changes with message `update CHANGELOG and bump version to X.Y.Z`
-   where `X.Y.Z` is the version in `elasticapm/version.py`
+   where `X.Y.Z` is the version in `src/elasticotel/distro/version.py`
 1. Open a PR against `main` with these changes leaving the body empty
 1. Once the PR is merged, fetch and checkout `upstream/main`
 1. Tag the commit with `git tag -s vX.Y.Z`, for example `git tag -s v1.2.3`.
    Copy the changelog for the release to the tag message, removing any leading `#`.
 1. Push tag upstream with `git push upstream --tags` (and optionally to your own fork as well)
-1. Open a PR from `main` to the major branch, e.g. `1.x` to update it. In order to keep history you may want to
-   merge with the `rebase` strategy. It is crucial that `main` and the major branch have the same content.
 1. After tests pass, Github Actions will automatically build and push the new release to PyPI.
+   merge with the `rebase` strategy. It is crucial that `main` and the major branch have the same content.
 1. Edit and publish the [draft Github release](https://github.com/elastic/elastic-otel-python/releases)
    created by Github Actions. Substitute the generated changelog with one hand written into the body of the
-   release and move the agent layer ARNs under a `<details>` block with a `summary`.
+   release.
+1. Open a PR from `main` to the major branch, e.g. `1.x` to update it. In order to keep history you may want to
