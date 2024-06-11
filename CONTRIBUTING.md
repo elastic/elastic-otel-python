@@ -95,7 +95,10 @@ testing needs. Note that pytest can be a bit confusing at first, due to its
 dynamic discovery features. In particular,
 [fixtures](https://docs.pytest.org/en/stable/fixture.html) can be confusing
 and hard to discover, due to the fact that they do not need to be imported to
-be used. 
+be used.
+
+By default only unit tests are run because tests under `tests/integrations` are a bit slower.
+Use `pytest --with-integration-tests` to run them.
 
 ### Workflow
 
