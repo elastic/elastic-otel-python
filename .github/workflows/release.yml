@@ -25,7 +25,7 @@ jobs:
       - run: python -m build
 
       - name: generate build provenance
-        uses: actions/attest-build-provenance@49df96e17e918a15956db358890b08e61c704919 # v1.2.0
+        uses: actions/attest-build-provenance@534b352d658f90498fd148d231fdbf88f3886a3a # v1.3.1
         with:
           subject-path: "${{ github.workspace }}/dist/*"
 
@@ -52,6 +52,6 @@ jobs:
 
       - name: Upload pypi.org
         if: startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@81e9d935c883d0b210363ab89cf05f3894778450
+        uses: pypa/gh-action-pypi-publish@ec4db0b4ddc65acdf4bff5fa45ac92d78b56bdf0
         with:
           repository-url: https://upload.pypi.org/legacy/
