@@ -1,6 +1,6 @@
-# Contributing to the Elastic OpenTelemetry Distribution
+# Contributing to the Elastic Distribution for OpenTelemetry Python
 
-The Elastic OpenTelemetry Distribution is open source and we love to receive contributions from our community — you!
+The Elastic Distribution for OpenTelemetry Python is open source and we love to receive contributions from our community — you!
 
 There are many ways to contribute,
 from writing tutorials or blog posts,
