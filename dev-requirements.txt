@@ -33,7 +33,7 @@ importlib-metadata==7.1.0
     # via opentelemetry-api
 iniconfig==2.0.0
     # via pytest
-leb128==1.0.7
+leb128==1.0.8
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-api==1.25.0
     # via
