@@ -17,7 +17,7 @@ deprecated==1.2.14
     #   opentelemetry-api
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-exceptiongroup==1.2.1
+exceptiongroup==1.2.2
     # via pytest
 googleapis-common-protos==1.63.1
     # via
