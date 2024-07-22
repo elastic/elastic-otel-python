@@ -97,7 +97,7 @@ pyproject-hooks==1.1.0
     # via
     #   build
     #   pip-tools
-pytest==8.2.2
+pytest==8.3.1
     # via elastic-opentelemetry (pyproject.toml)
 requests==2.32.3
     # via opentelemetry-exporter-otlp-proto-http
