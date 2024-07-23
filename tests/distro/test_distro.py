@@ -42,7 +42,8 @@ class TestDistribution(TestCase):
         self.assertEqual("otlp", os.environ.get(OTEL_LOGS_EXPORTER))
         self.assertEqual("grpc", os.environ.get(OTEL_EXPORTER_OTLP_PROTOCOL))
         self.assertEqual(
-            "process_runtime,os,otel,telemetry_distro", os.environ.get(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS)
+            "process_runtime,os,otel,telemetry_distro,_gcp,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm,container",
+            os.environ.get(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS),
         )
         self.assertEqual("always_off", os.environ.get(OTEL_METRICS_EXEMPLAR_FILTER))
         self.assertEqual("DELTA", os.environ.get(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE))

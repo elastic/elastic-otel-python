@@ -56,6 +56,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.util._importlib_metadata import EntryPoint
 
 from elasticotel.distro.environment_variables import ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
+from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
 
 
 logger = logging.getLogger(__name__)
@@ -139,8 +140,11 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         os.environ.setdefault(OTEL_METRICS_EXPORTER, "otlp")
         os.environ.setdefault(OTEL_LOGS_EXPORTER, "otlp")
         os.environ.setdefault(OTEL_EXPORTER_OTLP_PROTOCOL, "grpc")
-        os.environ.setdefault(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS, "process_runtime,os,otel,telemetry_distro")
         # disable exemplars by default for now
         os.environ.setdefault(OTEL_METRICS_EXEMPLAR_FILTER, "always_off")
         # preference to use DELTA temporality as we can handle only this kind of Histograms
         os.environ.setdefault(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE, "DELTA")
+
+        base_resource_detectors = ["process_runtime", "os", "otel", "telemetry_distro"]
+        detectors = base_resource_detectors + get_cloud_resource_detectors()
+        os.environ.setdefault(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS, ",".join(detectors))
