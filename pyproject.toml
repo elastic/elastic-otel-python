@@ -30,7 +30,7 @@ dependencies = [
     "opentelemetry-exporter-otlp == 1.25.0",
     "opentelemetry-instrumentation == 0.46b0",
     "opentelemetry-instrumentation-system-metrics == 0.46b0",
-    "opentelemetry-semantic-conventions == 0.46b0",
+    "opentelemetry-semantic-conventions == 0.47b0",
     "opentelemetry-sdk == 1.25.0",
 ]
 

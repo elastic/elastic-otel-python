@@ -72,7 +72,7 @@ opentelemetry-sdk==1.25.0
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-semantic-conventions==0.46b0
+opentelemetry-semantic-conventions==0.47b0
     # via
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-sdk
