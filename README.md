@@ -1,6 +1,6 @@
-# elastic-opentelemetry -- Elastic Distribution for OpenTelemetry Python
+# elastic-opentelemetry -- Elastic Distribution of OpenTelemetry Python
 
-`elastic-opentelemetry` is the Elastic Distribution for OpenTelemetry Python.
+`elastic-opentelemetry` is the Elastic Distribution of OpenTelemetry Python.
 
 ## Installation
 
