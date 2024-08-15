@@ -7,7 +7,7 @@ authors = [
 maintainers = [
     {name = "Riccardo Magliocchetti", email = "riccardo.magliocchetti@elastic.co"},
 ]
-description = "Elastic Distribution for OpenTelemetry Python"
+description = "Elastic Distribution of OpenTelemetry Python"
 license = {file = "LICENSE"}
 requires-python = ">=3.8"
 classifiers = [
