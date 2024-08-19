@@ -53,7 +53,7 @@ from your project dashboard you can encode it this way:
 
 ```python
 from urllib.parse import quote
-quote("ApiKey <your api key>)
+quote("ApiKey <your api key>")
 ```
 
 In the end it will look something like the following:
