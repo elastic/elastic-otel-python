@@ -5,26 +5,15 @@
 >
 > We welcome your feedback! You can reach us by [opening a GitHub issue](https://github.com/elastic/elastic-otel-python/issues) or starting a discussion thread on the [Elastic Discuss forum](https://discuss.elastic.co/tags/c/observability/apm/58/python).
 
-<!--
-Is the Python distro built on top of the OTel Python agent (https://opentelemetry.io/docs/zero-code/python/)?
-Or the OTel Python SDK (https://opentelemetry.io/docs/languages/python/)?
-Or neither?
--->
-The Elastic Distribution of OpenTelemetry Python (EDOT Python) is a customized version of the [OpenTelemetry SDK for Python](https://opentelemetry.io/docs/languages/python).
-<!-- Is this true of the Python distro? -->
+The Elastic Distribution of OpenTelemetry Python (EDOT Python) is a customized version of [OpenTelemetry Python](https://opentelemetry.io/docs/languages/python).
 EDOT Python makes it easier to get started using OpenTelemetry in your Python applications through strictly OpenTelemetry native means, while also providing a smooth and rich out of the box experience with [Elastic Observability](https://www.elastic.co/observability). It's an explicit goal of this distribution to introduce **no new concepts** in addition to those defined by the wider OpenTelemetry community.
 
 With EDOT Python you have access to all the features of the OpenTelemetry Python agent plus:
 
-<!--
-These are some examples from other distro docs.
-Feel free to delete or edit these items or add new items to this list.
--->
-* Access to SDK improvements and bug fixes contributed by the Elastic team _before_ the changes are available upstream in OpenTelemetry repositories.
+* Access to improvements and bug fixes contributed by the Elastic team _before_ the changes are available upstream in OpenTelemetry repositories.
 * Access to optional features that can enhance OpenTelemetry data that is being sent to Elastic.
 * Elastic-specific processors that ensure optimal compatibility when exporting OpenTelemetry signal data to an Elastic backend like an Elastic Observability deployment.
 * Preconfigured collection of tracing and metrics signals, applying some opinionated defaults, such as which sources are collected by default.
-* Ensuring that the OpenTelemetry protocol (OTLP) exporter is enabled by default.
 
 **Ready to try out EDOT Python?** Follow the step-by-step instructions in [Get started](./docs/get-started.md).
 

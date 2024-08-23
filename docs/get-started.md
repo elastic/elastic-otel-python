@@ -10,10 +10,9 @@ This guide shows you how to use the Elastic Distribution of OpenTelemetry Python
 
 **Already familiar with OpenTelemetry?** It's an explicit goal of this distribution to introduce _no new concepts_ outside those defined by the wider OpenTelemetry community.
 
-**New to OpenTelemetry?** This section will guide you through the _minimal_ configuration options to get EDOT Python set up in your application. You do _not_ need any existing experience with OpenTelemetry to set up EDOT Python initially. If you need more control over your configuration after getting set up, you can learn more in the [OpenTelemetry documentation](https://opentelemetry.io/docs/zero-code/python/agent/).
+**New to OpenTelemetry?** This section will guide you through the _minimal_ configuration options to get EDOT Python set up in your application. You do _not_ need any existing experience with OpenTelemetry to set up EDOT Python initially. If you need more control over your configuration after getting set up, you can learn more in the [OpenTelemetry documentation](https://opentelemetry.io/docs/languages/python/).
 
-<!-- What the user needs to know and/or do before they install EDOT Python -->
-<!-- Is this missing anything? -->
+<!-- ✅ What the user needs to know and/or do before they install EDOT Python -->
 ## Prerequisites
 
 Before getting started, you'll need somewhere to send the gathered OpenTelemetry data, so it can be viewed and analyzed. EDOT Python supports sending data to any OpenTelemetry protocol (OTLP) endpoint, but this guide assumes you are sending data to an [Elastic Observability](https://www.elastic.co/observability) cloud deployment. You can use an existing one or set up a new one.
@@ -91,6 +90,21 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=https://my-deployment.apm.us-west1.gcp.cloud.
 export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer P....l"
 ```
 
+> [!NOTE]
+> Alternatively, you can use an [APM agent key](https://www.elastic.co/guide/en/observability/current/apm-api-key.html) to authorize requests to an Elastic Observability endpoint. APM agent keys are revocable, you can have more than one of them, and you can add or remove them without restarting APM Server.
+>
+> To create and manage APM Agent keys in Kibana:
+>
+> 1. Go to **APM Settings**.
+> 1. Select the **Agent Keys** tab.
+>
+> When using an APM Agent key, the `OTEL_EXPORTER_OTLP_HEADERS` is set using different auth schema (`ApiKey` rather than `Bearer`). For example:
+> ```sh
+> export OTEL_EXPORTER_OTLP_ENDPOINT=https://my-deployment.apm.us-west1.gcp.cloud.es.io
+> export OTEL_EXPORTER_OTLP_HEADERS="Authorization=ApiKey TkpXUkx...dVZGQQ=="
+> ```
+
+<!-- ✅ Start sending data to Elastic -->
 ### Run EDOT Python
 
 Then wrap your service invocation with `opentelemetry-instrument`, which is the wrapper that provides _automatic instrumentation_:
@@ -114,7 +128,6 @@ To confirm that EDOT Python has successfully connected to Elastic:
 1. You should see the name of the service to which you just added EDOT Python. It can take several minutes after initializing EDOT Python for the service to show up in this list.
 1. Click on the name in the list to see trace data.
 
-<!-- Is this true for the Python distro? -->
 > [!NOTE]
 > There may be no trace data to visualize unless you have _used_ your application since initializing EDOT Python.
 
