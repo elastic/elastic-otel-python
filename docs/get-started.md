@@ -100,7 +100,6 @@ export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer P....l"
 >
 > When using an APM Agent key, the `OTEL_EXPORTER_OTLP_HEADERS` is set using different auth schema (`ApiKey` rather than `Bearer`). For example:
 > ```sh
-> export OTEL_EXPORTER_OTLP_ENDPOINT=https://my-deployment.apm.us-west1.gcp.cloud.es.io
 > export OTEL_EXPORTER_OTLP_HEADERS="Authorization=ApiKey TkpXUkx...dVZGQQ=="
 > ```
 
