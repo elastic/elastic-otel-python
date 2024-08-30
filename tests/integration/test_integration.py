@@ -112,5 +112,6 @@ class IntegrationTestCase(ElasticIntegrationTestCase):
                 "process.runtime.cpython.thread_count",
                 "process.runtime.cpython.cpu.utilization",
                 "process.runtime.cpython.context_switches",
+                "process.open_file_descriptor.count",
             ],
         )
