@@ -44,6 +44,8 @@ class IntegrationTestCase(ElasticIntegrationTestCase):
         self.assertTrue(resource["process.runtime.description"])
         self.assertTrue(resource["process.runtime.name"])
         self.assertTrue(resource["process.runtime.version"])
+        self.assertTrue(resource["os.type"])
+        self.assertTrue(resource["os.version"])
 
     def test_traces_sets_resource_attributes_from_env(self):
         env = {"OTEL_RESOURCE_ATTRIBUTES": "service.name=my-service"}
