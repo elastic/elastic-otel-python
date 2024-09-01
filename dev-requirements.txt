@@ -23,7 +23,7 @@ googleapis-common-protos==1.63.2
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-grpcio==1.64.1
+grpcio==1.66.1
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   oteltest
