@@ -69,11 +69,6 @@ authorization data to set a few `OTLP_*` environment variables that will be avai
 * `OTEL_EXPORTER_OTLP_HEADERS`: A comma-separated list of `key=value` pairs that will
 be added to the headers of every request. This is typically used for authentication information.
 
-<!--
-These are the instructions used in other distro docs, but in the README in this repo
-it looks like you might be recommending using an API key rather than using the secret
-token method used in the setup guides in Kibana.
--->
 You can find the values of the endpoint and header variables in Kibana's APM tutorial. In Kibana:
 
 1. Go to **Setup guides**.
