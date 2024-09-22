@@ -109,7 +109,7 @@ tomli==2.0.1
     #   pytest
 typing-extensions==4.12.2
     # via opentelemetry-sdk
-urllib3==2.2.2
+urllib3==2.2.3
     # via requests
 wheel==0.44.0
     # via pip-tools
