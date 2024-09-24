@@ -95,7 +95,7 @@ jobs:
           labels: |
             org.opencontainers.image.vendor=Elastic
             org.opencontainers.image.title=elastic-otel-python-operator
-            org.opencontainers.image.description=EDOT Python image for Kubernetes OpenTelemetry Operator
+            org.opencontainers.image.description=Elastic Distribution of OpenTelemetry Python
 
       - name: Build and push image
         id: docker-push
