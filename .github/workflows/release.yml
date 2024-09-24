@@ -92,6 +92,10 @@ jobs:
           tags: |
             type=raw,value=latest,prefix=test-,enable={{is_default_branch}}
             type=semver,pattern={{version}}
+          labels:
+            org.opencontainers.image.vendor=Elastic
+            org.opencontainers.image.title=elastic-otel-python-operator
+            org.opencontainers.image.description=EDOT Python image for Kubernetes OpenTelemetry Operator
 
       - name: Build and push image
         id: docker-push
