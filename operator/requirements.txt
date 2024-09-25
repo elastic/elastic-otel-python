@@ -1,4 +1,8 @@
+opentelemetry-exporter-prometheus==0.48b0
+
 opentelemetry-propagator-aws-xray==1.0.2
+opentelemetry-propagator-b3==1.27.0
+opentelemetry-propagator-jaeger==1.27.0
 opentelemetry-propagator-ot-trace==0.48b0
 
 opentelemetry-instrumentation-aio-pika==0.48b0
