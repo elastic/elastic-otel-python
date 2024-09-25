@@ -56,7 +56,7 @@ jobs:
         with:
           repository-url: https://upload.pypi.org/legacy/
 
-  publish-docker-operator:
+  publish-docker:
     needs:
       - packages
     runs-on: ubuntu-latest
@@ -65,7 +65,7 @@ jobs:
       id-token: write
       contents: write
     env:
-      DOCKER_IMAGE_NAME: docker.elastic.co/observability/elastic-otel-python-operator
+      DOCKER_IMAGE_NAME: docker.elastic.co/observability/elastic-otel-python
     steps:
       - uses: actions/checkout@v4
 
@@ -90,11 +90,12 @@ jobs:
         with:
           images: ${{ env.DOCKER_IMAGE_NAME }}
           tags: |
-            type=raw,value=latest,prefix=test-,enable={{is_default_branch}}
             type=semver,pattern={{version}}
+            # "edge" Docker tag on git push to default branch
+            type=edge
           labels: |
             org.opencontainers.image.vendor=Elastic
-            org.opencontainers.image.title=elastic-otel-python-operator
+            org.opencontainers.image.title=elastic-otel-python
             org.opencontainers.image.description=Elastic Distribution of OpenTelemetry Python
 
       - name: Build and push image
