@@ -6,7 +6,7 @@
 #
 build==1.2.1
     # via pip-tools
-certifi==2024.7.4
+certifi==2024.8.30
     # via requests
 charset-normalizer==3.3.2
     # via requests
@@ -28,7 +28,7 @@ grpcio==1.66.1
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   oteltest
-idna==3.8
+idna==3.10
     # via requests
 importlib-metadata==8.4.0
     # via opentelemetry-api
@@ -98,7 +98,7 @@ pyproject-hooks==1.1.0
     # via
     #   build
     #   pip-tools
-pytest==8.3.2
+pytest==8.3.3
     # via elastic-opentelemetry (pyproject.toml)
 requests==2.32.3
     # via opentelemetry-exporter-otlp-proto-http
@@ -109,7 +109,7 @@ tomli==2.0.1
     #   pytest
 typing-extensions==4.12.2
     # via opentelemetry-sdk
-urllib3==2.2.2
+urllib3==2.2.3
     # via requests
 wheel==0.44.0
     # via pip-tools
