@@ -39,6 +39,14 @@ jobs:
     - run: pip install pip-licenses
     - run: pip-licenses
 
+  operator-requirements-installable:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/env-install
+    - run: pip install .
+    - run: pip install -r operator/requirements.txt
+
   test:
     runs-on: ubuntu-latest
     env:
