@@ -39,6 +39,7 @@ EDOT Python supports all configuration options listed in the [OpenTelemetry Gene
 Exporting logs from the Python `logging` module is disabled by default and gated under a configuration environment variable:
 
 ```sh
+export OTEL_LOGS_EXPORTER=otlp
 export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
 ```
 
