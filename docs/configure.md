@@ -49,7 +49,7 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 | Option | EDOT Python default | OpenTelemetry Python default |
 |---|---|---|
 | `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` | `process_runtime,os,otel,telemetry_distro` | `otel` |
-| `OTEL_LOGS_EXPORTER` | `otlp` | |
+| `OTEL_LOGS_EXPORTER` | `otlp` | _no default_ |
 
 ### Configuration options that are _only_ available in EDOT Python
 
