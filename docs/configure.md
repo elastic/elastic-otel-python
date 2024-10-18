@@ -34,12 +34,22 @@ Because the Elastic Distribution of OpenTelemetry Python is an extension of Open
 
 EDOT Python supports all configuration options listed in the [OpenTelemetry General SDK Configuration documentation](https://opentelemetry.io/docs/languages/sdk-configuration/general/) and [OpenTelemetry Python](https://opentelemetry.io/docs/languages/python).
 
+#### Logs
+
+Exporting logs from the Python `logging` module is disabled by default and gated under a configuration environment variable:
+
+```sh
+export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
+```
+
+#### Differences from OpenTelemetry Python
+
 EDOT Python uses different defaults than OpenTelemetry Python for the following configuration options:
 
 | Option | EDOT Python default | OpenTelemetry Python default |
 |---|---|---|
 | `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` | `process_runtime,os,otel,telemetry_distro` | `otel` |
-
+| `OTEL_LOGS_EXPORTER` | `otlp` | _no default_ |
 
 ### Configuration options that are _only_ available in EDOT Python
 

@@ -20,6 +20,7 @@ from unittest import TestCase, mock
 from elasticotel.distro import ElasticOpenTelemetryDistro
 from elasticotel.distro.environment_variables import ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
 from opentelemetry.environment_variables import (
+    OTEL_LOGS_EXPORTER,
     OTEL_METRICS_EXPORTER,
     OTEL_TRACES_EXPORTER,
 )
@@ -36,6 +37,7 @@ class TestDistribution(TestCase):
         distro.configure()
         self.assertEqual("otlp", os.environ.get(OTEL_TRACES_EXPORTER))
         self.assertEqual("otlp", os.environ.get(OTEL_METRICS_EXPORTER))
+        self.assertEqual("otlp", os.environ.get(OTEL_LOGS_EXPORTER))
         self.assertEqual("grpc", os.environ.get(OTEL_EXPORTER_OTLP_PROTOCOL))
         self.assertEqual(
             "process_runtime,os,otel,telemetry_distro", os.environ.get(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS)
