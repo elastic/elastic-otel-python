@@ -1,4 +1,4 @@
-FROM docker.elastic.co/wolfi/python:3.12.7-r0-dev@sha256:9340c334f6c46c81e47f3c35ca30f178f72a098bd97d8e21509fcd90a214c8b0 AS build
+FROM docker.elastic.co/wolfi/python:3.13.0-r0-dev@sha256:9ba9f49f42208f570058ec1b7faf0c58de7c5a6794416b9b4b7711a381de139d AS build
 
 ENV LANG=C.UTF-8
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -16,7 +16,7 @@ RUN mkdir workspace
 
 RUN pip install --no-cache-dir --target workspace /opt/distro/*.whl -r requirements.txt
 
-FROM docker.elastic.co/wolfi/chainguard-base:latest@sha256:90888b190da54062f67f3fef1372eb0ae7d81ea55f5a1f56d748b13e4853d984
+FROM docker.elastic.co/wolfi/chainguard-base:latest@sha256:bf163e1977002301f7b9fd28fe6837a8cb2dd5c83e4cd45fb67fb28d15d5d40f
 
 COPY --from=build /operator-build/workspace /autoinstrumentation
 
