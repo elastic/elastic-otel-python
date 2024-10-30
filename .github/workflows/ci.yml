@@ -39,13 +39,22 @@ jobs:
     - run: pip install pip-licenses
     - run: pip-licenses
 
-  operator-requirements-installable:
+  operator-image-buildable:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/env-install
-    - run: pip install .
-    - run: pip install -r operator/requirements.txt
+    - run: pip install build
+    - run: python -m build
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349 # v3.7.1
+    - name: Log in to the Elastic Container registry
+      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      with:
+        registry: ${{ secrets.ELASTIC_DOCKER_REGISTRY }}
+        username: ${{ secrets.ELASTIC_DOCKER_USERNAME }}
+        password: ${{ secrets.ELASTIC_DOCKER_PASSWORD }}
+    - run: docker build -f operator/Dockerfile --build-arg DISTRO_DIR=./dist .
 
   test:
     runs-on: ubuntu-latest
