@@ -92,7 +92,7 @@ protobuf==4.25.3
     #   googleapis-common-protos
     #   opentelemetry-proto
     #   oteltest
-psutil==6.0.0
+psutil==6.1.0
     # via opentelemetry-instrumentation-system-metrics
 pyproject-hooks==1.2.0
     # via
