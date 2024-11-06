@@ -48,17 +48,9 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
 class ElasticOpenTelemetryDistro(BaseDistro):
     def load_instrumentor(self, entry_point: EntryPoint, **kwargs):
         # When running in the k8s operator loading of an instrumentor may fail because the environment
-        # in which python extensions are built does not match the one from the running container.
-        # There are at least two cases:
-        # - different python version
-        # - different kind of wheels, e.g. manylinux vs musllinux
-        # To avoid the distro loading to fail catch ImportError here, that is the kind of exception we see
-        # when loading shared objects or cython extensions fails.
-        try:
-            instrumentor_class: BaseInstrumentor = entry_point.load()
-        except ImportError:
-            logger.exception("Instrumenting of %s failed", entry_point.name)
-            return
+        # in which python extensions are built does not match the one from the running container but
+        # ImportErrors raised here are handled by the autoinstrumentation code
+        instrumentor_class: BaseInstrumentor = entry_point.load()
 
         instrumentor_kwargs = {}
         if instrumentor_class == SystemMetricsInstrumentor:

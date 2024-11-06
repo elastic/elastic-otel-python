@@ -85,18 +85,3 @@ class TestDistribution(TestCase):
         distro.load_instrumentor(entryPoint_mock)
 
         instrumentor_mock.assert_called_once_with()
-
-    def test_load_instrumentor_handles_import_error_from_instrumentor_loading(self):
-        distro = ElasticOpenTelemetryDistro()
-        entryPoint_mock = mock.Mock()
-        entryPoint_mock.load.side_effect = ImportError
-
-        distro.load_instrumentor(entryPoint_mock)
-
-    def test_load_instrumentor_forwards_exceptions(self):
-        distro = ElasticOpenTelemetryDistro()
-        entryPoint_mock = mock.Mock()
-        entryPoint_mock.load.side_effect = ValueError
-
-        with self.assertRaises(ValueError):
-            distro.load_instrumentor(entryPoint_mock)
