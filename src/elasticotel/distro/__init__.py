@@ -33,7 +33,7 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
     OTEL_EXPORTER_OTLP_PROTOCOL,
 )
-from pkg_resources import EntryPoint
+from opentelemetry.util._importlib_metadata import EntryPoint
 
 from elasticotel.distro.environment_variables import ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
 
