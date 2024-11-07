@@ -30,6 +30,7 @@ from opentelemetry.instrumentation.system_metrics import (
 )
 from opentelemetry.sdk._configuration import _OTelSDKConfigurator
 from opentelemetry.sdk.environment_variables import (
+    OTEL_METRICS_EXEMPLAR_FILTER,
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
     OTEL_EXPORTER_OTLP_PROTOCOL,
 )
@@ -68,3 +69,5 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         os.environ.setdefault(OTEL_LOGS_EXPORTER, "otlp")
         os.environ.setdefault(OTEL_EXPORTER_OTLP_PROTOCOL, "grpc")
         os.environ.setdefault(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS, "process_runtime,os,otel,telemetry_distro")
+        # disable exemplars by default for now
+        os.environ.setdefault(OTEL_METRICS_EXEMPLAR_FILTER, "always_off")

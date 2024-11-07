@@ -79,6 +79,7 @@ This distribution sets the following defaults:
 - `OTEL_METRICS_EXPORTER`: `otlp`
 - `OTEL_EXPORTER_OTLP_PROTOCOL`: `grpc`
 - `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS`: `process_runtime,os,otel,telemetry_distro`
+- `OTEL_METRICS_EXEMPLAR_FILTER`: `always_off`
 
 ### Distribution specific configuration variables
 
