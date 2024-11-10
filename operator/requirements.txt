@@ -49,7 +49,7 @@ opentelemetry-instrumentation-system-metrics==0.48b0
 opentelemetry-instrumentation-threading==0.48b0
 opentelemetry-instrumentation-tornado==0.48b0
 opentelemetry-instrumentation-tortoiseorm==0.48b0
-opentelemetry-instrumentation-urllib==0.48b0
+opentelemetry-instrumentation-urllib==0.49b1
 opentelemetry-instrumentation-urllib3==0.48b0
 opentelemetry-instrumentation-wsgi==0.48b0
 
