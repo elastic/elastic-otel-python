@@ -14,9 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
-from logging import getLogger
 
+from opentelemetry._logs import set_logger_provider
+from opentelemetry._events import set_event_logger_provider
 from opentelemetry.environment_variables import (
     OTEL_LOGS_EXPORTER,
     OTEL_METRICS_EXPORTER,
@@ -28,22 +30,90 @@ from opentelemetry.instrumentation.system_metrics import (
     _DEFAULT_CONFIG as SYSTEM_METRICS_DEFAULT_CONFIG,
     SystemMetricsInstrumentor,
 )
-from opentelemetry.sdk._configuration import _OTelSDKConfigurator
+from opentelemetry.semconv.resource import ResourceAttributes
+from opentelemetry.sdk._configuration import (
+    _OTelSDKConfigurator,
+    _import_exporters,
+    _get_exporter_names,
+    _get_sampler,
+    _import_sampler,
+    _get_id_generator,
+    _import_id_generator,
+    _init_tracing,
+    _init_metrics,
+)
+from opentelemetry.sdk._events import EventLoggerProvider
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.sdk.environment_variables import (
     OTEL_METRICS_EXEMPLAR_FILTER,
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
     OTEL_EXPORTER_OTLP_PROTOCOL,
+    _OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED,
 )
+from opentelemetry.sdk.resources import Resource
 from opentelemetry.util._importlib_metadata import EntryPoint
 
 from elasticotel.distro.environment_variables import ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
 
 
-logger = getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
-    pass
+    def _configure(self, **kwargs):
+        """This is overriden to enable the log machinery (and thus log events) without
+        attaching the OTel handler to the Python logging module.
+
+        This code is a simplified version of _initialize_components plus the changes
+        required to have log events enabled out of the box"""
+        span_exporters, metric_exporters, log_exporters = _import_exporters(
+            _get_exporter_names("traces"),
+            _get_exporter_names("metrics"),
+            _get_exporter_names("logs"),
+        )
+        sampler_name = _get_sampler()
+        sampler = _import_sampler(sampler_name)
+        id_generator_name = _get_id_generator()
+        id_generator = _import_id_generator(id_generator_name)
+
+        resource_attributes = {}
+        # populate version if using auto-instrumentation
+        auto_instrumentation_version = kwargs.get("auto_instrumentation_version")
+        if auto_instrumentation_version:
+            resource_attributes[ResourceAttributes.TELEMETRY_AUTO_VERSION] = auto_instrumentation_version
+        # if env var OTEL_RESOURCE_ATTRIBUTES is given, it will read the service_name
+        # from the env variable else defaults to "unknown_service"
+        resource = Resource.create(resource_attributes)
+
+        _init_tracing(
+            exporters=span_exporters,
+            id_generator=id_generator,
+            sampler=sampler,
+            resource=resource,
+        )
+        _init_metrics(metric_exporters, resource)
+
+        # from here we change the semantics of _OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED from
+        # controlling all the logging support to just the logging handler. So we can use log events without
+        # exporting all the logs to OTLP
+        logger_provider = LoggerProvider(resource=resource)
+        set_logger_provider(logger_provider)
+
+        for _, exporter_class in log_exporters.items():
+            exporter_args = {}
+            logger_provider.add_log_record_processor(BatchLogRecordProcessor(exporter_class(**exporter_args)))
+
+        setup_logging_handler = (
+            os.getenv(_OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED, "false").strip().lower() == "true"
+        )
+        if setup_logging_handler:
+            handler = LoggingHandler(level=logging.NOTSET, logger_provider=logger_provider)
+            logging.getLogger().addHandler(handler)
+
+        # now setup the event logger
+        event_logger_provider = EventLoggerProvider(logger_provider=logger_provider)
+        set_event_logger_provider(event_logger_provider)
 
 
 class ElasticOpenTelemetryDistro(BaseDistro):
