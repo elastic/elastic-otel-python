@@ -1,4 +1,4 @@
-FROM docker.elastic.co/wolfi/python:3.12-dev@sha256:2f10787cc037b197f6a5d1a031c31706ae59642708c8b3b5ddfd3fa79605e9ad AS build
+FROM docker.elastic.co/wolfi/python:3.13.0-r1-dev@sha256:cd4965805589d6f5383235f39f0f20ca84a8db0a53528b4b5fe420e3f1367ad2 AS build
 
 ENV LANG=C.UTF-8
 ENV PYTHONDONTWRITEBYTECODE=1
