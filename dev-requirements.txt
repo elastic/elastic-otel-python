@@ -30,7 +30,7 @@ grpcio==1.67.1
     #   oteltest
 idna==3.10
     # via requests
-importlib-metadata==8.4.0
+importlib-metadata==8.5.0
     # via opentelemetry-api
 iniconfig==2.0.0
     # via pytest
