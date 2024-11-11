@@ -1,5 +1,13 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v0.4.0
+
+- Bump to OTel 1.28.1 (#169)
+- Enable log events by default (#154)
+- Add musl autoinstrumentation to Docker image for OTel Kubernetes operator (#162)
+- Add documentation for logging enablement (#153)
+- Add flask autoinstrumentation example (#168)
+
 ## v0.3.0
 
 - Build Python 3.12 Docker image for OTel Kubernetes operator (#132, #136. #137)
