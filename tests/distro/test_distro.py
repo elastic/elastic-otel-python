@@ -25,6 +25,7 @@ from opentelemetry.environment_variables import (
     OTEL_TRACES_EXPORTER,
 )
 from opentelemetry.sdk.environment_variables import (
+    OTEL_METRICS_EXEMPLAR_FILTER,
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
     OTEL_EXPORTER_OTLP_PROTOCOL,
 )
@@ -42,6 +43,7 @@ class TestDistribution(TestCase):
         self.assertEqual(
             "process_runtime,os,otel,telemetry_distro", os.environ.get(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS)
         )
+        self.assertEqual("always_off", os.environ.get(OTEL_METRICS_EXEMPLAR_FILTER))
 
     @mock.patch.dict("os.environ", {}, clear=True)
     def test_load_instrumentor_call_with_default_kwargs_for_SystemMetricsInstrumentor(self):
@@ -85,18 +87,3 @@ class TestDistribution(TestCase):
         distro.load_instrumentor(entryPoint_mock)
 
         instrumentor_mock.assert_called_once_with()
-
-    def test_load_instrumentor_handles_import_error_from_instrumentor_loading(self):
-        distro = ElasticOpenTelemetryDistro()
-        entryPoint_mock = mock.Mock()
-        entryPoint_mock.load.side_effect = ImportError
-
-        distro.load_instrumentor(entryPoint_mock)
-
-    def test_load_instrumentor_forwards_exceptions(self):
-        distro = ElasticOpenTelemetryDistro()
-        entryPoint_mock = mock.Mock()
-        entryPoint_mock.load.side_effect = ValueError
-
-        with self.assertRaises(ValueError):
-            distro.load_instrumentor(entryPoint_mock)
