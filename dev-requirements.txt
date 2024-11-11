@@ -24,7 +24,7 @@ googleapis-common-protos==1.65.0
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-grpcio==1.67.0
+grpcio==1.67.1
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   oteltest
@@ -36,7 +36,7 @@ iniconfig==2.0.0
     # via pytest
 leb128==1.0.8
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-api==1.27.0
+opentelemetry-api==1.28.1
     # via
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-exporter-otlp-proto-grpc
@@ -46,48 +46,50 @@ opentelemetry-api==1.27.0
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
     #   oteltest
-opentelemetry-exporter-otlp==1.27.0
+opentelemetry-exporter-otlp==1.28.1
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-exporter-otlp-proto-common==1.27.0
+opentelemetry-exporter-otlp-proto-common==1.28.1
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-grpc==1.27.0
+opentelemetry-exporter-otlp-proto-grpc==1.28.1
     # via opentelemetry-exporter-otlp
-opentelemetry-exporter-otlp-proto-http==1.27.0
+opentelemetry-exporter-otlp-proto-http==1.28.1
     # via opentelemetry-exporter-otlp
-opentelemetry-instrumentation==0.48b0
+opentelemetry-instrumentation==0.49b1
     # via
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-instrumentation-system-metrics
-opentelemetry-instrumentation-system-metrics==0.48b0
+opentelemetry-instrumentation-system-metrics==0.49b1
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-proto==1.27.0
+opentelemetry-proto==1.28.1
     # via
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
     #   oteltest
-opentelemetry-sdk==1.27.0
+opentelemetry-sdk==1.28.1
     # via
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-semantic-conventions==0.48b0
+opentelemetry-semantic-conventions==0.49b1
     # via
     #   elastic-opentelemetry (pyproject.toml)
+    #   opentelemetry-instrumentation
     #   opentelemetry-sdk
-oteltest==0.15.0
+oteltest==0.24.0
     # via elastic-opentelemetry (pyproject.toml)
-packaging==24.1
+packaging==24.2
     # via
     #   build
+    #   opentelemetry-instrumentation
     #   pytest
 pip-tools==7.4.1
     # via elastic-opentelemetry (pyproject.toml)
 pluggy==1.5.0
     # via pytest
-protobuf==4.25.3
+protobuf==5.28.3
     # via
     #   googleapis-common-protos
     #   opentelemetry-proto

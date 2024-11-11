@@ -24,11 +24,11 @@ from pathlib import Path
 from typing import Callable, Mapping, Optional
 
 import leb128
-import pkg_resources
+from opentelemetry.util._importlib_metadata import version
 from oteltest import private as ot
 
-OTEL_VERSION = pkg_resources.get_distribution("opentelemetry-api").version
-OTEL_INSTRUMENTATION_VERSION = pkg_resources.get_distribution("opentelemetry-instrumentation").version
+OTEL_VERSION = version("opentelemetry-api")
+OTEL_INSTRUMENTATION_VERSION = version("opentelemetry-instrumentation")
 
 ROOT_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
@@ -137,7 +137,7 @@ class ElasticIntegrationTestCase(unittest.TestCase):
         metrics = []
         for request in telemetry["metric_requests"]:
             elems = []
-            for proto_elem in request["request"]["resourceMetrics"]:
+            for proto_elem in request["pbreq"]["resourceMetrics"]:
                 scope_metrics = []
                 for proto_scope_metric in proto_elem["scopeMetrics"]:
                     scope_metric = proto_scope_metric.copy()
@@ -157,7 +157,7 @@ class ElasticIntegrationTestCase(unittest.TestCase):
 
         traces = []
         for request in telemetry["trace_requests"]:
-            for resource_span in request["request"]["resourceSpans"]:
+            for resource_span in request["pbreq"]["resourceSpans"]:
                 resource_attributes = normalize_attributes(resource_span["resource"]["attributes"])
                 for proto_scope_spans in resource_span["scopeSpans"]:
                     for proto_span in proto_scope_spans["spans"]:
