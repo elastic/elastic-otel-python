@@ -104,7 +104,7 @@ pytest==8.3.3
     # via elastic-opentelemetry (pyproject.toml)
 requests==2.32.3
     # via opentelemetry-exporter-otlp-proto-http
-tomli==2.0.2
+tomli==2.1.0
     # via
     #   build
     #   pip-tools
