@@ -78,7 +78,7 @@ opentelemetry-semantic-conventions==0.49b1
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-instrumentation
     #   opentelemetry-sdk
-oteltest==0.24.0
+oteltest==0.29.0
     # via elastic-opentelemetry (pyproject.toml)
 packaging==24.2
     # via
