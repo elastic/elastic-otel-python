@@ -69,7 +69,7 @@ opentelemetry-instrument gunicorn main:app
 
 ## Configuration
 
-The distribution supports all the configuration variables from OpenTelemetry Python project version 1.28.1.
+The distribution supports all the configuration variables from OpenTelemetry Python project version 1.28.2.
 
 ### Default configuration variables
 
