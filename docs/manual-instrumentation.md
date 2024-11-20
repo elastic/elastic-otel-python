@@ -122,10 +122,11 @@ app = Flask(__name__)
 @app.route("/hello")
 def hello():
     choices = ["there", "world", "folks", "hello"]
+    # create a span for the choice of the name, this may be a costly call in your real world application
     with tracer.start_as_current_span("choice") as span:
-	choice = random.choice(choices)
-        span.set_attribute("choice.value", choice)
-	return f"Hello {choice}!"
+        choice = random.choice(choices)
+    span.set_attribute("choice.value", choice)
+    return f"Hello {choice}!"
 ```
 
 And then we can run this application with the following command:
@@ -156,11 +157,12 @@ app = Flask(__name__)
 @app.route("/hello")
 def hello():
     choices = ["there", "world", "folks", "hello"]
+    # create a span for the choice of the name, this may be a costly call in your real world application
     with tracer.start_as_current_span("choice") as span:
-	choice = random.choice(choices)
-        span.set_attribute("choice.value", choice)
-	hello_counter.add(1, {"choice.value": choice})
-	return f"Hello {choice}!"
+        choice = random.choice(choices)
+    span.set_attribute("choice.value", choice)
+    hello_counter.add(1, {"choice.value": choice})
+    return f"Hello {choice}!"
 ```
 
 <!--  ✅ What success looks like -->
