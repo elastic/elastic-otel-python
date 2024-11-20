@@ -100,9 +100,68 @@ export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer P....l"
 > ```
 
 <!-- ✅ Manually instrument the application and start sending data to Elastic -->
-### Manually instrument your Python application
+### Manually instrument your auto instrumented Python application
 
-FIXME 
+In this section we'll show how to add manual instrumentation to an already automatically instrumented application. A use case for
+this setup would be to trace something in particular while keeping the benefits of the simplicity of the automatic instrumentation doing
+the hard work for us.
+
+As an example we'll use an application using the Flask framework that implements an endpoint mounted on `/hello` returning a friendly
+salute. This application is saved in a file named `app.py` that is the default module for Flask applications.
+
+```
+import random
+
+from flask import Flask
+from opentelemetry import trace
+
+tracer = trace.get_tracer(__name__)
+
+app = Flask(__name__)
+
+@app.route("/hello")
+def hello():
+    choices = ["there", "world", "folks", "hello"]
+    with tracer.start_as_current_span("choice") as span:
+	choice = random.choice(choices)
+        span.set_attribute("choice.value", choice)
+	return f"Hello {choice}!"
+```
+
+And then we can run this application with the following command:
+
+```bash
+opentelemetry-instrument flask run
+```
+
+We may not only need to add custom span to our application we may also want to use a custom metric, like in the example below where we
+are tracking how many times we are getting one of the possible choices for our salutes.
+
+```
+import random
+
+from flask import Flask
+from opentelemetry import trace
+
+tracer = trace.get_tracer(__name__)
+meter = metrics.get_meter(__name__)
+
+hello_counter = meter.create_counter(
+    "hello.choice",
+    description="The number of times a salute is chosen",
+)
+
+app = Flask(__name__)
+
+@app.route("/hello")
+def hello():
+    choices = ["there", "world", "folks", "hello"]
+    with tracer.start_as_current_span("choice") as span:
+	choice = random.choice(choices)
+        span.set_attribute("choice.value", choice)
+	hello_counter.add(1, {"choice.value": choice})
+	return f"Hello {choice}!"
+```
 
 <!--  ✅ What success looks like -->
 ## Confirm that EDOT Python is working
