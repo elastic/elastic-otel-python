@@ -9,7 +9,7 @@ This guide shows you how to use the Elastic Distribution of OpenTelemetry Python
 
 **Already familiar with OpenTelemetry?** It's an explicit goal of this distribution to introduce _no new concepts_ outside those defined by the wider OpenTelemetry community.
 
-**New to OpenTelemetry?** If your are new to OpenTelemetry we encourage you to take a look at our [get started documentation](./get-started.md) instead that will introduce you to autoinstrumentation.
+**New to OpenTelemetry?** If your are new to OpenTelemetry we encourage you to take a look at our [get started documentation](./get-started.md) instead, which will introduce you to autoinstrumentation.
 
 **Already added autoinstrumentation with OpenTelemetry to your application?** Skip to the [Manually instrument your Python application chapter](#Manually-instrument-your-Python-application).
 
