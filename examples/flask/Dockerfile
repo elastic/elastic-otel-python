@@ -7,7 +7,7 @@ COPY . /app
 RUN pip install flask elastic-opentelemetry
 
 # Install all the instrumentations available for the installed packages
-RUN opentelemetry-bootstrap -a install
+RUN edot-bootstrap -a install
 
 # default flask run port
 EXPOSE 5000

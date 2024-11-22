@@ -42,12 +42,12 @@ pip install elastic-opentelemetry
 ### Install the available instrumentation
 
 EDOT Python does not install any instrumentation package by default, instead it relies on the
-`opentelemetry-bootstrap` command to scan the installed packages and install the available instrumentation.
+`edot-bootstrap` command to scan the installed packages and install the available instrumentation.
 The following command will install all the instrumentations available for libraries found installed
 in your environment:
 
 ```bash
-opentelemetry-bootstrap --action=install
+edot-bootstrap --action=install
 ```
 
 > [!NOTE]
