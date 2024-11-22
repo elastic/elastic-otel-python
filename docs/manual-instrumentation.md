@@ -125,7 +125,7 @@ def hello():
     # create a span for the choice of the name, this may be a costly call in your real world application
     with tracer.start_as_current_span("choice") as span:
         choice = random.choice(choices)
-    span.set_attribute("choice.value", choice)
+        span.set_attribute("choice.value", choice)
     return f"Hello {choice}!"
 ```
 
@@ -142,7 +142,7 @@ are tracking how many times we are getting one of the possible choices for our s
 import random
 
 from flask import Flask
-from opentelemetry import trace
+from opentelemetry import metrics, trace
 
 tracer = trace.get_tracer(__name__)
 meter = metrics.get_meter(__name__)
@@ -160,7 +160,7 @@ def hello():
     # create a span for the choice of the name, this may be a costly call in your real world application
     with tracer.start_as_current_span("choice") as span:
         choice = random.choice(choices)
-    span.set_attribute("choice.value", choice)
+        span.set_attribute("choice.value", choice)
     hello_counter.add(1, {"choice.value": choice})
     return f"Hello {choice}!"
 ```
