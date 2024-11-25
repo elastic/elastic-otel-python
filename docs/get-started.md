@@ -129,4 +129,5 @@ To confirm that EDOT Python has successfully connected to Elastic:
 ## Next steps
 
 * Reference all available [configuration options](./configure.md).
+* Learn how to add [manual instrumentation](./manual-instrumentation.md).
 * Learn more about viewing and interpreting data in the [Observability guide](https://www.elastic.co/guide/en/observability/current/apm.html).
