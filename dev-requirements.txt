@@ -20,7 +20,7 @@ deprecated==1.2.15
     #   opentelemetry-semantic-conventions
 exceptiongroup==1.2.2
     # via pytest
-googleapis-common-protos==1.65.0
+googleapis-common-protos==1.66.0
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
