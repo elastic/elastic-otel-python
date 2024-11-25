@@ -21,7 +21,6 @@ authorization data to set a few `OTLP_*` environment variables that will be avai
 export OTEL_RESOURCE_ATTRIBUTES=service.name=<app-name>
 export OTEL_EXPORTER_OTLP_ENDPOINT=https://my-deployment.apm.us-west1.gcp.cloud.es.io
 export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer P....l"
-opentelemetry-instrument <command to start your service>
 ```
 
 Refer to our [get started](./get-started.md) page for more details.
