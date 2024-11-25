@@ -113,7 +113,7 @@ typing-extensions==4.12.2
     # via opentelemetry-sdk
 urllib3==2.2.3
     # via requests
-wheel==0.45.0
+wheel==0.45.1
     # via pip-tools
 wrapt==1.17.0
     # via
