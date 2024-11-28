@@ -68,7 +68,7 @@ And then we can run this application with the following command:
 opentelemetry-instrument flask run
 ```
 
-We may not only need to add custom span to our application we may also want to use a custom metric, like in the example below where we
+We may not only need to add a custom span to our application but also want to use a custom metric, like in the example below where we
 are tracking how many times we are getting one of the possible choices for our salutes.
 
 ```
