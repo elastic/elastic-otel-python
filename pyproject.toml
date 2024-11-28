@@ -33,7 +33,6 @@ dependencies = [
     "opentelemetry-instrumentation-system-metrics == 0.49b2",
     "opentelemetry-resourcedetector-gcp ~= 1.7.0a0",
     "opentelemetry-resource-detector-azure ~= 0.1.5",
-    "opentelemetry-resource-detector-container ~= 0.49b2",
     "opentelemetry-sdk == 1.28.2",
     "opentelemetry-sdk-extension-aws ~= 2.0.2",
     "opentelemetry-semantic-conventions == 0.49b2",

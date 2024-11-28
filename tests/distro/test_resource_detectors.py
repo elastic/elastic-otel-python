@@ -38,12 +38,12 @@ class TestGetCloudResourceDetectors(TestCase):
     @mock.patch.dict("os.environ", {"KUBERNETES_SERVICE_HOST": "k8s"}, clear=True)
     def test_kubernetes_pod(self):
         resource_detectors = get_cloud_resource_detectors()
-        self.assertEqual(resource_detectors, ["_gcp", "aws_eks", "container"])
+        self.assertEqual(resource_detectors, ["_gcp", "aws_eks"])
 
     @mock.patch.dict("os.environ", {}, clear=True)
     def test_other_cloud_detectors(self):
         resource_detectors = get_cloud_resource_detectors()
         self.assertEqual(
             resource_detectors,
-            ["_gcp", "aws_ec2", "aws_ecs", "aws_elastic_beanstalk", "azure_app_service", "azure_vm", "container"],
+            ["_gcp", "aws_ec2", "aws_ecs", "aws_elastic_beanstalk", "azure_app_service", "azure_vm"],
         )
