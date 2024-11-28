@@ -20,6 +20,7 @@ With EDOT Python you have access to all the features of the OpenTelemetry Python
 ## Read the docs
 
 * [Get started](./docs/get-started.md)
+* [Manual instrumentation](./docs/manual-instrumentation.md)
 * [Configuration](./docs/configure.md)
 
 ## Install
