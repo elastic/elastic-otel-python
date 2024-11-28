@@ -48,6 +48,7 @@ from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.sdk.environment_variables import (
     OTEL_METRICS_EXEMPLAR_FILTER,
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
+    OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
     OTEL_EXPORTER_OTLP_PROTOCOL,
     _OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED,
 )
@@ -141,3 +142,5 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         os.environ.setdefault(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS, "process_runtime,os,otel,telemetry_distro")
         # disable exemplars by default for now
         os.environ.setdefault(OTEL_METRICS_EXEMPLAR_FILTER, "always_off")
+        # preference to use DELTA temporality as we can handle only this kind of Histograms
+        os.environ.setdefault(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE, "DELTA")
