@@ -85,7 +85,7 @@ This distribution sets the following defaults:
 - `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE`: `DELTA`
 
 > [!NOTE]
-> `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` cloud resource detectors are dinamically set. When running in a Kubernetes Pod only the `_gcp` and the `aws_eks` will be set.
+> `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` cloud resource detectors are dynamically set. When running in a Kubernetes Pod it will be set to `process_runtime,os,otel,telemetry_distro,_gcp,aws_eks`.
 
 ### Distribution specific configuration variables
 
