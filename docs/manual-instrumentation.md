@@ -59,7 +59,7 @@ We need to make sure to have Flask and the Flask OpenTelemetry instrumentation i
 
 ```bash
 pip install flask
-opentelemetry-bootstrap --action=install 
+edot-bootstrap --action=install
 ```
 
 And then we can run this application with the following command:

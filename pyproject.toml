@@ -33,6 +33,7 @@ dependencies = [
     "opentelemetry-instrumentation-system-metrics == 0.49b2",
     "opentelemetry-semantic-conventions == 0.49b2",
     "opentelemetry-sdk == 1.28.2",
+    "packaging",
 ]
 
 [project.optional-dependencies]
@@ -47,6 +48,9 @@ distro = "elasticotel.distro:ElasticOpenTelemetryDistro"
 [project.entry-points.opentelemetry_resource_detector]
 process_runtime = "elasticotel.sdk.resources:ProcessRuntimeResourceDetector"
 telemetry_distro = "elasticotel.sdk.resources:TelemetryDistroResourceDetector"
+
+[project.scripts]
+edot-bootstrap = "elasticotel.instrumentation.bootstrap:run"
 
 [project.readme]
 file = "README.md"

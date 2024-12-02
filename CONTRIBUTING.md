@@ -102,6 +102,13 @@ Once approved, the author of the pull request,
 or reviewer if the author does not have commit access,
 should "Squash and merge".
 
+### Bumping version of EDOT instrumentations
+
+When new EDOT instrumentations are released we need to update:
+
+- `operator/requirements.txt`, in order to have them available in the Docker image used for the Kubernetes Operator auto-instrumentation
+- `elasticotel/instrumentation/bootstrap.py`, in order to make them available to `edot-bootstrap`
+
 ### Releasing
 
 Releases tags are signed so you need to have a PGP key set up, you can follow Github documentation on [creating a key](https://docs.github.com/en/authentication/managing-commit-signature-verification/generating-a-new-gpg-key) and
