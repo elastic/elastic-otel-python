@@ -31,8 +31,11 @@ dependencies = [
     "opentelemetry-exporter-otlp == 1.28.2",
     "opentelemetry-instrumentation == 0.49b2",
     "opentelemetry-instrumentation-system-metrics == 0.49b2",
-    "opentelemetry-semantic-conventions == 0.49b2",
+    "opentelemetry-resourcedetector-gcp ~= 1.7.0a0",
+    "opentelemetry-resource-detector-azure ~= 0.1.5",
     "opentelemetry-sdk == 1.28.2",
+    "opentelemetry-sdk-extension-aws ~= 2.0.2",
+    "opentelemetry-semantic-conventions == 0.49b2",
     "packaging",
 ]
 
@@ -48,6 +51,7 @@ distro = "elasticotel.distro:ElasticOpenTelemetryDistro"
 [project.entry-points.opentelemetry_resource_detector]
 process_runtime = "elasticotel.sdk.resources:ProcessRuntimeResourceDetector"
 telemetry_distro = "elasticotel.sdk.resources:TelemetryDistroResourceDetector"
+_gcp = "opentelemetry.resourcedetector.gcp_resource_detector._detector:GoogleCloudResourceDetector"
 
 [project.scripts]
 edot-bootstrap = "elasticotel.instrumentation.bootstrap:run"
