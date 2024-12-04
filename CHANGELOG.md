@@ -1,5 +1,13 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v0.5.0
+
+- Enable by default cloud resource detectors for AWS, Azure and GCP (#198)
+- Introduce edot-bootstrap, like opentelemetry-bootstrap but with EDOT Openai instrumentation (#196)
+- Add docs for tracing with manual spans and metrics (#189)
+- Set OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE to DELTA (#197)
+- Bump elastic-opentelemetry-instrumentation-openai dependency to 0.5.0 (#204)
+
 ## v0.4.1
 
 - Bump to OTel 1.28.2 (#185)
