@@ -25,7 +25,7 @@ We provide a tool to discover available instrumentations automatically that can 
 
 ### Central configuration
 
-At the moment we don't have a Central configuration replacement so all the configurations would be static and should be provided to the application with other manners.
+At the moment we don't have a Central configuration feature so all the configurations are static and should be provided to the application with other configurations.
 
 ### AWS lambda
 
