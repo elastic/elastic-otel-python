@@ -46,7 +46,7 @@ At the moment of writing the following libraries are missing an OpenTelemetry in
 - pylibmc
 - pyodbc
 - pymssql
-- Sanic, though it may be compatible with the ASGI instrumentation
+- Sanic
 - zlib
 
 <!-- ✅ What they should do next -->
