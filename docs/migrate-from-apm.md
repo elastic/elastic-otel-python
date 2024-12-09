@@ -29,7 +29,7 @@ At the moment we don't have a Central configuration feature so all the configura
 
 ### AWS lambda
 
-At the moment we are not building any custom lambda layer for the Python instrumentation. You can refer to the upstream [Lambda Auto-Instrumentation](https://opentelemetry.io/docs/faas/lambda-auto-instrument/).
+At the moment, we are not building a custom lambda layer for our Python distribution. You can refer to the upstream [Lambda Auto-Instrumentation](https://opentelemetry.io/docs/faas/lambda-auto-instrument/).
 
 ### Missing instrumentations
 
