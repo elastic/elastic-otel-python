@@ -14,7 +14,7 @@ EDOT Python being a distribution of OpenTelemetry means we should follow standar
 
 ## Bold on autoinstrumentation
 
-We have choosen to be bold on autoinstrumentation - that is instrument your Python application without change the application code - so you can just focus on your code. This is because OpenTelemetry configuration has more options and configuration knobs that may complicate things.
+We have chosen to make auto-instrumentation as simple as possible so you can just focus on your code; we favored an experience that requires minimal changes to your application code. The upstream OpenTelemetry configuration has more options and configuration knobs than the distribution requires setting.
 
 ## Bring your own instrumentation
 
