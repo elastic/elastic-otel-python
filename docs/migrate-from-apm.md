@@ -33,7 +33,7 @@ At the moment, we are not building a custom lambda layer for our Python distribu
 
 ### Missing instrumentations
 
-Not all instrumentation we have in APM Python Agent have an OpenTelemetry counterpart, we may port them if there is customer request.
+Not all instrumentations we have in Elastic APM Python Agent have an OpenTelemetry counterpart. But we may port them if they are requested by users.
 
 At the moment of writing these docs, the following libraries are missing an OpenTelemetry instrumentation:
 - aiobotocore
