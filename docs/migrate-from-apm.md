@@ -35,7 +35,7 @@ At the moment, we are not building a custom lambda layer for our Python distribu
 
 Not all instrumentation we have in APM Python Agent have an OpenTelemetry counterpart, we may port them if there is customer request.
 
-At the moment of writing the following libraries are missing an OpenTelemetry instrumentation:
+At the moment of writing these docs, the following libraries are missing an OpenTelemetry instrumentation:
 - aiobotocore
 - aiomysql
 - aiopg
