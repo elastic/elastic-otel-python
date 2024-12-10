@@ -5,7 +5,7 @@ The user is able to understand the differences between the APM Python agent and 
 
 # Get started
 
-This guide will highlight the major differences between APM Python Agent and the Elastic Distribution of OpenTelemetry Python (EDOT Python).
+This guide will highlight the major differences between Elastic APM Python Agent and the Elastic Distribution of OpenTelemetry Python (EDOT Python).
 For an hands-on approach on setting up EDOT Python refer to the [Get started guide](./get-started.md).
 
 ## We are a distribution
