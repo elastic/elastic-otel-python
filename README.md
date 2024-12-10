@@ -22,7 +22,7 @@ With EDOT Python you have access to all the features of the OpenTelemetry Python
 * [Get started](./docs/get-started.md)
 * [Manual instrumentation](./docs/manual-instrumentation.md)
 * [Configuration](./docs/configure.md)
-* [Migrating from APM Python Agent](./docs/migrate-from-apm.md)
+* [Migrating from Elastic APM Python Agent](./docs/migrate-from-apm.md)
 
 ## Install
 
