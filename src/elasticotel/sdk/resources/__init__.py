@@ -60,3 +60,37 @@ class TelemetryDistroResourceDetector(ResourceDetector):
             telemetry_attributes.TELEMETRY_DISTRO_VERSION: version.__version__,
         }
         return Resource(resource_info)
+
+
+class GCPDebugDetector(ResourceDetector):
+    """Debug resource detectors"""
+
+    def detect(self) -> "Resource":
+        import os
+        import socket
+        import requests
+        from opentelemetry.resourcedetector.gcp_resource_detector._metadata import is_available
+
+        print("buildkite vars")
+        print({k: v for k, v in os.environ.items() if k.startswith("BUILDKITE")})
+        print("can resolve metadata?")
+        try:
+            addr = socket.getaddrinfo("metadata.google.internal", 443)
+        except Exception:
+            addr = None
+        print("metadata addr", addr)
+        print("now calling the gcp detector")
+        available = is_available()
+        print("metadata available", available)
+
+        print("get metadata from ip as the go metadata package")
+        try:
+            response = requests.get(
+                "http://169.254.169.254/computeMetadata/v1/",
+                params={"recursive": "true"},
+                headers={"Metadata-Flavor": "Google"},
+            )
+        except Exception:
+            response = None
+        print("response", response.json() if response else response)
+        return Resource.get_empty()
