@@ -66,6 +66,7 @@ class GCPDebugDetector(ResourceDetector):
     """Debug resource detectors"""
 
     def detect(self) -> "Resource":
+        """
         import os
         import socket
         import requests
@@ -93,4 +94,25 @@ class GCPDebugDetector(ResourceDetector):
         except Exception:
             response = None
         print("response", response.json() if response else response)
+        return Resource.get_empty()
+        """
+        import time
+        from opentelemetry.resourcedetector.gcp_resource_detector import _metadata, _gke, _detector
+
+        t1 = time.time()
+        print("t1", t1)
+        try:
+            _metadata.get_metadata()
+        except Exception:
+            return Resource.get_empty()
+        t2 = time.time()
+        print("t2", t2, "time", t2 - t1)
+
+        if _gke.on_gke():
+            print("on gke")
+            r = _detector._gke_resource()
+            t3 = time.time()
+            print("t3", t3, "time", t3 - t1)
+            return r
+
         return Resource.get_empty()
