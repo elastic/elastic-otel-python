@@ -96,23 +96,60 @@ class GCPDebugDetector(ResourceDetector):
         print("response", response.json() if response else response)
         return Resource.get_empty()
         """
-        import time
         from opentelemetry.resourcedetector.gcp_resource_detector import _metadata, _gke, _detector
+        from opentelemetry.resourcedetector.gcp_resource_detector._constants import (
+            ResourceAttributes,
+        )
 
-        t1 = time.time()
-        print("t1", t1)
-        try:
-            _metadata.get_metadata()
-        except Exception:
+        if not _metadata.is_available():
             return Resource.get_empty()
-        t2 = time.time()
-        print("t2", t2, "time", t2 - t1)
+
+        print(_metadata.get_metadata())
 
         if _gke.on_gke():
             print("on gke")
-            r = _detector._gke_resource()
-            t3 = time.time()
-            print("t3", t3, "time", t3 - t1)
-            return r
+            zone_or_region = _gke.availability_zone_or_region()
+            print("got zone and region")
+            zone_or_region_key = (
+                ResourceAttributes.CLOUD_AVAILABILITY_ZONE
+                if zone_or_region.type == "zone"
+                else ResourceAttributes.CLOUD_REGION
+            )
+
+            cluster_name = _gke.cluster_name()
+            print("after cluster name", cluster_name)
+            host_id = _gke.host_id()
+            print("after host_id", host_id)
+            attrs = {
+                ResourceAttributes.CLOUD_PLATFORM_KEY: ResourceAttributes.GCP_KUBERNETES_ENGINE,
+                zone_or_region_key: zone_or_region.value,
+                ResourceAttributes.K8S_CLUSTER_NAME: cluster_name,
+                ResourceAttributes.HOST_ID: host_id,
+            }
+            print("before return")
+            return _detector._make_resource(attrs)
+            """
+            cluster_location = _metadata.get_metadata()["instance"]["attributes"]["cluster-location"]
+            print("cluster_location", cluster_location)
+            hyphen_count = cluster_location.count("-")
+            if hyphen_count == 1:
+                zone_or_region_key = ResourceAttributes.CLOUD_REGION
+            elif hyphen_count == 2:
+                zone_or_region_key = ResourceAttributes.CLOUD_AVAILABILITY_ZONE
+            else:
+                print("oops no zone_or_region_key")
+                zone_or_region_key = "oops"
+
+            cluster_name = _metadata.get_metadata()["instance"]["attributes"]["cluster-name"]
+            host_id = str(_metadata.get_metadata()["instance"]["id"])
+            return Resource(
+                {
+                    ResourceAttributes.CLOUD_PLATFORM_KEY: ResourceAttributes.GCP_KUBERNETES_ENGINE,
+                    zone_or_region_key: cluster_location,
+                    ResourceAttributes.K8S_CLUSTER_NAME: cluster_name,
+                    ResourceAttributes.HOST_ID: host_id,
+                }
+            )
+            """
 
         return Resource.get_empty()
