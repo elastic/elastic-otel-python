@@ -10,7 +10,7 @@ For step-by-step instructions on setting up EDOT Python refer to the [Get starte
 
 ## We are a distribution
 
-EDOT Python being a distribution of OpenTelemetry means we should follow standards and can't always drift from that. That does not mean there isn't still space for innovation.
+As a distribution of OpenTelemetry, EDOT Python follows certain standards, but there is still some space for innovation.
 
 ## Bold on autoinstrumentation
 
