@@ -25,7 +25,7 @@ We provide a tool to discover available instrumentations automatically that can 
 
 ### Central configuration
 
-At the moment we don't have a Central configuration feature so all the configurations are static and should be provided to the application with other configurations.
+Currently EDOT Python does not have an equivalent of the [central configuration feature](https://www.elastic.co/guide/en/observability/current/apm-agent-configuration.html) that the Elastic APM Python agent supports. When using EDOT Python, all the configurations are static and should be provided to the application with other configurations.
 
 ### AWS lambda
 
