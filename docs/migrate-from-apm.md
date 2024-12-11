@@ -14,7 +14,7 @@ As a distribution of OpenTelemetry, EDOT Python follows certain standards, but t
 
 ## Bold on autoinstrumentation
 
-We have chosen to make auto-instrumentation as simple as possible so you can just focus on your code; we favored an experience that requires minimal changes to your application code. The upstream OpenTelemetry configuration has more options and configuration knobs than the distribution requires setting.
+We have chosen to make autoinstrumentation as simple as possible so you can just focus on your code; we favored an experience that requires minimal changes to your application code. The upstream OpenTelemetry configuration has more options than the distribution requires.
 
 ## Bring your own instrumentation
 
