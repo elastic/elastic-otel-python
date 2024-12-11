@@ -3,7 +3,7 @@ Goal of this doc:
 The user is able to understand the differences between the APM Python agent and EDOT
 -->
 
-# Get started
+# Compare EDOT Python and the Elastic APM Python agent 
 
 This guide will highlight the major differences between the [Elastic APM Python agent](https://www.elastic.co/guide/en/apm/agent/python/current/getting-started.html) and the Elastic Distribution of OpenTelemetry Python (EDOT Python).
 For step-by-step instructions on setting up EDOT Python refer to the [Get started guide](./get-started.md).
