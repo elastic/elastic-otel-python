@@ -1,5 +1,10 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v0.6.0
+
+- Bump to OTel 1.29.0 (#211)
+- Bump elastic-opentelemetry-instrumentation-openai dependency to 0.6.0 (#210)
+
 ## v0.5.0
 
 - Enable by default cloud resource detectors for AWS, Azure and GCP (#198)
