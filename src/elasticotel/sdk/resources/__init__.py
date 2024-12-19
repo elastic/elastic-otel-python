@@ -96,11 +96,13 @@ class GCPDebugDetector(ResourceDetector):
         print("response", response.json() if response else response)
         return Resource.get_empty()
         """
-        from opentelemetry.resourcedetector.gcp_resource_detector import _metadata, _gke, _detector
+        # from opentelemetry.resourcedetector.gcp_resource_detector import _metadata, _gke, _detector
         from opentelemetry.resourcedetector.gcp_resource_detector._constants import (
             ResourceAttributes,
         )
+        from opentelemetry.sdk.resources import Resource
 
+        """"
         if not _metadata.is_available():
             return Resource.get_empty()
 
@@ -120,14 +122,18 @@ class GCPDebugDetector(ResourceDetector):
             print("after cluster name", cluster_name)
             host_id = _gke.host_id()
             print("after host_id", host_id)
+        """
+        if True:
             attrs = {
                 ResourceAttributes.CLOUD_PLATFORM_KEY: ResourceAttributes.GCP_KUBERNETES_ENGINE,
-                zone_or_region_key: zone_or_region.value,
-                ResourceAttributes.K8S_CLUSTER_NAME: cluster_name,
-                ResourceAttributes.HOST_ID: host_id,
+                ResourceAttributes.CLOUD_REGION: "us-central1",
+                ResourceAttributes.K8S_CLUSTER_NAME: "ci-systems-prod",
+                ResourceAttributes.HOST_ID: "9908982718004639609",
+                ResourceAttributes.CLOUD_PROVIDER: "gcp",
+                ResourceAttributes.CLOUD_ACCOUNT_ID: "elastic-ci-prod",
             }
-            print("before return")
-            return _detector._make_resource(attrs)
+            print("before return", attrs)
+            return Resource.create(attrs)
             """
             cluster_location = _metadata.get_metadata()["instance"]["attributes"]["cluster-location"]
             print("cluster_location", cluster_location)
