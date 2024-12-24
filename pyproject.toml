@@ -34,7 +34,7 @@ dependencies = [
     "opentelemetry-resourcedetector-gcp ~= 1.7.0a0",
     "opentelemetry-resource-detector-azure ~= 0.1.5",
     "opentelemetry-sdk == 1.29.0",
-    "opentelemetry-sdk-extension-aws ~= 2.0.2",
+    "opentelemetry-sdk-extension-aws ~= 2.1.0",
     "opentelemetry-semantic-conventions == 0.50b0",
     "packaging",
 ]
