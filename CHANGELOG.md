@@ -1,5 +1,10 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v0.6.1
+
+- Bump opentelemetry-sdk-extension-aws to 2.1.0 (#222)
+- Disable GCP Cloud detector for avoid an infinite loop on GCP (#222)
+
 ## v0.6.0
 
 - Bump to OTel 1.29.0 (#211)
