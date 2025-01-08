@@ -40,6 +40,8 @@ jobs:
     - run: pip-licenses
 
   operator-image-buildable:
+    env:
+      USE_ELASTIC_REGISTRY: ${{ github.event_name != 'pull_request' || ( github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]' ) }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -54,11 +56,11 @@ jobs:
         registry: ${{ secrets.ELASTIC_DOCKER_REGISTRY }}
         username: ${{ secrets.ELASTIC_DOCKER_USERNAME }}
         password: ${{ secrets.ELASTIC_DOCKER_PASSWORD }}
-      if: github.event_name != 'pull_request' || ( github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]' )
+      if: ${{ env.USE_ELASTIC_REGISTRY }}
     - run: docker build -f operator/Dockerfile --build-arg DISTRO_DIR=./dist .
-      if: github.event_name != 'pull_request' || ( github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]' )
+      if: ${{ env.USE_ELASTIC_REGISTRY }}
     - run: docker build -f operator/Dockerfile --build-arg PYTHON_GLIBC_IMAGE=cgr.dev/chainguard/python --build-arg PYTHON_GLIBC_IMAGE_VERSION=latest --build-arg DISTRO_DIR=./dist --build-arg IMAGE=cgr.dev/chainguard/busybox --build-arg IMAGE_VERSION=latest .
-      if: github.event_name == 'pull_request' && (github.event.pull_request.head.repo.fork == true || github.actor == 'dependabot[bot]')
+      if: ${{ ! env.USE_ELASTIC_REGISTRY }}
 
   test:
     runs-on: ubuntu-latest
