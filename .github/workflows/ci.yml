@@ -59,7 +59,7 @@ jobs:
       if: ${{ env.USE_ELASTIC_REGISTRY }}
     - run: docker build -f operator/Dockerfile --build-arg DISTRO_DIR=./dist .
       if: ${{ env.USE_ELASTIC_REGISTRY }}
-    - run: docker build -f operator/Dockerfile --build-arg PYTHON_GLIBC_IMAGE=cgr.dev/chainguard/python --build-arg PYTHON_GLIBC_IMAGE_VERSION=latest-dev --build-arg DISTRO_DIR=./dist --build-arg IMAGE=cgr.dev/chainguard/busybox --build-arg IMAGE_VERSION=latest .
+    - run: docker build -f operator/Dockerfile --build-arg PYTHON_GLIBC_IMAGE=cgr.dev/chainguard/python --build-arg PYTHON_GLIBC_IMAGE_VERSION=latest-dev --build-arg DISTRO_DIR=./dist --build-arg IMAGE=cgr.dev/chainguard/bash --build-arg IMAGE_VERSION=latest .
       if: ${{ ! env.USE_ELASTIC_REGISTRY }}
 
   test:
