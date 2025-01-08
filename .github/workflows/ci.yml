@@ -56,7 +56,7 @@ jobs:
         registry: ${{ secrets.ELASTIC_DOCKER_REGISTRY }}
         username: ${{ secrets.ELASTIC_DOCKER_USERNAME }}
         password: ${{ secrets.ELASTIC_DOCKER_PASSWORD }}
-      if: ${{ env.USE_ELASTIC_REGISTRY }}
+      if: ${{ env.USE_ELASTIC_REGISTRY == 'true' }}
     - run: docker build -f operator/Dockerfile --build-arg DISTRO_DIR=./dist .
       if: ${{ env.USE_ELASTIC_REGISTRY }}
     - run: docker build -f operator/Dockerfile --build-arg PYTHON_GLIBC_IMAGE=cgr.dev/chainguard/python --build-arg PYTHON_GLIBC_IMAGE_VERSION=latest-dev --build-arg DISTRO_DIR=./dist --build-arg IMAGE=cgr.dev/chainguard/bash --build-arg IMAGE_VERSION=latest .
