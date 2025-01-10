@@ -71,7 +71,7 @@ opentelemetry-proto==1.29.0
     #   oteltest
 opentelemetry-resource-detector-azure==0.1.5
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-resourcedetector-gcp==1.7.0a0
+opentelemetry-resourcedetector-gcp==1.8.0a0
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-sdk==1.29.0
     # via
