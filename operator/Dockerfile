@@ -1,4 +1,10 @@
-FROM docker.elastic.co/wolfi/python:3.12-dev@sha256:2f10787cc037b197f6a5d1a031c31706ae59642708c8b3b5ddfd3fa79605e9ad AS build
+ARG PYTHON_GLIBC_IMAGE="docker.elastic.co/wolfi/python"
+ARG PYTHON_GLIBC_IMAGE_VERSION="3.12-dev@sha256:2f10787cc037b197f6a5d1a031c31706ae59642708c8b3b5ddfd3fa79605e9ad"
+
+ARG IMAGE="docker.elastic.co/wolfi/chainguard-base"
+ARG IMAGE_VERSION="latest@sha256:26caa6beaee2bbf739a82e91a35173892dfe888d0a744b9e46cdc19a90d8656f"
+
+FROM ${PYTHON_GLIBC_IMAGE}:${PYTHON_GLIBC_IMAGE_VERSION} AS build
 
 ENV LANG=C.UTF-8
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -32,7 +38,7 @@ RUN apk add gcc g++ python3-dev musl-dev linux-headers
 
 RUN pip install --no-cache-dir --target workspace /opt/distro/*.whl -r requirements.txt
 
-FROM docker.elastic.co/wolfi/chainguard-base:latest@sha256:26caa6beaee2bbf739a82e91a35173892dfe888d0a744b9e46cdc19a90d8656f
+FROM ${IMAGE}:${IMAGE_VERSION}
 
 COPY --from=build /operator-build/workspace /autoinstrumentation
 COPY --from=build-musl /operator-build/workspace /autoinstrumentation-musl

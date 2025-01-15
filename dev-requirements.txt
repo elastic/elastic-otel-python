@@ -71,7 +71,7 @@ opentelemetry-proto==1.29.0
     #   oteltest
 opentelemetry-resource-detector-azure==0.1.5
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-resourcedetector-gcp==1.7.0a0
+opentelemetry-resourcedetector-gcp==1.8.0a0
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-sdk==1.29.0
     # via
@@ -100,7 +100,7 @@ pip-tools==7.4.1
     # via elastic-opentelemetry (pyproject.toml)
 pluggy==1.5.0
     # via pytest
-protobuf==5.29.2
+protobuf==5.29.3
     # via
     #   googleapis-common-protos
     #   opentelemetry-proto
@@ -130,7 +130,7 @@ urllib3==2.2.3
     # via requests
 wheel==0.45.1
     # via pip-tools
-wrapt==1.17.0
+wrapt==1.17.1
     # via
     #   deprecated
     #   opentelemetry-instrumentation
