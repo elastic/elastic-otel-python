@@ -3,7 +3,7 @@ Goal of this doc:
 The user is able to understand the differences between the APM Python agent and EDOT
 -->
 
-# Compare EDOT Python and the Elastic APM Python agent 
+# Compare EDOT Python and the Elastic APM Python agent
 
 This guide will highlight the major differences between the [Elastic APM Python agent](https://www.elastic.co/guide/en/apm/agent/python/current/getting-started.html) and the Elastic Distribution of OpenTelemetry Python (EDOT Python).
 For step-by-step instructions on setting up EDOT Python refer to the [Get started guide](./get-started.md).
@@ -23,7 +23,7 @@ We provide a tool to discover available instrumentations automatically that can 
 
 ## Limitations
 
-### Central configuration
+### Central and Dynamic configuration
 
 Currently EDOT Python does not have an equivalent of the [central configuration feature](https://www.elastic.co/guide/en/observability/current/apm-agent-configuration.html) that the Elastic APM Python agent supports. When using EDOT Python, all the configurations are static and should be provided to the application with other configurations.
 
@@ -48,6 +48,18 @@ At the moment of writing these docs, the following libraries are missing an Open
 - pymssql
 - Sanic
 - zlib
+
+### Integration with structured logging
+
+EDOT Python does not have any [structlog integration](https://www.elastic.co/guide/en/apm/agent/python/current/logs.html#structlog) at the moment.
+
+### Span compression
+
+EDOT Python does not implement [span compression](https://www.elastic.co/guide/en/observability/current/apm-data-model-spans.html#apm-spans-span-compression).
+
+### Breakdown metrics
+
+EDOT Python is not sending metrics that power the [Breakdown metrics](https://www.elastic.co/guide/en/apm/guide/current/data-model-metrics.html#_breakdown_metrics).
 
 <!-- ✅ What they should do next -->
 ## Next steps
