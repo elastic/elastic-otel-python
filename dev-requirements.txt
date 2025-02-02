@@ -12,7 +12,7 @@ charset-normalizer==3.4.1
     # via requests
 click==8.1.8
     # via pip-tools
-deprecated==1.2.17
+deprecated==1.2.18
     # via
     #   opentelemetry-api
     #   opentelemetry-exporter-otlp-proto-grpc
