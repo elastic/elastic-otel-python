@@ -14,7 +14,7 @@ As a distribution of OpenTelemetry, EDOT Python follows certain standards, but t
 
 ## Bold on autoinstrumentation
 
-We have chosen to make autoinstrumentation as simple as possible so you can just focus on your code; we favored an experience that requires minimal changes to your application code. The upstream OpenTelemetry configuration has more options than the distribution requires.
+We have chosen to make autoinstrumentation as simple as possible so you can just focus on your code; we favored an experience that requires minimal changes to your application code. The upstream OpenTelemetry configuration has more options than the distribution requires. Our default configuration is listed [here](https://github.com/elastic/elastic-otel-python?tab=readme-ov-file#configuration).
 
 ## Bring your own instrumentation
 
@@ -25,7 +25,7 @@ We provide a tool to discover available instrumentations automatically that can 
 
 ### Central and Dynamic configuration
 
-Currently EDOT Python does not have an equivalent of the [central configuration feature](https://www.elastic.co/guide/en/observability/current/apm-agent-configuration.html) that the Elastic APM Python agent supports. When using EDOT Python, all the configurations are static and should be provided to the application with other configurations.
+Currently EDOT Python does not have an equivalent of the [central configuration feature](https://www.elastic.co/guide/en/observability/current/apm-agent-configuration.html) that the Elastic APM Python agent supports. When using EDOT Python, all the configurations are static and should be provided to the application with other configurations, e.g. environment variables.
 
 ### AWS lambda
 
