@@ -32,3 +32,4 @@ def test_overriden_instrumentations(monkeypatch, capfd):
     captured = capfd.readouterr()
     assert "opentelemetry-instrumentation-openai-v2" not in captured.out
     assert "elastic-opentelemetry-instrumentation-openai" in captured.out
+    assert "opentelemetry-instrumentation-vertexai" not in captured.out
