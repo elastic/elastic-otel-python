@@ -1,5 +1,9 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v0.7.0
+
+- Bump to OTel 1.30.0: Python 3.13 support, pymssql instrumentation, basic GenAI tracing with AWS Bedrock (#241)
+
 ## v0.6.1
 
 - Bump opentelemetry-sdk-extension-aws to 2.1.0 (#222)
