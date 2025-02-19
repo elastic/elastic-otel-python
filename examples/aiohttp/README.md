@@ -11,8 +11,6 @@ docker build --load -t edot-aiohttp:latest .
 You can run the application with:
 
 ```sh
-export OTEL_METRICS_EXPORTER=otlp
-export OTEL_LOGS_EXPORTER=otlp
 export OTEL_EXPORTER_OTLP_ENDPOINT=https://my-deployment.apm.us-west1.gcp.cloud.es.io
 export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer P....l"
 docker run -e OTEL_EXPORTER_OTLP_ENDPOINT="$OTEL_EXPORTER_OTLP_ENDPOINT" \
