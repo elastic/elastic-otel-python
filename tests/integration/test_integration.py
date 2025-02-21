@@ -117,3 +117,19 @@ class IntegrationTestCase(ElasticIntegrationTestCase):
                 "process.open_file_descriptor.count",
             ],
         )
+
+    def test_log_events_are_sent(self):
+        def send_event():
+            from opentelemetry._events import Event
+            from opentelemetry._events import get_event_logger
+
+            event = Event(name="test.event", attributes={}, body={"key": "value", "dict": {"nestedkey": "nestedvalue"}})
+            event_logger = get_event_logger(__name__)
+            event_logger.emit(event)
+
+        stdout, stderr, returncode = self.run_script(send_event, wrapper_script="opentelemetry-instrument")
+
+        telemetry = self.get_telemetry()
+        (log,) = telemetry["logs"]
+        self.assertEqual(log["attributes"]["event.name"], "test.event")
+        self.assertEqual(log["body"], {"key": "value", "dict": {"nestedkey": "nestedvalue"}})
