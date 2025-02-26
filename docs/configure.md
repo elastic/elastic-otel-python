@@ -49,7 +49,7 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 | Option | EDOT Python default | OpenTelemetry Python default |
 |---|---|---|
 | `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` | `process_runtime,os,otel,telemetry_distro,_gcp,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm` | `otel` |
-| `OTEL_METRICS_EXEMPLAR_FILTER | `always_off` | `trace_based` |
+| `OTEL_METRICS_EXEMPLAR_FILTER` | `always_off` | `trace_based` |
 | `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | `DELTA` | `CUMULATIVE` |
 
 > [!NOTE]
