@@ -134,6 +134,27 @@ class ElasticIntegrationTestCase(unittest.TestCase):
                 for a in attributes
             }
 
+        def normalize_kvlist(body) -> dict:
+            """
+            normalizes oteltest values in the form
+            {'kvlistValue': {'values': [{'key': 'key', 'value': {'stringValue': 'value'}},
+                            {'key': 'dict',
+                             'value': {'kvlistValue': {'values': [{'key': 'nestedkey',
+                                                                   'value': {'stringValue': 'nestedvalue'}}]}}}]}}
+            to plain dicts
+            """
+            dict_values = {}
+            values = body["kvlistValue"]["values"]
+            for value in values:
+                key = value["key"]
+                if "kvlistValue" in value["value"]:
+                    dict_values[key] = normalize_kvlist(value["value"])
+                elif "stringValue" in value["value"]:
+                    dict_values[key] = value["value"]["stringValue"]
+                elif "intValue" in value["value"]:
+                    dict_values[key] = value["value"]["intValue"]
+            return dict_values
+
         metrics = []
         for request in telemetry["metric_requests"]:
             elems = []
@@ -168,8 +189,20 @@ class ElasticIntegrationTestCase(unittest.TestCase):
                         span["traceId"] = decode_id(span["traceId"])
                         traces.append(span)
 
+        logs = []
+        for request in telemetry["log_requests"]:
+            for resource_log in request["pbreq"]["resourceLogs"]:
+                resource_attributes = normalize_attributes(resource_log["resource"]["attributes"])
+                for proto_scope_logs in resource_log["scopeLogs"]:
+                    for proto_log in proto_scope_logs["logRecords"]:
+                        log = proto_log.copy()
+                        log["attributes"] = normalize_attributes(log["attributes"])
+                        log["body"] = normalize_kvlist(log["body"])
+                        log["resource"] = resource_attributes
+                        logs.append(log)
+
         return {
-            "logs": telemetry["log_requests"],  # TODO
+            "logs": logs,
             "metrics": metrics,
             "traces": traces,
         }
