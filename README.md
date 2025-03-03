@@ -73,24 +73,7 @@ opentelemetry-instrument gunicorn main:app
 
 The distribution supports all the configuration variables from OpenTelemetry Python project version 1.30.0.
 
-### Default configuration variables
-
-This distribution sets the following defaults:
-
-- `OTEL_TRACES_EXPORTER`: `otlp`
-- `OTEL_METRICS_EXPORTER`: `otlp`
-- `OTEL_LOGS_EXPORTER`: `otlp`
-- `OTEL_EXPORTER_OTLP_PROTOCOL`: `grpc`
-- `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS`: `process_runtime,os,otel,telemetry_distro,_gcp,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm`
-- `OTEL_METRICS_EXEMPLAR_FILTER`: `always_off`
-- `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE`: `DELTA`
-
-> [!NOTE]
-> `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` cloud resource detectors are dynamically set. When running in a Kubernetes Pod it will be set to `process_runtime,os,otel,telemetry_distro,_gcp,aws_eks`.
-
-### Distribution specific configuration variables
-
-- `ELASTIC_OTEL_SYSTEM_METRICS_ENABLED` (default: `false`): when sets to `true` sends *system namespace* metrics.
+See [Configuration](./docs/configure.md) for more details.
 
 ## License
 
