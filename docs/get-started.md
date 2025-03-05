@@ -18,7 +18,7 @@ This guide shows you how to use the Elastic Distribution of OpenTelemetry Python
 Before getting started, you'll need somewhere to send the gathered OpenTelemetry data, so it can be viewed and analyzed. EDOT Python supports sending data to any OpenTelemetry protocol (OTLP) endpoint, but this guide assumes you are sending data to an [Elastic Observability](https://www.elastic.co/observability) cloud deployment. You can use an existing one or set up a new one.
 
 <details>
-<summary><strong>Expand for setup instructions</strong></summary>
+<summary><strong>Expand for Elastic Observability deployment setup instructions</strong></summary>
 
 To create your first Elastic Observability deployment:
 
@@ -26,6 +26,17 @@ To create your first Elastic Observability deployment:
 1. Go to <https://cloud.elastic.co/home>.
 1. Click **Create deployment**.
 1. When the deployment is ready, click **Open** to visit your Kibana home page (for example, `https://{DEPLOYMENT_NAME}.kb.{REGION}.cloud.es.io/app/home#/getting_started`).
+</details>
+
+<details>
+<summary><strong>Expand for Elastic Observability Serverless setup instructions</strong></summary>
+
+To create your first Elastic Observability Serverless project:
+
+1. Sign up for a [free Elastic Cloud trial](https://cloud.elastic.co/registration) or sign into an existing account.
+1. Go to <https://cloud.elastic.co/home>.
+1. Click **Create project**.
+1. When the project is ready, click **Open** to visit your Kibana home page (for example, `https://{DEPLOYMENT_NAME}.kb.{REGION}.cloud.es.io/app/home#/getting_started`).
 </details>
 
 <!-- ✅ How to install EDOT Python -->
@@ -77,16 +88,16 @@ You can find the values of the endpoint and header variables in Kibana's APM tut
 1. Scroll down and select the **OpenTelemetry** option.
 1. The appropriate values for `OTEL_EXPORTER_OTLP_ENDPOINT` and `OTEL_EXPORTER_OTLP_HEADERS` are shown there.
 
-Here's an example:
+Here's an example for sending data to an Elastic Cloud deployment:
 
 ```sh
-export OTEL_RESOURCE_ATTRIBUTES=service.name=<app-name>
+export OTEL_RESOURCE_ATTRIBUTES=service.name=<app-name>,service.version=<app-version>,deployment.environment=production
 export OTEL_EXPORTER_OTLP_ENDPOINT=https://my-deployment.apm.us-west1.gcp.cloud.es.io
 export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer P....l"
 ```
 
 > [!NOTE]
-> Alternatively, you can use an [APM agent key](https://www.elastic.co/guide/en/observability/current/apm-api-key.html) to authorize requests to an Elastic Observability endpoint. APM agent keys are revocable, you can have more than one of them, and you can add or remove them without restarting APM Server.
+> On serverless projects and alternatively on deployments, you can use an [APM agent key](https://www.elastic.co/guide/en/observability/current/apm-api-key.html) to authorize requests to an Elastic Observability endpoint. APM agent keys are revocable, you can have more than one of them, and you can add or remove them without restarting APM Server.
 >
 > To create and manage APM Agent keys in Kibana:
 >
