@@ -72,7 +72,7 @@ After installing EDOT Python, configure and initialize it to start sending data 
 <!-- ✅ Provide _minimal_ configuration/setup -->
 ### Configure EDOT Python
 
-To configure EDOT Python, at a minimum you'll need your Elastic Observability cloud deployment's OTLP endpoint and
+To configure EDOT Python, at a minimum you'll need your Elastic Observability cloud OTLP endpoint and
 authorization data to set a few `OTLP_*` environment variables that will be available when running EDOT Python:
 
 * `OTEL_RESOURCE_ATTRIBUTES`: Use this to add a service name that will make it easier to recognize your application when reviewing data sent to Elastic.
@@ -97,7 +97,7 @@ export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer P....l"
 ```
 
 > [!NOTE]
-> On serverless projects and alternatively on deployments, you can use an [APM agent key](https://www.elastic.co/guide/en/observability/current/apm-api-key.html) to authorize requests to an Elastic Observability endpoint. APM agent keys are revocable, you can have more than one of them, and you can add or remove them without restarting APM Server.
+> Alternatively on deployments, you can use an [APM agent key](https://www.elastic.co/guide/en/observability/current/apm-api-key.html) to authorize requests to an Elastic Observability endpoint. APM agent keys are revocable, you can have more than one of them, and you can add or remove them without restarting APM Server.
 >
 > To create and manage APM Agent keys in Kibana:
 >
@@ -108,6 +108,17 @@ export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer P....l"
 > ```sh
 > export OTEL_EXPORTER_OTLP_HEADERS="Authorization=ApiKey TkpXUkx...dVZGQQ=="
 > ```
+
+And here's an example for sending data to an Elastic Cloud serverless project:
+
+```sh
+export OTEL_RESOURCE_ATTRIBUTES=service.name=<app-name>,service.version=<app-version>,deployment.environment=production
+export OTEL_EXPORTER_OTLP_ENDPOINT=https://my-deployment.apm.us-west1.gcp.cloud.es.io
+export OTEL_EXPORTER_OTLP_HEADERS="Authorization=ApiKey B....="
+```
+
+> [!NOTE]
+> You'll be prompted to create an API key during the Elastic Cloud serverless project onboarding. Refer to the [Api keys documentation](https://www.elastic.co/guide/en/serverless/current/api-keys.html) on how to manage them.
 
 <!-- ✅ Start sending data to Elastic -->
 ### Run EDOT Python
