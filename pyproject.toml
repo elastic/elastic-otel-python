@@ -52,6 +52,7 @@ distro = "elasticotel.distro:ElasticOpenTelemetryDistro"
 [project.entry-points.opentelemetry_resource_detector]
 process_runtime = "elasticotel.sdk.resources:ProcessRuntimeResourceDetector"
 telemetry_distro = "elasticotel.sdk.resources:TelemetryDistroResourceDetector"
+service_instance = "elasticotel.sdk.resources:ServiceInstanceResourceDetector"
 _gcp = "opentelemetry.resourcedetector.gcp_resource_detector._detector:GoogleCloudResourceDetector"
 
 [project.scripts]
