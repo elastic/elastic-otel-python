@@ -15,8 +15,10 @@
 # limitations under the License.
 
 import sys
+import uuid
 
 from opentelemetry.semconv._incubating.attributes import telemetry_attributes
+from opentelemetry.semconv._incubating.attributes import service_attributes
 from opentelemetry.sdk.resources import (
     Attributes,
     Resource,
@@ -48,6 +50,16 @@ class ProcessRuntimeResourceDetector(ResourceDetector):
             PROCESS_RUNTIME_NAME: sys.implementation.name,
             PROCESS_RUNTIME_VERSION: runtime_version,
         }
+        return Resource(resource_info)
+
+
+class ServiceInstanceResourceDetector(ResourceDetector):
+    """Resource detector to fill service instance attributes
+
+    NOTE: with multi-process services this is shared between processes"""
+
+    def detect(self) -> "Resource":
+        resource_info: Attributes = {service_attributes.SERVICE_INSTANCE_ID: str(uuid.uuid4())}
         return Resource(resource_info)
 
 

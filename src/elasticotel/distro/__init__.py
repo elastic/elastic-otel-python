@@ -75,6 +75,6 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         # preference to use DELTA temporality as we can handle only this kind of Histograms
         os.environ.setdefault(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE, "DELTA")
 
-        base_resource_detectors = ["process_runtime", "os", "otel", "telemetry_distro"]
+        base_resource_detectors = ["process_runtime", "os", "otel", "telemetry_distro", "service_instance"]
         detectors = base_resource_detectors + get_cloud_resource_detectors()
         os.environ.setdefault(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS, ",".join(detectors))
