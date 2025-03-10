@@ -7,8 +7,8 @@ The user is able to understand what technologies are supported by EDOT Python
 
 ## Elastic Stack versions
 
-The Elastic Distribution of OpenTelemetry Node.js (EDOT Python) sends data via OpenTelemetry protocol (OTLP).
-Elastic Observability supports OTLP natively since version 7.14, but is strongly recommended to be using a recent 8.x version.
+The Elastic Distribution of OpenTelemetry Python (EDOT Python) sends data via OpenTelemetry protocol (OTLP).
+It is strongly recommended to be using at least a recent 8.x version of the Elastic Observability Stack.
 
 On [Elastic Cloud](https://www.elastic.co/cloud) both hosted deployments of the Elastic Stack and [Serverless](https://www.elastic.co/cloud/serverless) projects are supported.
 
