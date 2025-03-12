@@ -20,6 +20,7 @@ import numpy as np
 import openai
 
 EMBEDDINGS_MODEL = os.environ.get("EMBEDDINGS_MODEL", "text-embedding-3-small")
+INPUT = "What can help me connect to a database?"
 
 
 def main():
@@ -41,7 +42,7 @@ def main():
     for product in products:
         product_embeddings.append(create_embedding(client, product))
 
-    query_embedding = create_embedding(client, "What can help me connect to a database?")
+    query_embedding = create_embedding(client, INPUT)
 
     # Calculate cosine similarity between the query and document embeddings
     similarities = []

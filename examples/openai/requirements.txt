@@ -1,2 +1,2 @@
-openai~=1.61.1
-numpy~=2.2.2
+openai~=1.66.2
+numpy~=2.2.3
