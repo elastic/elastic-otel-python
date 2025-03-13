@@ -32,7 +32,7 @@ _EXCLUDED_INSTRUMENTATIONS = {"opentelemetry-instrumentation-openai-v2", "opente
 _EDOT_INSTRUMENTATIONS = [
     {
         "library": "openai >= 1.2.0",
-        "instrumentation": "elastic-opentelemetry-instrumentation-openai==0.6.0",
+        "instrumentation": "elastic-opentelemetry-instrumentation-openai",
     }
 ]
 
