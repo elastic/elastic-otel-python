@@ -1,5 +1,12 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v0.8.0
+
+- Remove some custom code in ElasticOpenTelemetryConfigurator (#250)
+- Introduce a resource detector sending server.instance.id (#259)
+- Bump to OTel 1.31.0: programmatic auto-instrumentation, added metrics and events for AWS Bedrock instrumentation (#263)
+- Bump elastic-opentelemetry-instrumentation-openai to 0.6.1 in Docker image and relax version dependency to (#264)
+
 ## v0.7.0
 
 - Bump to OTel 1.30.0: Python 3.13 support, pymssql instrumentation, basic GenAI tracing with AWS Bedrock (#241)
