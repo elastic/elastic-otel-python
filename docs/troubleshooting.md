@@ -20,7 +20,8 @@ a list of common problems that users run into.
 
 Most frameworks support a debug mode. Generally, this mode is intended for
 non-production environments and provides detailed error messages and logging of
-potentially sensitive data.
+potentially sensitive data. So enabling instrumentation in debug mode is not advised and may pose privacy and security issues in recording
+sensitive data.
 
 #### Django
 
