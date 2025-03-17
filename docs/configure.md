@@ -36,11 +36,14 @@ EDOT Python supports all configuration options listed in the [OpenTelemetry Gene
 
 #### Logs
 
-Exporting logs from the Python `logging` module is disabled by default and gated under a configuration environment variable:
+Instrument Python `logging` module to format and forward logs in OTLP format is disabled by default and gated under a configuration environment variable:
 
 ```sh
 export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
 ```
+
+> [!NOTE]
+> Enabling this will make any call to [logging.basicConfig](https://docs.python.org/3/library/logging.html#logging.basicConfig) from your application a no-op.
 
 #### Differences from OpenTelemetry Python
 

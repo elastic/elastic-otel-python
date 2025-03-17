@@ -44,3 +44,13 @@ To disable the underlying OpenTelemetry SDK you set the following environment va
 
 If only a subset of instrumentation are causing disruptions you can disable them with the `OTEL_PYTHON_DISABLED_INSTRUMENTATIONS`
 environment variable. It accepts a list of comma separated instrumentations to disable, see [OpenTelemetry zero code documentation](https://opentelemetry.io/docs/zero-code/python/configuration/#disabling-specific-instrumentations)
+
+## Missing logs
+
+Enabling the Python logging module auto-instrumentation with `OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true` calls the
+[logging.basicConfig](https://docs.python.org/3/library/logging.html#logging.basicConfig) method that will make your own application calls
+to it a no-op. The side effect of this is that you won't see your application logs in the console anymore.
+
+If you are already shipping logs by other means you don't need to enable this.
+
+<!-- TODO: when available add link to to propose other option  https://elastic.github.io/opentelemetry/use-cases/logs/ -->
