@@ -73,7 +73,7 @@ opentelemetry-instrument gunicorn main:app
 
 ## Configuration
 
-The distribution supports all the configuration variables from OpenTelemetry Python project version 1.31.0.
+The distribution supports all the configuration variables from OpenTelemetry Python project version 1.31.1.
 
 See [Configuration](./docs/configure.md) for more details.
 
