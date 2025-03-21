@@ -1,5 +1,9 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v0.8.1
+
+- Bump to OTel 1.31.1 (#270)
+
 ## v0.8.0
 
 - Remove some custom code in ElasticOpenTelemetryConfigurator (#250)
