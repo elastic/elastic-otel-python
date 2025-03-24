@@ -55,4 +55,4 @@ opentelemetry-instrumentation-urllib==0.52b1
 opentelemetry-instrumentation-urllib3==0.52b1
 opentelemetry-instrumentation-wsgi==0.52b1
 
-elastic-opentelemetry-instrumentation-openai==0.7.0
+elastic-opentelemetry-instrumentation-openai==1.0.0
