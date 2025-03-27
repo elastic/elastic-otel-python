@@ -37,6 +37,7 @@ updates:
   - package-ecosystem: "docker"
     directories:
       - '/'
+      - 'operator/*'
     reviewers:
       - "elastic/apm-agent-python"
     registries: "*"
