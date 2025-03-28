@@ -15,67 +15,13 @@ With EDOT Python you have access to all the features of the OpenTelemetry Python
 * Elastic-specific processors that ensure optimal compatibility when exporting OpenTelemetry signal data to an Elastic backend like an Elastic Observability deployment.
 * Preconfigured collection of tracing and metrics signals, applying some opinionated defaults, such as which sources are collected by default.
 
-**Ready to try out EDOT Python?** Follow the step-by-step instructions in [Get started](./docs/get-started.md).
-
-## Read the docs
-
-* [Get started](./docs/get-started.md)
-* [Supported technologies](./docs/supported-techologies.md)
-* [Manual instrumentation](./docs/manual-instrumentation.md)
-* [Configuration](./docs/configure.md)
-* [Migrating from Elastic APM Python Agent](./docs/migrate-from-apm.md)
-* [Troubleshooting](./docs/troubleshooting.md)
-
-## Install
-
-```bash
-pip install elastic-opentelemetry
-```
-
-<!-- I'll let you decide how much to keep here from the content below vs rely on content in the docs directory -->
-
-## Usage
-
-Our distribution does not install any instrumentation package by default, instead it relies on the
-`edot-bootstrap` command to scan the installed packages and install the available instrumentation, preferring EDOT variants when available.
-The following command will install all the instrumentations available for libraries found installed
-in your environment:
-
-```bash
-edot-bootstrap --action=install
-```
-
-It will be useful to add this command every time you need to deploy an updated version of your application,
-e.g. into your container image build process.
-
-At runtime you have to make some environment variables available to provide the needed configuration.
-A *service name* is required to have your app easily recognizable from the other. Then you need to provide
-the *authorization* headers for authentication with Elastic cloud and the project endpoint where to send your data.
-
-```bash
-OTEL_RESOURCE_ATTRIBUTES=service.name=<app-name>
-OTEL_EXPORTER_OTLP_HEADERS="Authorization=<authorization header value>"
-OTEL_EXPORTER_OTLP_ENDPOINT=<your elastic cloud url>
-```
-
-We are done with the configuration and the last piece of the puzzle is wrapping your service invocation with
-`opentelemetry-instrument` that is the wrapper that provides *automatic instrumentation*:
-
-```bash
-opentelemetry-instrument <command to start your service>
-```
-
-For a web service running with gunicorn it may looks like:
-
-```bash
-opentelemetry-instrument gunicorn main:app
-```
+**Ready to try out EDOT Python?** Follow the step-by-step instructions in [Setting up EDOT Python](https://elastic.github.io/opentelemetry/edot-sdks/python/setup/index.html).
 
 ## Configuration
 
 The distribution supports all the configuration variables from OpenTelemetry Python project version 1.31.1.
 
-See [Configuration](./docs/configure.md) for more details.
+See [Configuration](https://elastic.github.io/opentelemetry/edot-sdks/python/configuration.html) for more details.
 
 ## License
 
