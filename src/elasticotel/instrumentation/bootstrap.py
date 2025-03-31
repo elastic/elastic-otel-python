@@ -25,7 +25,7 @@ from packaging.requirements import Requirement
 
 
 # the instrumentations available in opentelemetry-bootstrap we want to skip
-_EXCLUDED_INSTRUMENTATIONS = {"opentelemetry-instrumentation-openai-v2", "opentelemetry-instrumentation-vertexai"}
+_EXCLUDED_INSTRUMENTATIONS = {"opentelemetry-instrumentation-openai-v2"}
 
 # update with:
 # $ python3.12 scripts/build_edot_bootstrap_instrumentations.py | ruff format -
