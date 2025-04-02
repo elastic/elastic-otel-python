@@ -1,5 +1,11 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.0.0
+
+- Enable opentelemetry-instrumentation-vertexai in edot-bootstrap (#283)
+- Bump openai instrumentation to 1.0.0 in docker image (#275)
+- Move docs to https://elastic.github.io/opentelemetry/ (#282)
+
 ## v0.8.1
 
 - Bump to OTel 1.31.1 (#270)
