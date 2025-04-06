@@ -124,7 +124,7 @@ tomli==2.2.1
     #   build
     #   pip-tools
     #   pytest
-typing-extensions==4.12.2
+typing-extensions==4.13.1
     # via
     #   opentelemetry-resourcedetector-gcp
     #   opentelemetry-sdk
