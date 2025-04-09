@@ -44,4 +44,5 @@ updates:
     schedule:
       interval: "daily"
     ignore:
-      - update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "python*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
