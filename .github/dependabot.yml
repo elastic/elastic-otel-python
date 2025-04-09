@@ -43,3 +43,5 @@ updates:
     registries: "*"
     schedule:
       interval: "daily"
+    ignore:
+      - update-types: ["version-update:semver-major", "version-update:semver-minor"]
