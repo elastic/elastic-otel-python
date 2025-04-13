@@ -75,7 +75,7 @@ opentelemetry-resource-detector-azure==0.1.5
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-resourcedetector-gcp==1.8.0a0
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-sdk==1.31.1
+opentelemetry-sdk==1.32.0
     # via
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-exporter-otlp-proto-grpc
