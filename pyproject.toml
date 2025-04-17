@@ -28,15 +28,15 @@ classifiers = [
 ]
 
 dependencies = [
-    "opentelemetry-api == 1.31.1",
-    "opentelemetry-exporter-otlp == 1.31.1",
-    "opentelemetry-instrumentation == 0.52b1",
-    "opentelemetry-instrumentation-system-metrics == 0.52b1",
+    "opentelemetry-api == 1.32.1",
+    "opentelemetry-exporter-otlp == 1.32.1",
+    "opentelemetry-instrumentation == 0.53b1",
+    "opentelemetry-instrumentation-system-metrics == 0.53b1",
     "opentelemetry-resourcedetector-gcp ~= 1.8.0a0",
     "opentelemetry-resource-detector-azure ~= 0.1.5",
-    "opentelemetry-sdk == 1.31.1",
+    "opentelemetry-sdk == 1.32.1",
     "opentelemetry-sdk-extension-aws ~= 2.1.0",
-    "opentelemetry-semantic-conventions == 0.52b1",
+    "opentelemetry-semantic-conventions == 0.53b1",
     "packaging",
 ]
 

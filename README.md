@@ -14,7 +14,7 @@ With EDOT Python you have access to all the features of the OpenTelemetry Python
 
 ## Configuration
 
-The distribution supports all the configuration variables from OpenTelemetry Python project version 1.31.1.
+The distribution supports all the configuration variables from OpenTelemetry Python project version 1.32.1.
 
 See [Configuration](https://elastic.github.io/opentelemetry/edot-sdks/python/configuration.html) for more details.
 
