@@ -11,6 +11,7 @@ opentelemetry-instrumentation-aiohttp-server==0.53b1
 opentelemetry-instrumentation-aiokafka==0.53b1
 opentelemetry-instrumentation-aiopg==0.53b1
 opentelemetry-instrumentation-asgi==0.53b1
+opentelemetry-instrumentation-asyncclick==0.53b1
 opentelemetry-instrumentation-asyncio==0.53b1
 opentelemetry-instrumentation-asyncpg==0.53b1
 opentelemetry-instrumentation-boto==0.53b1
