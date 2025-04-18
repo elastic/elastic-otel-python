@@ -14,9 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os.path
+
 import pytest
 
-from .utils import ElasticIntegrationTestCase, OTEL_INSTRUMENTATION_VERSION
+from .utils import ElasticIntegrationTestCase, OTEL_INSTRUMENTATION_VERSION, ROOT_DIR
 
 
 @pytest.mark.integration
@@ -139,3 +141,37 @@ class IntegrationTestCase(ElasticIntegrationTestCase):
         (log,) = telemetry["logs"]
         self.assertEqual(log["attributes"]["event.name"], "test.event")
         self.assertEqual(log["body"], {"key": "value", "dict": {"nestedkey": "nestedvalue"}})
+
+
+@pytest.mark.integration
+class OperatorTestCase(ElasticIntegrationTestCase):
+    @staticmethod
+    def _read_operator_requirements():
+        requirements = []
+        with open(os.path.join(ROOT_DIR, "operator", "requirements.txt")) as reqf:
+            for line in reqf:
+                req = line.strip()
+                if req:
+                    requirements.append(req)
+        return requirements
+
+    @classmethod
+    def requirements(cls):
+        requirements = super().requirements()
+        return requirements + cls._read_operator_requirements()
+
+    def script(self):
+        import sqlite3
+
+        connection = sqlite3.connect(":memory:")
+        cursor = connection.cursor()
+        cursor.execute("CREATE TABLE movie(title, year, score)")
+
+    def test_auto_instrumentation_works(self):
+        stdout, stderr, returncode = self.run_script(self.script, wrapper_script="opentelemetry-instrument")
+
+        telemetry = self.get_telemetry()
+        (span,) = telemetry["traces"]
+        self.assertTrue(span)
+
+        self.assertEqual(returncode, 0)
