@@ -1,5 +1,10 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.1.0
+
+- Bump to OTel 1.32.1: logging module autoinstrumentation improvements, explicit bucket advisory fixes, asyncclick instrumentation (#293)
+- Bump openai instrumentation to 1.1.0 in docker image (#297)
+
 ## v1.0.0
 
 - Enable opentelemetry-instrumentation-vertexai in edot-bootstrap (#283)
