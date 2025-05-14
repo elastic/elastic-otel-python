@@ -10,13 +10,13 @@ With EDOT Python you have access to all the features of the OpenTelemetry Python
 * Elastic-specific processors that ensure optimal compatibility when exporting OpenTelemetry signal data to an Elastic backend like an Elastic Observability deployment.
 * Preconfigured collection of tracing and metrics signals, applying some opinionated defaults, such as which sources are collected by default.
 
-**Ready to try out EDOT Python?** Follow the step-by-step instructions in [Setting up EDOT Python](https://elastic.github.io/opentelemetry/edot-sdks/python/setup/index.html).
+**Ready to try out EDOT Python?** Follow the step-by-step instructions in [Setting up EDOT Python](https://www.elastic.co/docs/reference/opentelemetry/edot-sdks/python/setup/index.html).
 
 ## Configuration
 
 The distribution supports all the configuration variables from OpenTelemetry Python project version 1.32.1.
 
-See [Configuration](https://elastic.github.io/opentelemetry/edot-sdks/python/configuration.html) for more details.
+See [Configuration](https://www.elastic.co/docs/reference/opentelemetry/edot-sdks/python/configuration.html) for more details.
 
 ## License
 
