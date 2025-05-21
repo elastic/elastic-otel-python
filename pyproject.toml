@@ -41,7 +41,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "pip-tools", "oteltest==0.24.0", "leb128"]
+dev = ["pytest", "pip-tools", "oteltest==0.39.0", "leb128"]
 
 [project.entry-points.opentelemetry_configurator]
 configurator = "elasticotel.distro:ElasticOpenTelemetryConfigurator"
