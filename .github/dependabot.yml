@@ -16,15 +16,11 @@ updates:
       interval: "weekly"
       day: "sunday"
       time: "22:00"
-    reviewers:
-      - "elastic/apm-agent-python"
 
   - package-ecosystem: "github-actions"
     directories:
       - '/'
       - '/.github/actions/*'
-    reviewers:
-      - "elastic/observablt-ci"
     schedule:
       interval: "weekly"
       day: "sunday"
@@ -38,8 +34,6 @@ updates:
     directories:
       - '/'
       - 'operator/*'
-    reviewers:
-      - "elastic/apm-agent-python"
     registries: "*"
     schedule:
       interval: "daily"
