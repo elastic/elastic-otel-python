@@ -1,5 +1,14 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.2.0
+
+- Bump to OTel 1.33.1: logs OTLP serialization improvements, stable `code` attributes used in logs (#307)
+
+  Upstream changes:
+  * https://github.com/open-telemetry/opentelemetry-python/discussions/4574
+  * https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3487
+- Bump openai instrumentation to 1.1.1 in docker image (#308)
+
 ## v1.1.0
 
 - Bump to OTel 1.32.1: logging module autoinstrumentation improvements, explicit bucket advisory fixes, asyncclick instrumentation (#293)
