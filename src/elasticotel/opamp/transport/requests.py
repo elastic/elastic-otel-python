@@ -22,6 +22,10 @@ from .base import HttpTransport
 
 
 class RequestsTransport(HttpTransport):
+    # TODO: move some stuff here instead of send?
+    def __init__(self):
+        self.session = requests.Session()
+
     # TODO: We don't have a specific connection phase ATM but specs says:
     # If the Client is unable to establish a connection to the Server
     # it SHOULD retry connection attempts and use exponential backoff strategy
