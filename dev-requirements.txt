@@ -129,7 +129,7 @@ typing-extensions==4.13.2
     #   exceptiongroup
     #   opentelemetry-resourcedetector-gcp
     #   opentelemetry-sdk
-urllib3==2.2.3
+urllib3==2.4.0
     # via requests
 wheel==0.45.1
     # via pip-tools
