@@ -1,3 +1,5 @@
 *  @elastic/apm-agent-python
 /.github/actions/  @elastic/apm-agent-python @elastic/observablt-ci
 /.github/workflows/  @elastic/apm-agent-python @elastic/observablt-ci
+*.md @elastic/ingest-docs 
+/docs/ @elastic/ingest-docs
