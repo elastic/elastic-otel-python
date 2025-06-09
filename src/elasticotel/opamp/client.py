@@ -1,120 +1,92 @@
 from __future__ import annotations
 
-import math
-import os
-import weakref
 from logging import getLogger
-from os import environ
-from threading import Event, Thread
-from time import time_ns
+from typing import Any, Callable
 
-from .exceptions import OpAMPTimeoutError
-from .environment_variables import OPAMP_AGENT_INTERVAL, OPAMP_AGENT_TIMEOUT
-from .transport.http import HttpTransport
-from .transport.requests import RequestsTransport
+from uuid_utils import uuid7
+from opentelemetry.util.types import AnyValue as AnyValueType
+
+import elasticotel.opamp.messages as messages
+from elasticotel.opamp.transport.base import HttpTransport
+from elasticotel.opamp.transport.requests import RequestsTransport
+from elasticotel.opamp.version import __version__
+from elasticotel.opamp.proto import opamp_pb2
+
 
 _logger = getLogger(__name__)
 
 _DEFAULT_OPAMP_TIMEOUT_MS = 5_000
 
+_OTLP_HTTP_HEADERS = {
+    "Content-Type": "application/x-protobuf",
+    "User-Agent": "OTel-Opamp-Python/" + __version__,
+}
+
+_HANDLED_CAPABILITIES = (
+    opamp_pb2.AgentCapabilities.AgentCapabilities_ReportsStatus
+    | opamp_pb2.AgentCapabilities.AgentCapabilities_ReportsHeartbeat
+    | opamp_pb2.AgentCapabilities.AgentCapabilities_AcceptsRemoteConfig
+    | opamp_pb2.AgentCapabilities.AgentCapabilities_ReportsRemoteConfig
+)
+
 
 class OpAMPClient:
-    # TODO: need to support basic auth too
     def __init__(
         self,
         endpoint: str,
         headers: dict[str, str] | None = None,
         timeout_millis: int = _DEFAULT_OPAMP_TIMEOUT_MS,
         transport: HttpTransport | None = None,
+        agent_identifying_attributes: dict[str, AnyValueType] | None = None,
+        agent_non_identifying_attributes: dict[str, AnyValueType] | None = None,
     ):
         self._timeout_millis = timeout_millis
         self._transport = transport if transport is not None else RequestsTransport
 
         self._endpoint = endpoint
-        # TODO: add a proper user agent
-        self._headers = headers or {}
+        headers = headers or {}
+        self._headers = {**_OTLP_HTTP_HEADERS, **headers}
 
-    def _status_message():
-        pass
-
-    def _poll_message():
-        pass
-
-    def poll(self, data):
-        # TODO: sort out where to add the logic of deciding what message to send
-        return self._transport.send(
-            url=self._endpoint, headers=self._headers, data=data, timeout_millis=self._timeout_millis
+        self._agent_description = messages._build_agent_description(
+            identifying_attributes=agent_identifying_attributes,
+            non_identifying_attributes=agent_non_identifying_attributes,
         )
+        self._sequence_num: int = 0
+        self._instance_uid: bytes = uuid7().bytes
 
+    def _build_connection_message(self):
+        message = messages._build_presentation_message(
+            instance_uid=self._instance_uid,
+            agent_description=self._agent_description,
+            sequence_num=self._sequence_num,
+            capabilities=_HANDLED_CAPABILITIES,
+        )
+        data = messages._encode_message(message)
+        return data
 
-class OpAMPAgent:
-    def __init__(self):
+    def _build_heartbeat_message(self):
+        message = messages._build_poll_message(instance_uid=self._instance_uid, sequence_num=self._sequence_num)
+        data = messages._encode_message(message)
+        return data
+
+    def _send(self, data):
         try:
-            interval_millis = float(environ.get(OPAMP_AGENT_INTERVAL, 30000))
-        except ValueError:
-            _logger.warning("Found invalid value for export interval, using default")
-            interval_millis = 30000
-        try:
-            timeout_millis = float(environ.get(OPAMP_AGENT_TIMEOUT, 5000))
-        except ValueError:
-            _logger.warning("Found invalid value for export timeout, using default")
-            timeout_millis = 5000
-
-        # TODO: env for auth
-
-        self._interval_millis = interval_millis
-        self._timeout_millis = timeout_millis
-
-        self._shutdown = False
-        self._shutdown_event = Event()
-
-        self._daemon_thread = None
-
-        if self._interval_millis > 0 and self._interval_millis < math.inf:
-            self._daemon_thread = self._create_thread()
-            self._daemon_thread.start()
-            if hasattr(os, "register_at_fork"):
-                weak_at_fork = weakref.WeakMethod(self._at_fork_reinit)
-
-                os.register_at_fork(
-                    after_in_child=lambda: weak_at_fork()()  # pylint: disable=unnecessary-lambda
-                )
-        elif self._interval_millis <= 0:
-            raise ValueError(
-                f"interval value {self._interval_millis} is invalid \
-                and needs to be larger than zero."
+            response = self._transport.send(
+                url=self._endpoint, headers=self._headers, data=data, timeout_millis=self._timeout_millis
             )
+            return response
+        except:
+            raise
+        finally:
+            self._sequence_num += 1
 
-    def _create_thread(self):
-        return Thread(
-            name="OpAMPAgent",
-            target=self._worker,
-            daemon=True,
-        )
+    def _get_content(self, response):
+        return self._transport._get_content(response)
 
-    def _at_fork_reinit(self):
-        self._daemon_thread = self._create_thread()
-        self._daemon_thread.start()
+    def _decode_response(self, response_content: bytes, callbacks: dict[str, Callable[Any, Any]]):
+        server_message = messages._decode_message(response_content)
+        return server_message
 
-    def _worker(self) -> None:
-        client = OpAMPClient(timeout_millis=self._timeout_millis)
-        interval_secs = self._interval_millis / 1e3
-
-        while not self._shutdown_event.wait(interval_secs):
-            # TODO: here we should block on a queue
-            try:
-                client.poll()
-            except OpAMPTimeoutError:
-                _logger.warning(
-                    "OpAMP send status timed out. Will try again after %s seconds",
-                    interval_secs,
-                    exc_info=True,
-                )
-
-    def shutdown(self, timeout_millis: float = 30_000, **kwargs) -> None:
-        deadline_ns = time_ns() + timeout_millis * 10**6
-
-        self._shutdown = True
-        self._shutdown_event.set()
-        if self._daemon_thread:
-            self._daemon_thread.join(timeout=(deadline_ns - time_ns()) / 10**9)
+    def _decode_remote_config(self, remote_config) -> tuple[str, dict[str, AnyValueType]]:
+        for config_file, config in messages._decode_remote_config(remote_config):
+            yield config_file, config
