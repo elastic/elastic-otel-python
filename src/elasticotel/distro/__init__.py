@@ -82,7 +82,7 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                 endpoint=endpoint,
                 interval=interval,
                 handler=self._opamp_handler,
-                agent_identifying_attributes={
+                identifying_attributes={
                     "service.name": service_name,
                     "deployment.environment.name": deployment_environment_name,
                 },
