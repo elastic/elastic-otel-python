@@ -5,6 +5,8 @@ import queue
 import logging
 from typing import Any, Callable
 
+from opentelemetry.util.types import AnyValue as AnyValueType
+
 from elasticotel.opamp.client import OpAMPClient
 
 logger = logging.getLogger(__name__)
@@ -46,6 +48,8 @@ class OpAMPAgent:
         handler: Callable[[Any], None],
         max_retries: int = 1,
         initial_backoff: float = 1.0,
+        identifying_attributes: dict[str, AnyValueType] | None = None,
+        non_identifying_attributes: dict[str, AnyValueType] | None = None,
     ):
         """
         :param endpoint: the opamp endpoint
@@ -67,7 +71,11 @@ class OpAMPAgent:
         # start scheduling only after connection with server has been established
         self._schedule = False
 
-        self._client = OpAMPClient(endpoint=endpoint)
+        self._client = OpAMPClient(
+            endpoint=endpoint,
+            agent_identifying_attributes=identifying_attributes,
+            agent_non_identifying_attributes=non_identifying_attributes,
+        )
 
     def _enable_scheduler(self):
         self._schedule = True
