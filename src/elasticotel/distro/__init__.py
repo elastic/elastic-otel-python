@@ -14,9 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import atexit
 import logging
 import os
+from urllib.parse import urlparse
 
+from opentelemetry import trace
 from opentelemetry.environment_variables import (
     OTEL_LOGS_EXPORTER,
     OTEL_METRICS_EXPORTER,
@@ -39,13 +42,60 @@ from opentelemetry.util._importlib_metadata import EntryPoint
 
 from elasticotel.distro.environment_variables import ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
+from elasticotel.opamp import messages
+from elasticotel.opamp.agent import OpAMPAgent
+from elasticotel.opamp.client import OpAMPClient
+from elasticotel.opamp.environment_variables import ELASTIC_OTEL_OPAMP_INTERVAL, ELASTIC_OTEL_OPAMP_ENDPOINT
 
 
 logger = logging.getLogger(__name__)
 
 
 class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
-    pass
+    def _configure(self, **kwargs):
+        super()._configure(**kwargs)
+
+        enable_opamp = False
+        endpoint = os.environ.get(ELASTIC_OTEL_OPAMP_ENDPOINT)
+        if endpoint:
+            parsed = urlparse(endpoint)
+            enable_opamp = parsed.scheme in ("http", "https") and parsed.netloc and parsed.path
+            if not enable_opamp:
+                logger.warning("Found invalid value for OpAMP endpoint")
+
+        if enable_opamp:
+            # FIXME: this is not great but we don't have the calculated resource attributes around
+            # won't be an issue once the code is upstreamed
+            tracer_provider = trace.get_tracer_provider()
+            resource_attributes = tracer_provider.resource.attributes
+            service_name = resource_attributes.get("service.name")
+            deployment_environment_name = resource_attributes.get(
+                "deployment.environment.name", resource_attributes.get("deployment.environment")
+            )
+            try:
+                interval = float(os.environ.get(ELASTIC_OTEL_OPAMP_INTERVAL, 30))
+            except ValueError:
+                logger.warning("Found invalid value for OpAMP interval, using default")
+                interval = 30
+
+            agent = OpAMPAgent(
+                endpoint=endpoint,
+                interval=interval,
+                handler=self._opamp_handler,
+                agent_identifying_attributes={
+                    "service.name": service_name,
+                    "deployment.environment.name": deployment_environment_name,
+                },
+            )
+            agent.start()
+            atexit.register(agent.stop)
+
+    def _opamp_handler(self, client: OpAMPClient, response):
+        response_content = client._get_content(response)
+        message = client._decode_response(response_content)
+        if message.remote_config:
+            for config_filename, config in messages._decode_remote_config(message.remote_config):
+                print(config_filename, config)
 
 
 class ElasticOpenTelemetryDistro(BaseDistro):
