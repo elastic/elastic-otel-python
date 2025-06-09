@@ -8,6 +8,7 @@ from typing import Any, Callable
 from opentelemetry.util.types import AnyValue as AnyValueType
 
 from elasticotel.opamp.client import OpAMPClient
+from elasticotel.opamp.proto import opamp_pb2 as opamp_pb2
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class OpAMPAgent:
         *,
         endpoint: str,
         interval: float,
-        handler: Callable[[Any], None],
+        handler: Callable[[opamp_pb2.ServerToAgent], None],
         max_retries: int = 1,
         initial_backoff: float = 1.0,
         identifying_attributes: dict[str, AnyValueType] | None = None,
@@ -123,10 +124,10 @@ class OpAMPAgent:
             except queue.Empty:
                 continue
 
+            message = None
             while job.attempt <= job.max_retries and not self._stop.is_set():
                 try:
-                    response = self.client._send(job.payload)
-                    self.handler(self.client, response)
+                    message = self._client._send(job.payload)
                     logger.info("Job succeeded: %r", job.payload)
                     break
                 except Exception as exc:
@@ -135,6 +136,7 @@ class OpAMPAgent:
 
                     if job.attempt > job.max_retries:
                         logger.error("Job %r dropped after max retries", job.payload)
+                        logger.exception(exc)
                         break
 
                     # exponential backoff, interruptible by stop event
@@ -144,6 +146,13 @@ class OpAMPAgent:
                         # stop requested during backoff: abandon job
                         logger.debug("Stop signaled, abandoning job %r", job.payload)
                         break
+
+            # we can't do much if the handler fails other than logging
+            if message is not None:
+                try:
+                    self.handler(message)
+                except Exception as exc:
+                    logger.warning("Job %r handler failed with: %s", job.payload, exc)
 
             try:
                 if job.callback is not None:
