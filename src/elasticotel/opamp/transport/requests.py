@@ -16,9 +16,9 @@
 
 import requests
 
-from elasticotel.omamp.messages import decode_message
-from ..exceptions import OpAMPException
-from .base import HttpTransport
+from elasticotel.opamp import messages
+from elasticotel.opamp.transport.exceptions import OpAMPException
+from .base import HttpTransport, base_headers
 
 
 class RequestsTransport(HttpTransport):
@@ -32,22 +32,14 @@ class RequestsTransport(HttpTransport):
     # with jitter to avoid overwhelming the Server
     # TODO: support basic-auth
     def send(self, url: str, headers: dict[str, str], data: bytes, timeout_millis: int):
+        headers = {**base_headers, **headers}
         timeout: float = timeout_millis / 1e3
         try:
             response = self.session.post(url, headers=headers, data=data, timeout=timeout)
             response.raise_for_status()
-        except requests.exceptions.HTTPError as exc:
-            print(exc, response.status_code)
-            # 401 and 404 should raise, 400 should be decoded instead
-            if response.status_code not in (400, 503, 429):
-                # TODO: we may retry in case of 429 or 503
-                raise OpAMPException
-        except requests.exception.ConnectionError:
-            # TODO: we MAY retry here
-            raise OpAMPException
         except Exception:
             raise OpAMPException
 
-        message = decode_message(response.content)
+        message = messages._decode_message(response.content)
 
         return message

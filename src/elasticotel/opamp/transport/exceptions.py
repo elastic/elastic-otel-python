@@ -1,0 +1,2 @@
+class OpAMPException(Exception):
+    pass
