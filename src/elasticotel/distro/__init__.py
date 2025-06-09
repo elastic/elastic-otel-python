@@ -44,8 +44,8 @@ from elasticotel.distro.environment_variables import ELASTIC_OTEL_SYSTEM_METRICS
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
 from elasticotel.opamp import messages
 from elasticotel.opamp.agent import OpAMPAgent
-from elasticotel.opamp.client import OpAMPClient
 from elasticotel.opamp.environment_variables import ELASTIC_OTEL_OPAMP_INTERVAL, ELASTIC_OTEL_OPAMP_ENDPOINT
+from elasticotel.opamp.proto import opamp_pb2 as opamp_pb2
 
 
 logger = logging.getLogger(__name__)
@@ -90,9 +90,7 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
             agent.start()
             atexit.register(agent.stop)
 
-    def _opamp_handler(self, client: OpAMPClient, response):
-        response_content = client._get_content(response)
-        message = client._decode_response(response_content)
+    def _opamp_handler(self, message: opamp_pb2.ServerToAgent):
         if message.remote_config:
             for config_filename, config in messages._decode_remote_config(message.remote_config):
                 print(config_filename, config)

@@ -41,7 +41,8 @@ class OpAMPClient:
         agent_non_identifying_attributes: dict[str, AnyValueType] | None = None,
     ):
         self._timeout_millis = timeout_millis
-        self._transport = transport if transport is not None else RequestsTransport
+        transport_class = transport if transport is not None else RequestsTransport
+        self._transport = transport_class()
 
         self._endpoint = endpoint
         headers = headers or {}
