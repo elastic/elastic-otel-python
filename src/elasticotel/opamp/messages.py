@@ -79,7 +79,7 @@ def _encode_message(data: opamp_pb2.AgentToServer) -> bytes:
 
 def _decode_remote_config(remote_config: opamp_pb2.AgentRemoteConfig) -> tuple[str, dict[str, AnyValueType]]:
     for config_file_name, config_file in remote_config.config.config_map.items():
-        if config_file.content_type == "text/json":
+        if config_file.content_type in ("application/json", "text/json"):
             try:
                 body = config_file.body.decode()
                 config_data = json.loads(body)
