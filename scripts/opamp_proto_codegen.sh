@@ -20,6 +20,7 @@ OPAMP_SPEC_REPO_DIR=${OPAMP_SPEC_REPO_DIR:-"/tmp/opamp-spec"}
 # root of opentelemetry-python repo
 repo_root="$(git rev-parse --show-toplevel)"
 venv_dir="/tmp/opamp_proto_codegen_venv"
+proto_output_dir="$repo_root/src/elasticotel/opamp/proto"
 
 # run on exit even if crash
 cleanup() {
@@ -51,7 +52,7 @@ fi
     git symbolic-ref -q HEAD && git pull --ff-only || true
 )
 
-cd $repo_root/src/elasticotel/opamp/proto
+cd $proto_output_dir
 
 # clean up old generated code
 find . -regex ".*_pb2.*\.pyi?" -exec rm {} +
@@ -63,3 +64,5 @@ python -m grpc_tools.protoc \
     --python_out=. \
     --mypy_out=. \
     $all_protos
+
+sed -i -e 's/import anyvalue_pb2 as anyvalue__pb2/from . import anyvalue_pb2 as anyvalue__pb2/' opamp_pb2.py
