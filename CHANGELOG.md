@@ -1,5 +1,13 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.3.0
+
+- Bump to OTel 1.34.1: dropped support for Python 3.8 (#321)
+
+  Upstream changes:
+  * https://github.com/open-telemetry/opentelemetry-python/discussions/4613
+  * https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3558
+
 ## v1.2.0
 
 - Bump to OTel 1.33.1: logs OTLP serialization improvements, stable `code` attributes used in logs (#307)
