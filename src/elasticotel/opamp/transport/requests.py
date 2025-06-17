@@ -26,11 +26,7 @@ class RequestsTransport(HttpTransport):
     def __init__(self):
         self.session = requests.Session()
 
-    # TODO: We don't have a specific connection phase ATM but specs says:
-    # If the Client is unable to establish a connection to the Server
-    # it SHOULD retry connection attempts and use exponential backoff strategy
-    # with jitter to avoid overwhelming the Server
-    # TODO: support basic-auth
+    # TODO: support basic-auth?
     def send(self, url: str, headers: dict[str, str], data: bytes, timeout_millis: int):
         headers = {**base_headers, **headers}
         timeout: float = timeout_millis / 1e3

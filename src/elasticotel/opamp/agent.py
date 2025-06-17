@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import threading
-import queue
 import logging
+import queue
+import random
+import threading
 from typing import Any, Callable
 
 from opentelemetry.util.types import AnyValue as AnyValueType
@@ -139,8 +140,8 @@ class OpAMPAgent:
                         logger.exception(exc)
                         break
 
-                    # exponential backoff, interruptible by stop event
-                    delay = job.initial_backoff * (2 ** (job.attempt - 1))
+                    # exponential backoff with +/- 20% jitter, interruptible by stop event
+                    delay = job.initial_backoff * (2 ** (job.attempt - 1)) * random.uniform(0.8, 1.2)
                     logger.debug("Retrying in %.1fs", delay)
                     if self._stop.wait(delay):
                         # stop requested during backoff: abandon job
