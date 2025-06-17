@@ -16,8 +16,8 @@
 
 import requests
 
-from elasticotel.opamp import messages
-from elasticotel.opamp.transport.exceptions import OpAMPException
+from opentelemetry._opamp import messages
+from opentelemetry._opamp.transport.exceptions import OpAMPException
 from .base import HttpTransport, base_headers
 
 

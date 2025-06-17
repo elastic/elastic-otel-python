@@ -21,9 +21,9 @@ from typing import Generator
 
 from opentelemetry.util.types import AnyValue as AnyValueType
 
-from elasticotel.opamp.proto import opamp_pb2 as opamp_pb2
-from elasticotel.opamp.proto.anyvalue_pb2 import KeyValue, AnyValue
-from elasticotel.opamp.exceptions import OpAMPRemoteConfigParseException, OpAMPRemoteConfigDecodeException
+from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
+from opentelemetry._opamp.proto.anyvalue_pb2 import KeyValue, AnyValue
+from opentelemetry._opamp.exceptions import OpAMPRemoteConfigParseException, OpAMPRemoteConfigDecodeException
 
 
 def _decode_message(data: bytes) -> opamp_pb2.ServerToAgent:
