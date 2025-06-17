@@ -42,6 +42,7 @@ from opentelemetry.util._importlib_metadata import EntryPoint
 
 from elasticotel.distro.environment_variables import ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
+from elasticotel.distro.config import _LOG_LEVELS_MAP
 from elasticotel.opamp import messages
 from elasticotel.opamp.agent import OpAMPAgent
 from elasticotel.opamp.environment_variables import ELASTIC_OTEL_OPAMP_INTERVAL, ELASTIC_OTEL_OPAMP_ENDPOINT
@@ -93,7 +94,22 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
     def _opamp_handler(self, message: opamp_pb2.ServerToAgent):
         if message.remote_config:
             for config_filename, config in messages._decode_remote_config(message.remote_config):
-                print(config_filename, config)
+                # we don't have standardized config values so limit to configs coming from our backend
+                if config_filename == "elastic":
+                    logger.debug("Config %s: %s", config_filename, config)
+                    # when config option has default value you don't get it so need to handle the default
+                    config_logging_level = config.get("logging_level")
+                    if config_logging_level is not None:
+                        logging_level = _LOG_LEVELS_MAP.get(config_logging_level)
+                    else:
+                        logging_level = logging.INFO
+
+                    if logging_level is None:
+                        logger.warning("Logging level not handled: %s", config_logging_level)
+                    else:
+                        # update upstream and distro logging levels
+                        logging.getLogger("opentelemetry").setLevel(logging_level)
+                        logging.getLogger("elasticotel").setLevel(logging_level)
 
 
 class ElasticOpenTelemetryDistro(BaseDistro):
