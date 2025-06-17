@@ -63,32 +63,32 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
             if not enable_opamp:
                 logger.warning("Found invalid value for OpAMP endpoint")
 
-        if enable_opamp:
-            # FIXME: this is not great but we don't have the calculated resource attributes around
-            # won't be an issue once the code is upstreamed
-            tracer_provider = trace.get_tracer_provider()
-            resource_attributes = tracer_provider.resource.attributes
-            service_name = resource_attributes.get("service.name")
-            deployment_environment_name = resource_attributes.get(
-                "deployment.environment.name", resource_attributes.get("deployment.environment")
-            )
-            try:
-                interval = float(os.environ.get(ELASTIC_OTEL_OPAMP_INTERVAL, 30))
-            except ValueError:
-                logger.warning("Found invalid value for OpAMP interval, using default")
-                interval = 30
+            if enable_opamp:
+                # FIXME: this is not great but we don't have the calculated resource attributes around
+                # won't be an issue once the code is upstreamed
+                tracer_provider = trace.get_tracer_provider()
+                resource_attributes = tracer_provider.resource.attributes  # type: ignore[reportAttributeAccessIssue]
+                service_name = resource_attributes.get("service.name")
+                deployment_environment_name = resource_attributes.get(
+                    "deployment.environment.name", resource_attributes.get("deployment.environment")
+                )
+                try:
+                    interval = float(os.environ.get(ELASTIC_OTEL_OPAMP_INTERVAL, 30))
+                except ValueError:
+                    logger.warning("Found invalid value for OpAMP interval, using default")
+                    interval = 30
 
-            agent = OpAMPAgent(
-                endpoint=endpoint,
-                interval=interval,
-                handler=opamp_handler,
-                identifying_attributes={
-                    "service.name": service_name,
-                    "deployment.environment.name": deployment_environment_name,
-                },
-            )
-            agent.start()
-            atexit.register(agent.stop)
+                agent = OpAMPAgent(
+                    endpoint=endpoint,
+                    interval=interval,
+                    handler=opamp_handler,
+                    identifying_attributes={
+                        "service.name": service_name,
+                        "deployment.environment.name": deployment_environment_name,
+                    },
+                )
+                agent.start()
+                atexit.register(agent.stop)
 
 
 class ElasticOpenTelemetryDistro(BaseDistro):
@@ -106,7 +106,7 @@ class ElasticOpenTelemetryDistro(BaseDistro):
                 instrumentor_kwargs["config"] = {
                     k: v for k, v in SYSTEM_METRICS_DEFAULT_CONFIG.items() if k.startswith("process.runtime")
                 }
-        instrumentor_class(**instrumentor_kwargs).instrument(**kwargs)
+                instrumentor_class(**instrumentor_kwargs).instrument(**kwargs)  # type: ignore[reportCallIssue]
 
     def _configure(self, **kwargs):
         os.environ.setdefault(OTEL_TRACES_EXPORTER, "otlp")
