@@ -16,7 +16,7 @@
 
 import abc
 
-from elasticotel.opamp.proto import opamp_pb2 as opamp_pb2
+from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
 
 base_headers = {

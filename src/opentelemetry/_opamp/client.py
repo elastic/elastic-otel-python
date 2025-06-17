@@ -6,10 +6,10 @@ from typing import Any, Callable, Generator
 from uuid_utils import uuid7
 from opentelemetry.util.types import AnyValue as AnyValueType
 
-import elasticotel.opamp.messages as messages
-from elasticotel.opamp.transport.requests import RequestsTransport
-from elasticotel.opamp.version import __version__
-from elasticotel.opamp.proto import opamp_pb2
+import opentelemetry._opamp.messages as messages
+from opentelemetry._opamp.transport.requests import RequestsTransport
+from opentelemetry._opamp.version import __version__
+from opentelemetry._opamp.proto import opamp_pb2
 
 
 _logger = getLogger(__name__)

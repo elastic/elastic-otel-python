@@ -8,8 +8,8 @@ from typing import Any, Callable
 
 from opentelemetry.util.types import AnyValue as AnyValueType
 
-from elasticotel.opamp.client import OpAMPClient
-from elasticotel.opamp.proto import opamp_pb2 as opamp_pb2
+from opentelemetry._opamp.client import OpAMPClient
+from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
 logger = logging.getLogger(__name__)
 

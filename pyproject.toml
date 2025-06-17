@@ -103,9 +103,10 @@ pythonVersion = "3.9"
 
 include = [
   "src/elasticotel",
+  "src/opentelemetry",
 ]
 
 exclude = [
   "**/__pycache__",
-  "src/elasticotel/opamp/proto",
+  "src/opentelemetry/_opamp/proto",
 ]

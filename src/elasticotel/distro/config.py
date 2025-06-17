@@ -1,7 +1,7 @@
 import logging
 
-from elasticotel.opamp import messages
-from elasticotel.opamp.proto import opamp_pb2 as opamp_pb2
+from opentelemetry._opamp import messages
+from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
 
 logger = logging.getLogger(__name__)

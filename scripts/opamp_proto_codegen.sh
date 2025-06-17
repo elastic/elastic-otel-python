@@ -20,7 +20,7 @@ OPAMP_SPEC_REPO_DIR=${OPAMP_SPEC_REPO_DIR:-"/tmp/opamp-spec"}
 # root of opentelemetry-python repo
 repo_root="$(git rev-parse --show-toplevel)"
 venv_dir="/tmp/opamp_proto_codegen_venv"
-proto_output_dir="$repo_root/src/elasticotel/opamp/proto"
+proto_output_dir="$repo_root/src/opentelemetry/_opamp/proto"
 
 # run on exit even if crash
 cleanup() {

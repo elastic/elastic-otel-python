@@ -39,13 +39,13 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_EXPORTER_OTLP_PROTOCOL,
 )
 from opentelemetry.util._importlib_metadata import EntryPoint
+from opentelemetry._opamp.agent import OpAMPAgent
+from opentelemetry._opamp.environment_variables import ELASTIC_OTEL_OPAMP_INTERVAL, ELASTIC_OTEL_OPAMP_ENDPOINT
+from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
 from elasticotel.distro.environment_variables import ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
 from elasticotel.distro.config import opamp_handler
-from elasticotel.opamp.agent import OpAMPAgent
-from elasticotel.opamp.environment_variables import ELASTIC_OTEL_OPAMP_INTERVAL, ELASTIC_OTEL_OPAMP_ENDPOINT
-from elasticotel.opamp.proto import opamp_pb2 as opamp_pb2
 
 
 logger = logging.getLogger(__name__)
