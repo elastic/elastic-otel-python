@@ -96,3 +96,16 @@ known-third-party = [
   "opentelemetry",
 ]
 known-first-party = ["elasticotel"]
+
+[tool.pyright]
+typeCheckingMode = "standard"
+pythonVersion = "3.9"
+
+include = [
+  "src/elasticotel",
+]
+
+exclude = [
+  "**/__pycache__",
+  "src/elasticotel/opamp/proto",
+]

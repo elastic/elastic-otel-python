@@ -17,6 +17,7 @@
 from __future__ import annotations
 
 import json
+from typing import Generator
 
 from opentelemetry.util.types import AnyValue as AnyValueType
 
@@ -47,7 +48,8 @@ def _encode_attributes(attributes: dict[str, AnyValueType]):
 
 
 def _build_agent_description(
-    identifying_attributes: dict[str, AnyValueType], non_identifying_attributes: dict[str, AnyValueType] | None = None
+    identifying_attributes: dict[str, AnyValueType] | None = None,
+    non_identifying_attributes: dict[str, AnyValueType] | None = None,
 ) -> opamp_pb2.AgentDescription:
     identifying_attrs = _encode_attributes(identifying_attributes) if identifying_attributes else None
     non_identifying_attrs = _encode_attributes(non_identifying_attributes) if non_identifying_attributes else None
@@ -77,7 +79,7 @@ def _encode_message(data: opamp_pb2.AgentToServer) -> bytes:
     return data.SerializeToString()
 
 
-def _decode_remote_config(remote_config: opamp_pb2.AgentRemoteConfig) -> tuple[str, dict[str, AnyValueType]]:
+def _decode_remote_config(remote_config: opamp_pb2.AgentRemoteConfig) -> Generator[tuple[str, dict[str, AnyValueType]]]:
     for config_file_name, config_file in remote_config.config.config_map.items():
         if config_file.content_type in ("application/json", "text/json"):
             try:

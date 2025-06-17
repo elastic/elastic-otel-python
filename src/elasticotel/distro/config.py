@@ -28,7 +28,7 @@ def opamp_handler(message: opamp_pb2.ServerToAgent):
             # when config option has default value you don't get it so need to handle the default
             config_logging_level = config.get("logging_level")
             if config_logging_level is not None:
-                logging_level = _LOG_LEVELS_MAP.get(config_logging_level)
+                logging_level = _LOG_LEVELS_MAP.get(config_logging_level)  # type: ignore[reportArgumentType]
             else:
                 logging_level = logging.INFO
 

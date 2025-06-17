@@ -24,7 +24,7 @@ class Job:
         payload: Any,
         max_retries: int = 1,
         initial_backoff: float = 1.0,
-        callback: Callable[None, None] | None = None,
+        callback: Callable[..., None] | None = None,
     ):
         self.payload = payload
         self.attempt = 0
@@ -94,7 +94,7 @@ class OpAMPAgent:
         payload = self._client._build_connection_message()
         self.send(payload, max_retries=10, callback=self._enable_scheduler)
 
-    def send(self, payload: Any, max_retries: int | None = None, callback: Callable[None, None] | None = None) -> None:
+    def send(self, payload: Any, max_retries: int | None = None, callback: Callable[..., None] | None = None) -> None:
         """
         Enqueue an on-demand request.
         """
