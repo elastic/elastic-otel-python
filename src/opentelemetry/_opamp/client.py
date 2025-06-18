@@ -68,7 +68,7 @@ class OpAMPClient:
         data = messages._encode_message(message)
         return data
 
-    def _send(self, data):
+    def _send(self, data: bytes):
         try:
             response = self._transport.send(
                 url=self._endpoint, headers=self._headers, data=data, timeout_millis=self._timeout_millis
@@ -83,6 +83,8 @@ class OpAMPClient:
         server_message = messages._decode_message(response_content)
         return server_message
 
-    def _decode_remote_config(self, remote_config) -> Generator[tuple[str, dict[str, AnyValue]]]:
+    def _decode_remote_config(
+        self, remote_config: opamp_pb2.AgentRemoteConfig
+    ) -> Generator[tuple[str, dict[str, AnyValue]]]:
         for config_file, config in messages._decode_remote_config(remote_config):
             yield config_file, config
