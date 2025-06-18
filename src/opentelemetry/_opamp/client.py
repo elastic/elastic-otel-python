@@ -36,7 +36,7 @@ class OpAMPClient:
         endpoint: str,
         headers: dict[str, str] | None = None,
         timeout_millis: int = _DEFAULT_OPAMP_TIMEOUT_MS,
-        agent_identifying_attributes: dict[str, AnyValueType] | None = None,
+        agent_identifying_attributes: dict[str, AnyValueType],
         agent_non_identifying_attributes: dict[str, AnyValueType] | None = None,
     ):
         self._timeout_millis = timeout_millis
