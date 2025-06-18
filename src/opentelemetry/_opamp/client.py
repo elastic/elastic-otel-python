@@ -4,7 +4,7 @@ from logging import getLogger
 from typing import Any, Callable, Generator
 
 from uuid_utils import uuid7
-from opentelemetry.util.types import AnyValue as AnyValueType
+from opentelemetry.util.types import AnyValue
 
 import opentelemetry._opamp.messages as messages
 from opentelemetry._opamp.transport.requests import RequestsTransport
@@ -36,8 +36,8 @@ class OpAMPClient:
         endpoint: str,
         headers: dict[str, str] | None = None,
         timeout_millis: int = _DEFAULT_OPAMP_TIMEOUT_MS,
-        agent_identifying_attributes: dict[str, AnyValueType],
-        agent_non_identifying_attributes: dict[str, AnyValueType] | None = None,
+        agent_identifying_attributes: dict[str, AnyValue],
+        agent_non_identifying_attributes: dict[str, AnyValue] | None = None,
     ):
         self._timeout_millis = timeout_millis
         self._transport = RequestsTransport()
@@ -83,6 +83,6 @@ class OpAMPClient:
         server_message = messages._decode_message(response_content)
         return server_message
 
-    def _decode_remote_config(self, remote_config) -> Generator[tuple[str, dict[str, AnyValueType]]]:
+    def _decode_remote_config(self, remote_config) -> Generator[tuple[str, dict[str, AnyValue]]]:
         for config_file, config in messages._decode_remote_config(remote_config):
             yield config_file, config
