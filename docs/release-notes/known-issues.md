@@ -13,3 +13,4 @@ products:
 
 # Elastic Distribution of OpenTelemetry Python known issues
 
+No known issues.

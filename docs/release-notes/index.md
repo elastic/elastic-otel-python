@@ -17,14 +17,14 @@ Review the changes, fixes, and more in each version of Elastic Distribution of O
 
 To check for security updates, go to [Security announcements for the Elastic stack](https://discuss.elastic.co/c/announcements/security-announcements/31).
 
-% Release notes include only features, enhancements, and fixes. Add breaking changes, deprecations, and known issues to the applicable release notes sections.
+% Release notes include only features, enhancements, and fixes. Add breaking changes, deprecations, and known issues to the applicable release notes files.
 
-% ## version.next [kibana-X.X.X-release-notes]
+% ## version.next [X.X.X-release-notes]
 
-% ### Features and enhancements [kibana-X.X.X-features-enhancements]
+% ### Features and enhancements [X.X.X-features-enhancements]
 % *
 
-% ### Fixes [kibana-X.X.X-fixes]
+% ### Fixes [X.X.X-fixes]
 % *
 
 ## 1.3.0
