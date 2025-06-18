@@ -25,7 +25,6 @@ _HANDLED_CAPABILITIES = (
     opamp_pb2.AgentCapabilities.AgentCapabilities_ReportsStatus
     | opamp_pb2.AgentCapabilities.AgentCapabilities_ReportsHeartbeat
     | opamp_pb2.AgentCapabilities.AgentCapabilities_AcceptsRemoteConfig
-    | opamp_pb2.AgentCapabilities.AgentCapabilities_ReportsRemoteConfig
 )
 
 
