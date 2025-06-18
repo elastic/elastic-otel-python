@@ -31,6 +31,7 @@ class Job:
         self.attempt = 0
         self.max_retries = max_retries
         self.initial_backoff = initial_backoff
+        # callback is called after OpAMP message handler is executed
         self.callback = callback
 
 
@@ -38,7 +39,7 @@ class OpAMPAgent:
     """
     OpAMPAgent handles:
       - periodic “heartbeat” calls enqueued at a fixed interval
-      - on-demand calls via send_on_demand()
+      - on-demand calls via send()
       - exponential backoff retry on failures
       - immediate cancellation of all jobs on shutdown
     """
@@ -49,7 +50,8 @@ class OpAMPAgent:
         endpoint: str,
         interval: float,
         handler: Callable[[opamp_pb2.ServerToAgent], None],
-        max_retries: int = 1,
+        max_retries: int = 10,
+        heartbeat_max_retries: int = 1,
         initial_backoff: float = 1.0,
         identifying_attributes: dict[str, AnyValue],
         non_identifying_attributes: dict[str, AnyValue] | None = None,
@@ -57,14 +59,18 @@ class OpAMPAgent:
         """
         :param endpoint: the opamp endpoint
         :param interval: seconds between automatic calls
-        :param handler: function(payload) that performs the remote request
-        :param max_retries: how many times to retry a failed job
+        :param handler: user provided function that takes the received ServerToAgent message
+        :param max_retries: how many times to retry a failed job for ad-hoc messages
+        :param heartbeat_max_retries: how many times to retry an heartbeat failed job
         :param initial_backoff: base seconds for exponential backoff
+        :param identifying_attributes: service identifying attributes
+        :param non_identifying_attributes: service non identifying attributes
         """
-        self.interval = interval
-        self.handler = handler
-        self.max_retries = max_retries
-        self.initial_backoff = initial_backoff
+        self._interval = interval
+        self._handler = handler
+        self._max_retries = max_retries
+        self._heartbeat_max_retries = heartbeat_max_retries
+        self._initial_backoff = initial_backoff
 
         self._queue: queue.Queue[Job] = queue.Queue()
         self._stop = threading.Event()
@@ -93,7 +99,7 @@ class OpAMPAgent:
 
         # enqueue the connection message so we can then enable heartbeat
         payload = self._client._build_connection_message()
-        self.send(payload, max_retries=10, callback=self._enable_scheduler)
+        self.send(payload, max_retries=self._max_retries, callback=self._enable_scheduler)
 
         atexit.register(self.stop)
 
@@ -102,8 +108,8 @@ class OpAMPAgent:
         Enqueue an on-demand request.
         """
         if max_retries is None:
-            max_retries = self.max_retries
-        job = Job(payload, max_retries=max_retries, initial_backoff=self.initial_backoff, callback=callback)
+            max_retries = self._max_retries
+        job = Job(payload, max_retries=max_retries, initial_backoff=self._initial_backoff, callback=callback)
         self._queue.put(job)
         logger.debug("On-demand job enqueued: %r", payload)
 
@@ -111,16 +117,18 @@ class OpAMPAgent:
         """
         Periodically enqueue “heartbeat” jobs until stop is signaled.
         """
-        while not self._stop.wait(self.interval):
+        while not self._stop.wait(self._interval):
             if self._schedule:
                 payload = self._client._build_heartbeat_message()
-                job = Job(payload=payload, max_retries=self.max_retries, initial_backoff=self.initial_backoff)
+                job = Job(
+                    payload=payload, max_retries=self._heartbeat_max_retries, initial_backoff=self._initial_backoff
+                )
                 self._queue.put(job)
                 logger.debug("Periodic job enqueued")
 
     def _run_worker(self) -> None:
         """
-        Worker loop: pull jobs, attempt the handler, retry on failure with backoff.
+        Worker loop: pull jobs, attempt the message handler, retry on failure with backoff.
         """
         while not self._stop.is_set():
             try:
@@ -154,7 +162,7 @@ class OpAMPAgent:
             # we can't do much if the handler fails other than logging
             if message is not None:
                 try:
-                    self.handler(message)
+                    self._handler(message)
                 except Exception as exc:
                     logger.warning("Job %r handler failed with: %s", job.payload, exc)
 
