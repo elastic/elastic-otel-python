@@ -55,6 +55,7 @@ class OpAMPAgent:
         initial_backoff: float = 1.0,
         identifying_attributes: dict[str, AnyValue],
         non_identifying_attributes: dict[str, AnyValue] | None = None,
+        headers: dict[str, str] | None = None,
     ):
         """
         :param endpoint: the opamp endpoint
@@ -65,6 +66,7 @@ class OpAMPAgent:
         :param initial_backoff: base seconds for exponential backoff
         :param identifying_attributes: service identifying attributes
         :param non_identifying_attributes: service non identifying attributes
+        :param headers: http headers sent OpAMP server
         """
         self._interval = interval
         self._handler = handler
@@ -82,6 +84,7 @@ class OpAMPAgent:
 
         self._client = OpAMPClient(
             endpoint=endpoint,
+            headers=headers,
             agent_identifying_attributes=identifying_attributes,
             agent_non_identifying_attributes=non_identifying_attributes,
         )
