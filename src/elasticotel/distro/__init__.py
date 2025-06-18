@@ -39,10 +39,9 @@ from opentelemetry.sdk.environment_variables import (
 )
 from opentelemetry.util._importlib_metadata import EntryPoint
 from opentelemetry._opamp.agent import OpAMPAgent
-from opentelemetry._opamp.environment_variables import ELASTIC_OTEL_OPAMP_INTERVAL, ELASTIC_OTEL_OPAMP_ENDPOINT
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
-from elasticotel.distro.environment_variables import ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
+from elasticotel.distro.environment_variables import ELASTIC_OTEL_OPAMP_ENDPOINT, ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
 from elasticotel.distro.config import opamp_handler
 
@@ -71,15 +70,10 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                 deployment_environment_name = resource_attributes.get(
                     "deployment.environment.name", resource_attributes.get("deployment.environment")
                 )
-                try:
-                    interval = float(os.environ.get(ELASTIC_OTEL_OPAMP_INTERVAL, 30))
-                except ValueError:
-                    logger.warning("Found invalid value for OpAMP interval, using default")
-                    interval = 30
 
                 agent = OpAMPAgent(
                     endpoint=endpoint,
-                    interval=interval,
+                    interval=30,
                     handler=opamp_handler,
                     identifying_attributes={
                         "service.name": service_name,
