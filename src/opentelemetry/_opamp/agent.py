@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import atexit
 import logging
 import queue
 import random
@@ -93,6 +94,8 @@ class OpAMPAgent:
         # enqueue the connection message so we can then enable heartbeat
         payload = self._client._build_connection_message()
         self.send(payload, max_retries=10, callback=self._enable_scheduler)
+
+        atexit.register(self.stop)
 
     def send(self, payload: Any, max_retries: int | None = None, callback: Callable[..., None] | None = None) -> None:
         """

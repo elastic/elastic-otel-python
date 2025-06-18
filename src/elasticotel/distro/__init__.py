@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import atexit
 import logging
 import os
 from urllib.parse import urlparse
@@ -88,7 +87,6 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                     },
                 )
                 agent.start()
-                atexit.register(agent.stop)
 
 
 class ElasticOpenTelemetryDistro(BaseDistro):
