@@ -15,7 +15,7 @@ products:
 
 Breaking changes can impact your Elastic applications, potentially disrupting normal operations. Before you upgrade, carefully review the Elastic Distribution of OpenTelemetry Python breaking changes and take the necessary steps to mitigate any issues.
 
-% ## Next version [edot-X.X.X-breaking-changes]
+% ## Next version [edot-python-X.X.X-breaking-changes]
 
 % Use the following template to add entries to this document.
 
