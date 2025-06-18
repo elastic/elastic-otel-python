@@ -19,10 +19,10 @@ from __future__ import annotations
 import json
 from typing import Generator
 
-from opentelemetry.util.types import AnyValue as AnyValueType
+from opentelemetry.util.types import AnyValue
 
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
-from opentelemetry._opamp.proto.anyvalue_pb2 import KeyValue, AnyValue
+from opentelemetry._opamp.proto.anyvalue_pb2 import KeyValue as PB2KeyValue, AnyValue as PB2AnyValue
 from opentelemetry._opamp.exceptions import OpAMPRemoteConfigParseException, OpAMPRemoteConfigDecodeException
 
 
@@ -32,24 +32,30 @@ def _decode_message(data: bytes) -> opamp_pb2.ServerToAgent:
     return message
 
 
-# TODO: copy / share full fledged _encode_value from exporter?
-def _encode_value(value: AnyValueType) -> AnyValue:
+def _encode_value(value: AnyValue) -> PB2AnyValue:
     if value is None:
-        return AnyValue()
+        return PB2AnyValue()
+    if isinstance(value, bool):
+        return PB2AnyValue(bool_value=value)
+    if isinstance(value, int):
+        return PB2AnyValue(int_value=value)
+    if isinstance(value, float):
+        return PB2AnyValue(double_value=value)
     if isinstance(value, str):
-        return AnyValue(string_value=value)
+        return PB2AnyValue(string_value=value)
     if isinstance(value, bytes):
-        return AnyValue(bytes_value=value)
+        return PB2AnyValue(bytes_value=value)
+    # TODO: handle sequence and mapping?
     raise ValueError(f"Invalid type {type(value)} of value {value}")
 
 
-def _encode_attributes(attributes: dict[str, AnyValueType]):
-    return [KeyValue(key=key, value=_encode_value(value)) for key, value in attributes.items()]
+def _encode_attributes(attributes: dict[str, AnyValue]):
+    return [PB2KeyValue(key=key, value=_encode_value(value)) for key, value in attributes.items()]
 
 
 def _build_agent_description(
-    identifying_attributes: dict[str, AnyValueType],
-    non_identifying_attributes: dict[str, AnyValueType] | None = None,
+    identifying_attributes: dict[str, AnyValue],
+    non_identifying_attributes: dict[str, AnyValue] | None = None,
 ) -> opamp_pb2.AgentDescription:
     identifying_attrs = _encode_attributes(identifying_attributes)
     non_identifying_attrs = _encode_attributes(non_identifying_attributes) if non_identifying_attributes else None
@@ -79,7 +85,7 @@ def _encode_message(data: opamp_pb2.AgentToServer) -> bytes:
     return data.SerializeToString()
 
 
-def _decode_remote_config(remote_config: opamp_pb2.AgentRemoteConfig) -> Generator[tuple[str, dict[str, AnyValueType]]]:
+def _decode_remote_config(remote_config: opamp_pb2.AgentRemoteConfig) -> Generator[tuple[str, dict[str, AnyValue]]]:
     for config_file_name, config_file in remote_config.config.config_map.items():
         if config_file.content_type in ("application/json", "text/json"):
             try:

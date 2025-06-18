@@ -7,7 +7,7 @@ import random
 import threading
 from typing import Any, Callable
 
-from opentelemetry.util.types import AnyValue as AnyValueType
+from opentelemetry.util.types import AnyValue
 
 from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
@@ -51,8 +51,8 @@ class OpAMPAgent:
         handler: Callable[[opamp_pb2.ServerToAgent], None],
         max_retries: int = 1,
         initial_backoff: float = 1.0,
-        identifying_attributes: dict[str, AnyValueType],
-        non_identifying_attributes: dict[str, AnyValueType] | None = None,
+        identifying_attributes: dict[str, AnyValue],
+        non_identifying_attributes: dict[str, AnyValue] | None = None,
     ):
         """
         :param endpoint: the opamp endpoint
