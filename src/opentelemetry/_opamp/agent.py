@@ -88,6 +88,7 @@ class OpAMPAgent:
 
     def _enable_scheduler(self):
         self._schedule = True
+        logger.debug("Connection with endpoint, enabling heartbeat")
 
     def start(self) -> None:
         """
@@ -97,11 +98,11 @@ class OpAMPAgent:
         self._worker.start()
         self._scheduler.start()
 
+        atexit.register(self.stop)
+
         # enqueue the connection message so we can then enable heartbeat
         payload = self._client._build_connection_message()
         self.send(payload, max_retries=self._max_retries, callback=self._enable_scheduler)
-
-        atexit.register(self.stop)
 
     def send(self, payload: Any, max_retries: int | None = None, callback: Callable[..., None] | None = None) -> None:
         """
