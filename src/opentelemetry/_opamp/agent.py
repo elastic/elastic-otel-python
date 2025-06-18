@@ -15,7 +15,7 @@ from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 logger = logging.getLogger(__name__)
 
 
-class Job:
+class _Job:
     """
     Represents a single request job, with retry/backoff metadata.
     """
@@ -72,7 +72,7 @@ class OpAMPAgent:
         self._heartbeat_max_retries = heartbeat_max_retries
         self._initial_backoff = initial_backoff
 
-        self._queue: queue.Queue[Job] = queue.Queue()
+        self._queue: queue.Queue[_Job] = queue.Queue()
         self._stop = threading.Event()
 
         self._worker = threading.Thread(name="OpAMPAgentWorker", target=self._run_worker, daemon=True)
@@ -110,7 +110,7 @@ class OpAMPAgent:
         """
         if max_retries is None:
             max_retries = self._max_retries
-        job = Job(payload, max_retries=max_retries, initial_backoff=self._initial_backoff, callback=callback)
+        job = _Job(payload, max_retries=max_retries, initial_backoff=self._initial_backoff, callback=callback)
         self._queue.put(job)
         logger.debug("On-demand job enqueued: %r", payload)
 
@@ -121,7 +121,7 @@ class OpAMPAgent:
         while not self._stop.wait(self._interval):
             if self._schedule:
                 payload = self._client._build_heartbeat_message()
-                job = Job(
+                job = _Job(
                     payload=payload, max_retries=self._heartbeat_max_retries, initial_backoff=self._initial_backoff
                 )
                 self._queue.put(job)
@@ -133,7 +133,7 @@ class OpAMPAgent:
         """
         while not self._stop.is_set():
             try:
-                job: Job = self._queue.get(timeout=1)
+                job: _Job = self._queue.get(timeout=1)
             except queue.Empty:
                 continue
 
