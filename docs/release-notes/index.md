@@ -29,7 +29,11 @@ To check for security updates, go to [Security announcements for the Elastic sta
 
 ## 1.3.0
 
-This release drops support for Python 3.8, following upstream changes.
+- Bump to OTel 1.34.1: dropped support for Python 3.8 (#321)
+
+  Upstream changes:
+  * https://github.com/open-telemetry/opentelemetry-python/discussions/4613
+  * https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3558
 
 ## 1.2.0
 
