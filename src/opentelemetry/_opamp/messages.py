@@ -48,10 +48,10 @@ def _encode_attributes(attributes: dict[str, AnyValueType]):
 
 
 def _build_agent_description(
-    identifying_attributes: dict[str, AnyValueType] | None = None,
+    identifying_attributes: dict[str, AnyValueType],
     non_identifying_attributes: dict[str, AnyValueType] | None = None,
 ) -> opamp_pb2.AgentDescription:
-    identifying_attrs = _encode_attributes(identifying_attributes) if identifying_attributes else None
+    identifying_attrs = _encode_attributes(identifying_attributes)
     non_identifying_attrs = _encode_attributes(non_identifying_attributes) if non_identifying_attributes else None
     return opamp_pb2.AgentDescription(
         identifying_attributes=identifying_attrs, non_identifying_attributes=non_identifying_attrs

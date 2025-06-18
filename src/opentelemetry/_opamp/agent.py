@@ -51,7 +51,7 @@ class OpAMPAgent:
         handler: Callable[[opamp_pb2.ServerToAgent], None],
         max_retries: int = 1,
         initial_backoff: float = 1.0,
-        identifying_attributes: dict[str, AnyValueType] | None = None,
+        identifying_attributes: dict[str, AnyValueType],
         non_identifying_attributes: dict[str, AnyValueType] | None = None,
     ):
         """
