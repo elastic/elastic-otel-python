@@ -18,7 +18,7 @@ _DEFAULT_OPAMP_TIMEOUT_MS = 5_000
 
 _OTLP_HTTP_HEADERS = {
     "Content-Type": "application/x-protobuf",
-    "User-Agent": "OTel-Opamp-Python/" + __version__,
+    "User-Agent": "OTel-OpAMP-Python/" + __version__,
 }
 
 _HANDLED_CAPABILITIES = (
