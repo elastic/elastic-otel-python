@@ -18,7 +18,7 @@ import requests
 
 from opentelemetry._opamp import messages
 from opentelemetry._opamp.transport.exceptions import OpAMPException
-from .base import HttpTransport, base_headers
+from opentelemetry._opamp.transport.base import HttpTransport, base_headers
 
 
 class RequestsTransport(HttpTransport):
