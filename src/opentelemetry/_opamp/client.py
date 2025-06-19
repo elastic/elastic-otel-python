@@ -62,6 +62,14 @@ class OpAMPClient:
         data = messages._encode_message(message)
         return data
 
+    def _build_agent_disconnect_message(self):
+        message = messages._build_agent_disconnect_message(
+            instance_uid=self._instance_uid,
+            sequence_num=self._sequence_num,
+        )
+        data = messages._encode_message(message)
+        return data
+
     def _build_heartbeat_message(self):
         message = messages._build_poll_message(instance_uid=self._instance_uid, sequence_num=self._sequence_num)
         data = messages._encode_message(message)

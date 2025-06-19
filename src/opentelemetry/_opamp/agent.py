@@ -182,6 +182,16 @@ class OpAMPAgent:
         """
         Immediately cancel all in-flight and queued jobs, then join threads.
         """
+
+        # Before exiting send signal the server we are disconnecting to free our resources
+        # This is not required by the spec but is helpful in practice
+        logger.debug("Stopping OpAMPClient: sending AgentDisconnect")
+        payload = self._client._build_agent_disconnect_message()
+        try:
+            self._client._send(payload)
+        except Exception:
+            logger.debug("Stopping OpAMPClient: failed to send AgentDisconnect message")
+
         logger.debug("Stopping OpAMPClient: cancelling jobs")
         # Clear pending jobs
         while True:
