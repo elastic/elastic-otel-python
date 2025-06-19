@@ -190,6 +190,13 @@ class OpAMPAgent:
 
         # Signal threads to exit
         self._stop.set()
-        self._worker.join()
-        self._scheduler.join()
+        # don't crash if the user calls stop() before start() or calls stop() multiple times
+        try:
+            self._worker.join()
+        except RuntimeError as exc:
+            logger.warning("Stopping OpAMPClient: worker thread failed to join %s", exc)
+        try:
+            self._scheduler.join()
+        except RuntimeError as exc:
+            logger.warning("Stopping OpAMPClient: scheduler thread failed to join %s", exc)
         logger.debug("OpAMPClient stopped")
