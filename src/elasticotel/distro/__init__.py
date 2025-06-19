@@ -81,7 +81,7 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                 )
                 opamp_agent = OpAMPAgent(
                     interval=30,
-                    handler=opamp_handler,
+                    message_handler=opamp_handler,
                     client=opamp_client,
                 )
                 opamp_agent.start()
