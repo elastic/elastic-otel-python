@@ -81,6 +81,15 @@ def _build_poll_message(instance_uid: bytes, sequence_num: int) -> opamp_pb2.Age
     return command
 
 
+def _build_agent_disconnect_message(instance_uid: bytes, sequence_num: int) -> opamp_pb2.AgentToServer:
+    command = opamp_pb2.AgentToServer(
+        instance_uid=instance_uid,
+        sequence_num=sequence_num,
+        agent_disconnect=opamp_pb2.AgentDisconnect(),
+    )
+    return command
+
+
 def _encode_message(data: opamp_pb2.AgentToServer) -> bytes:
     return data.SerializeToString()
 
