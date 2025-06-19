@@ -83,3 +83,12 @@ jobs:
         architecture: "x64"
     - run: pip install -r dev-requirements.txt
     - run: pytest --with-integration-tests
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/env-install
+      - run: pip install -r dev-requirements.txt
+      - run: pip install pyright
+      - run: pyright
