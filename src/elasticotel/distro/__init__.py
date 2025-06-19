@@ -39,6 +39,7 @@ from opentelemetry.sdk.environment_variables import (
 )
 from opentelemetry.util._importlib_metadata import EntryPoint
 from opentelemetry._opamp.agent import OpAMPAgent
+from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
 from elasticotel.distro.environment_variables import ELASTIC_OTEL_OPAMP_ENDPOINT, ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
@@ -71,16 +72,19 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                     "deployment.environment.name", resource_attributes.get("deployment.environment")
                 )
 
-                agent = OpAMPAgent(
+                opamp_client = OpAMPClient(
                     endpoint=endpoint,
-                    interval=30,
-                    handler=opamp_handler,
-                    identifying_attributes={
+                    agent_identifying_attributes={
                         "service.name": service_name,
                         "deployment.environment.name": deployment_environment_name,
                     },
                 )
-                agent.start()
+                opamp_agent = OpAMPAgent(
+                    interval=30,
+                    handler=opamp_handler,
+                    client=opamp_client,
+                )
+                opamp_agent.start()
 
 
 class ElasticOpenTelemetryDistro(BaseDistro):

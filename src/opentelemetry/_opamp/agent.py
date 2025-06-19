@@ -7,8 +7,6 @@ import random
 import threading
 from typing import Any, Callable
 
-from opentelemetry.util.types import AnyValue
-
 from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
@@ -47,26 +45,20 @@ class OpAMPAgent:
     def __init__(
         self,
         *,
-        endpoint: str,
         interval: float,
         handler: Callable[[opamp_pb2.ServerToAgent], None],
         max_retries: int = 10,
         heartbeat_max_retries: int = 1,
         initial_backoff: float = 1.0,
-        identifying_attributes: dict[str, AnyValue],
-        non_identifying_attributes: dict[str, AnyValue] | None = None,
-        headers: dict[str, str] | None = None,
+        client: OpAMPClient,
     ):
         """
-        :param endpoint: the opamp endpoint
         :param interval: seconds between automatic calls
         :param handler: user provided function that takes the received ServerToAgent message
         :param max_retries: how many times to retry a failed job for ad-hoc messages
         :param heartbeat_max_retries: how many times to retry an heartbeat failed job
         :param initial_backoff: base seconds for exponential backoff
-        :param identifying_attributes: service identifying attributes
-        :param non_identifying_attributes: service non identifying attributes
-        :param headers: http headers sent OpAMP server
+        :param client: an OpAMPClient instance
         """
         self._interval = interval
         self._handler = handler
@@ -82,16 +74,11 @@ class OpAMPAgent:
         # start scheduling only after connection with server has been established
         self._schedule = False
 
-        self._client = OpAMPClient(
-            endpoint=endpoint,
-            headers=headers,
-            agent_identifying_attributes=identifying_attributes,
-            agent_non_identifying_attributes=non_identifying_attributes,
-        )
+        self._client = client
 
     def _enable_scheduler(self):
         self._schedule = True
-        logger.debug("Connection with endpoint, enabling heartbeat")
+        logger.debug("Connected with endpoint, enabling heartbeat")
 
     def start(self) -> None:
         """
