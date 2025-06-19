@@ -32,6 +32,15 @@ class _Job:
         # callback is called after OpAMP message handler is executed
         self.callback = callback
 
+    def should_retry(self) -> bool:
+        """Checks if we should retry again"""
+        return self.attempt <= self.max_retries
+
+    def delay(self) -> float:
+        """Calculate the delay before next retry"""
+        assert self.attempt > 0
+        return self.initial_backoff * (2 ** (self.attempt - 1)) * random.uniform(0.8, 1.2)
+
 
 class OpAMPAgent:
     """
@@ -106,7 +115,7 @@ class OpAMPAgent:
 
     def _run_scheduler(self) -> None:
         """
-        Periodically enqueue “heartbeat” jobs until stop is signaled.
+        After me made a connection periodically enqueue “heartbeat” jobs until stop is signaled.
         """
         while not self._stop.wait(self._interval):
             if self._schedule:
@@ -128,7 +137,7 @@ class OpAMPAgent:
                 continue
 
             message = None
-            while job.attempt <= job.max_retries and not self._stop.is_set():
+            while job.should_retry() and not self._stop.is_set():
                 try:
                     message = self._client._send(job.payload)
                     logger.info("Job succeeded: %r", job.payload)
@@ -137,13 +146,13 @@ class OpAMPAgent:
                     job.attempt += 1
                     logger.warning("Job %r failed attempt %d/%d: %s", job.payload, job.attempt, job.max_retries, exc)
 
-                    if job.attempt > job.max_retries:
+                    if not job.should_retry():
                         logger.error("Job %r dropped after max retries", job.payload)
                         logger.exception(exc)
                         break
 
                     # exponential backoff with +/- 20% jitter, interruptible by stop event
-                    delay = job.initial_backoff * (2 ** (job.attempt - 1)) * random.uniform(0.8, 1.2)
+                    delay = job.delay()
                     logger.debug("Retrying in %.1fs", delay)
                     if self._stop.wait(delay):
                         # stop requested during backoff: abandon job
