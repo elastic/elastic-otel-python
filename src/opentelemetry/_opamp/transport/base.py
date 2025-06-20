@@ -14,20 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ELASTIC_OTEL_SYSTEM_METRICS_ENABLED = "ELASTIC_OTEL_SYSTEM_METRICS_ENABLED"
-"""
-.. envvar:: ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
+import abc
 
-Enables sending system metrics.
+from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
-**Default value:** ``false``
-"""
 
-ELASTIC_OTEL_OPAMP_ENDPOINT = "ELASTIC_OTEL_OPAMP_ENDPOINT"
-"""
-.. envvar:: ELASTIC_OTEL_OPAMP_ENDPOINT
+base_headers = {
+    "Content-Type": "application/x-protobuf",
+}
 
-OpAMP Endpoint URL.
 
-**Default value:** ``not set``
-"""
+class HttpTransport(abc.ABC):
+    @abc.abstractmethod
+    def send(self, url: str, headers: dict[str, str], data: bytes, timeout_millis: int) -> opamp_pb2.ServerToAgent:
+        pass

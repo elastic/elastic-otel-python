@@ -16,7 +16,9 @@
 
 import logging
 import os
+from urllib.parse import urlparse
 
+from opentelemetry import trace
 from opentelemetry.environment_variables import (
     OTEL_LOGS_EXPORTER,
     OTEL_METRICS_EXPORTER,
@@ -36,16 +38,53 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_EXPORTER_OTLP_PROTOCOL,
 )
 from opentelemetry.util._importlib_metadata import EntryPoint
+from opentelemetry._opamp.agent import OpAMPAgent
+from opentelemetry._opamp.client import OpAMPClient
+from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
-from elasticotel.distro.environment_variables import ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
+from elasticotel.distro.environment_variables import ELASTIC_OTEL_OPAMP_ENDPOINT, ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
+from elasticotel.distro.config import opamp_handler
 
 
 logger = logging.getLogger(__name__)
 
 
 class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
-    pass
+    def _configure(self, **kwargs):
+        super()._configure(**kwargs)
+
+        enable_opamp = False
+        endpoint = os.environ.get(ELASTIC_OTEL_OPAMP_ENDPOINT)
+        if endpoint:
+            parsed = urlparse(endpoint)
+            enable_opamp = parsed.scheme in ("http", "https") and parsed.netloc and parsed.path
+            if not enable_opamp:
+                logger.warning("Found invalid value for OpAMP endpoint")
+
+            if enable_opamp:
+                # FIXME: this is not great but we don't have the calculated resource attributes around
+                # won't be an issue once the code is upstreamed
+                tracer_provider = trace.get_tracer_provider()
+                resource_attributes = tracer_provider.resource.attributes  # type: ignore[reportAttributeAccessIssue]
+                service_name = resource_attributes.get("service.name")
+                deployment_environment_name = resource_attributes.get(
+                    "deployment.environment.name", resource_attributes.get("deployment.environment")
+                )
+
+                opamp_client = OpAMPClient(
+                    endpoint=endpoint,
+                    agent_identifying_attributes={
+                        "service.name": service_name,
+                        "deployment.environment.name": deployment_environment_name,
+                    },
+                )
+                opamp_agent = OpAMPAgent(
+                    interval=30,
+                    message_handler=opamp_handler,
+                    client=opamp_client,
+                )
+                opamp_agent.start()
 
 
 class ElasticOpenTelemetryDistro(BaseDistro):
@@ -63,7 +102,7 @@ class ElasticOpenTelemetryDistro(BaseDistro):
                 instrumentor_kwargs["config"] = {
                     k: v for k, v in SYSTEM_METRICS_DEFAULT_CONFIG.items() if k.startswith("process.runtime")
                 }
-        instrumentor_class(**instrumentor_kwargs).instrument(**kwargs)
+        instrumentor_class(**instrumentor_kwargs).instrument(**kwargs)  # type: ignore[reportCallIssue]
 
     def _configure(self, **kwargs):
         os.environ.setdefault(OTEL_TRACES_EXPORTER, "otlp")
