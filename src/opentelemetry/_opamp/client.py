@@ -52,7 +52,7 @@ class OpAMPClient:
         self._sequence_num: int = 0
         self._instance_uid: bytes = uuid7().bytes
 
-    def _build_connection_message(self):
+    def _build_connection_message(self) -> bytes:
         message = messages._build_presentation_message(
             instance_uid=self._instance_uid,
             agent_description=self._agent_description,
@@ -62,7 +62,7 @@ class OpAMPClient:
         data = messages._encode_message(message)
         return data
 
-    def _build_agent_disconnect_message(self):
+    def _build_agent_disconnect_message(self) -> bytes:
         message = messages._build_agent_disconnect_message(
             instance_uid=self._instance_uid,
             sequence_num=self._sequence_num,
@@ -70,7 +70,7 @@ class OpAMPClient:
         data = messages._encode_message(message)
         return data
 
-    def _build_heartbeat_message(self):
+    def _build_heartbeat_message(self) -> bytes:
         message = messages._build_poll_message(instance_uid=self._instance_uid, sequence_num=self._sequence_num)
         data = messages._encode_message(message)
         return data
@@ -86,7 +86,9 @@ class OpAMPClient:
         finally:
             self._sequence_num += 1
 
-    def _decode_response(self, response_content: bytes, callbacks: dict[str, Callable[[Any], Any]]):
+    def _decode_response(
+        self, response_content: bytes, callbacks: dict[str, Callable[[Any], Any]]
+    ) -> opamp_pb2.ServerToAgent:
         server_message = messages._decode_message(response_content)
         return server_message
 
