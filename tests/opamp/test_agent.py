@@ -1,3 +1,4 @@
+import logging
 from time import sleep
 from unittest import mock
 
@@ -44,6 +45,72 @@ def test_agent_can_call_agent_stop_multiple_times():
 def test_agent_can_call_agent_stop_before_start():
     agent = OpAMPAgent(interval=30, client=mock.Mock(), message_handler=mock.Mock())
     agent.stop()
+
+
+def test_agent_send_warns_without_worker_thread(caplog):
+    agent = OpAMPAgent(interval=30, client=mock.Mock(), message_handler=mock.Mock())
+    agent.send(payload="payload")
+
+    assert caplog.record_tuples == [
+        (
+            "opentelemetry._opamp.agent",
+            logging.WARNING,
+            "Called send() but worker thread is not alive. Worker threads is started with start()",
+        )
+    ]
+
+
+def test_agent_retries_before_max_attempts(caplog):
+    caplog.set_level(logging.DEBUG, logger="opentelemetry._opamp.agent")
+    message_handler_mock = mock.Mock()
+    client_mock = mock.Mock()
+    connection_message = disconnection_message = server_message = mock.Mock()
+    client_mock._send.side_effect = [connection_message, Exception, server_message, disconnection_message]
+    agent = OpAMPAgent(interval=30, client=client_mock, message_handler=message_handler_mock, initial_backoff=0)
+    agent.start()
+    agent.send(payload="payload")
+    # wait for the queue to be consumed
+    sleep(0.1)
+    agent.stop()
+
+    assert client_mock._send.call_count == 4
+    assert message_handler_mock.call_count == 2
+
+
+def test_agent_stops_after_max_attempts(caplog):
+    caplog.set_level(logging.DEBUG, logger="opentelemetry._opamp.agent")
+    message_handler_mock = mock.Mock()
+    client_mock = mock.Mock()
+    connection_message = disconnection_message = mock.Mock()
+    client_mock._send.side_effect = [connection_message, Exception, Exception, disconnection_message]
+    agent = OpAMPAgent(
+        interval=30, client=client_mock, message_handler=message_handler_mock, max_retries=1, initial_backoff=0
+    )
+    agent.start()
+    agent.send(payload="payload")
+    # wait for the queue to be consumed
+    sleep(0.1)
+    agent.stop()
+
+    assert client_mock._send.call_count == 4
+    assert message_handler_mock.call_count == 1
+
+
+def test_agent_send_enqueues_job():
+    message_handler_mock = mock.Mock()
+    agent = OpAMPAgent(interval=30, client=mock.Mock(), message_handler=message_handler_mock)
+    agent.start()
+    # wait for the queue to be consumed
+    sleep(0.1)
+    # message handler called for connection message
+    assert message_handler_mock.call_count == 1
+    agent.send(payload="payload")
+    # wait for the queue to be consumed
+    sleep(0.1)
+    agent.stop()
+
+    # message handler called once for connection and once for our message
+    assert message_handler_mock.call_count == 2
 
 
 def test_can_instantiate_job():

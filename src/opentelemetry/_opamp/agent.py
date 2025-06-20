@@ -107,6 +107,9 @@ class OpAMPAgent:
         """
         Enqueue an on-demand request.
         """
+        if not self._worker.is_alive():
+            logger.warning("Called send() but worker thread is not alive. Worker threads is started with start()")
+
         if max_retries is None:
             max_retries = self._max_retries
         job = _Job(payload, max_retries=max_retries, initial_backoff=self._initial_backoff, callback=callback)
@@ -163,6 +166,7 @@ class OpAMPAgent:
             if message is not None:
                 try:
                     self._handler(message)
+                    logger.debug("Called Job message handler for: %r", message)
                 except Exception as exc:
                     logger.warning("Job %r handler failed with: %s", job.payload, exc)
 
