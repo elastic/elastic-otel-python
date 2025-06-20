@@ -14,7 +14,7 @@ from opentelemetry._opamp.proto import opamp_pb2
 
 _logger = getLogger(__name__)
 
-_DEFAULT_OPAMP_TIMEOUT_MS = 5_000
+_DEFAULT_OPAMP_TIMEOUT_MS = 1_000
 
 _OTLP_HTTP_HEADERS = {
     "Content-Type": "application/x-protobuf",
