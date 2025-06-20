@@ -76,7 +76,7 @@ def _build_presentation_message(
     return command
 
 
-def _build_poll_message(instance_uid: bytes, sequence_num: int) -> opamp_pb2.AgentToServer:
+def _build_heartbeat_message(instance_uid: bytes, sequence_num: int) -> opamp_pb2.AgentToServer:
     command = opamp_pb2.AgentToServer(instance_uid=instance_uid, sequence_num=sequence_num)
     return command
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Callable, Generator
+from typing import Generator
 
 from uuid_utils import uuid7
 from opentelemetry.util.types import AnyValue
@@ -71,7 +71,7 @@ class OpAMPClient:
         return data
 
     def _build_heartbeat_message(self) -> bytes:
-        message = messages._build_poll_message(instance_uid=self._instance_uid, sequence_num=self._sequence_num)
+        message = messages._build_heartbeat_message(instance_uid=self._instance_uid, sequence_num=self._sequence_num)
         data = messages._encode_message(message)
         return data
 
@@ -85,12 +85,6 @@ class OpAMPClient:
             raise
         finally:
             self._sequence_num += 1
-
-    def _decode_response(
-        self, response_content: bytes, callbacks: dict[str, Callable[[Any], Any]]
-    ) -> opamp_pb2.ServerToAgent:
-        server_message = messages._decode_message(response_content)
-        return server_message
 
     def _decode_remote_config(
         self, remote_config: opamp_pb2.AgentRemoteConfig
