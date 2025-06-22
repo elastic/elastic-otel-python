@@ -106,7 +106,7 @@ protobuf==5.29.5
     #   oteltest
 psutil==7.0.0
     # via opentelemetry-instrumentation-system-metrics
-pygments==2.19.1
+pygments==2.19.2
     # via pytest
 pyproject-hooks==1.2.0
     # via
