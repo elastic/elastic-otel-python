@@ -18,7 +18,6 @@ import logging
 import os
 from urllib.parse import urlparse
 
-from opentelemetry import trace
 from opentelemetry.environment_variables import (
     OTEL_LOGS_EXPORTER,
     OTEL_METRICS_EXPORTER,
@@ -37,6 +36,7 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
     OTEL_EXPORTER_OTLP_PROTOCOL,
 )
+from opentelemetry.sdk.resources import OTELResourceDetector
 from opentelemetry.util._importlib_metadata import EntryPoint
 from opentelemetry._opamp.agent import OpAMPAgent
 from opentelemetry._opamp.client import OpAMPClient
@@ -63,13 +63,11 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                 logger.warning("Found invalid value for OpAMP endpoint")
 
             if enable_opamp:
-                # FIXME: this is not great but we don't have the calculated resource attributes around
-                # won't be an issue once the code is upstreamed
-                tracer_provider = trace.get_tracer_provider()
-                resource_attributes = tracer_provider.resource.attributes  # type: ignore[reportAttributeAccessIssue]
-                service_name = resource_attributes.get("service.name")
-                deployment_environment_name = resource_attributes.get(
-                    "deployment.environment.name", resource_attributes.get("deployment.environment")
+                # this is not great but we don't have the calculated resource attributes around
+                resource = OTELResourceDetector().detect()
+                service_name = resource.attributes.get("service.name")
+                deployment_environment_name = resource.attributes.get(
+                    "deployment.environment.name", resource.attributes.get("deployment.environment", "unknown")
                 )
 
                 opamp_client = OpAMPClient(
