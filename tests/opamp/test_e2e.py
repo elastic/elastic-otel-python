@@ -47,7 +47,7 @@ def test_with_server_not_responding(caplog):
     opamp_handler = mock.Mock()
 
     opamp_client = OpAMPClient(
-        endpoint="http://localhost:4320/v1/opamp",
+        endpoint="http://localhost:4321/v1/opamp",
         agent_identifying_attributes={
             "service.name": "foo",
             "deployment.environment.name": "foo",
