@@ -65,7 +65,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      py39: 3.9
+      py39: "3.9"
       py310: "3.10"
       py311: "3.11"
       py312: "3.12"
@@ -82,6 +82,9 @@ jobs:
         python-version: ${{ env[matrix.python-version] }}
         architecture: "x64"
     - run: pip install -r dev-requirements.txt
+    - name: run recorded tests with python 3.10+ where urllib3 2.x is supported
+      run: pip install pytest-vcr
+      if: ${{ env[matrix.python-version] != "3.9" }}
     - run: pytest --with-integration-tests
 
   typecheck:
