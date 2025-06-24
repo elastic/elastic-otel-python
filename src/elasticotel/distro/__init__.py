@@ -16,7 +16,7 @@
 
 import logging
 import os
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 from opentelemetry.environment_variables import (
     OTEL_LOGS_EXPORTER,
@@ -58,11 +58,12 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
         endpoint = os.environ.get(ELASTIC_OTEL_OPAMP_ENDPOINT)
         if endpoint:
             parsed = urlparse(endpoint)
-            enable_opamp = parsed.scheme in ("http", "https") and parsed.netloc and parsed.path
-            if not enable_opamp:
-                logger.warning("Found invalid value for OpAMP endpoint")
-
+            enable_opamp = parsed.scheme in ("http", "https") and parsed.netloc
             if enable_opamp:
+                if not parsed.path:
+                    parsed = parsed._replace(path="/v1/opamp")
+
+                endpoint_url = urlunparse(parsed)
                 # this is not great but we don't have the calculated resource attributes around
                 resource = OTELResourceDetector().detect()
                 service_name = resource.attributes.get("service.name")
@@ -71,7 +72,7 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                 )
 
                 opamp_client = OpAMPClient(
-                    endpoint=endpoint,
+                    endpoint=endpoint_url,
                     agent_identifying_attributes={
                         "service.name": service_name,
                         "deployment.environment.name": deployment_environment_name,
@@ -83,6 +84,8 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                     client=opamp_client,
                 )
                 opamp_agent.start()
+            else:
+                logger.warning("Found invalid value for OpAMP endpoint")
 
 
 class ElasticOpenTelemetryDistro(BaseDistro):
