@@ -1,4 +1,3 @@
-#!/usr/bin/env sh
 # Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
 # or more contributor license agreements. See the NOTICE file distributed with
 # this work for additional information regarding copyright
@@ -15,23 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if [ $# -eq 0 ]
-then
-    FILES=$(git ls-files | grep -e "\.py$" -e "\.c$" -e "\.sh$" | grep -v -e "/proto/" | xargs -r -d'\n' -I{} find {} -size +1c)
-else
-    FILES=$@
-fi
+import abc
+from typing import Mapping
 
-LICENSE_HEADER="Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one"
-UPSTREAM_LICENSE_HEADER="Copyright The OpenTelemetry Authors"
+from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
-MISSING=$(grep --files-without-match -e "$LICENSE_HEADER" -e "$UPSTREAM_LICENSE_HEADER" ${FILES})
 
-if [ -z "$MISSING" ]
-then
-    exit 0
-else
-    echo "Files with missing copyright header:"
-    echo $MISSING
-    exit 1
-fi
+base_headers = {
+    "Content-Type": "application/x-protobuf",
+}
+
+
+class HttpTransport(abc.ABC):
+    @abc.abstractmethod
+    def send(self, url: str, headers: Mapping[str, str], data: bytes, timeout_millis: int) -> opamp_pb2.ServerToAgent:
+        pass

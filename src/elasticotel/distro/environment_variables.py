@@ -22,3 +22,12 @@ Enables sending system metrics.
 
 **Default value:** ``false``
 """
+
+ELASTIC_OTEL_OPAMP_ENDPOINT = "ELASTIC_OTEL_OPAMP_ENDPOINT"
+"""
+.. envvar:: ELASTIC_OTEL_OPAMP_ENDPOINT
+
+OpAMP Endpoint URL.
+
+**Default value:** ``not set``
+"""
