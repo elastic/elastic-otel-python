@@ -66,17 +66,17 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                 endpoint_url = urlunparse(parsed)
                 # this is not great but we don't have the calculated resource attributes around
                 resource = OTELResourceDetector().detect()
-                service_name = resource.attributes.get("service.name")
-                deployment_environment_name = resource.attributes.get(
-                    "deployment.environment.name", resource.attributes.get("deployment.environment", "unknown")
-                )
+                agent_identifying_attributes = {
+                    "service.name": resource.attributes.get("service.name"),
+                }
+                if deployment_environment_name := resource.attributes.get(
+                    "deployment.environment.name", resource.attributes.get("deployment.environment")
+                ):
+                    agent_identifying_attributes["deployment.environment.name"] = deployment_environment_name
 
                 opamp_client = OpAMPClient(
                     endpoint=endpoint_url,
-                    agent_identifying_attributes={
-                        "service.name": service_name,
-                        "deployment.environment.name": deployment_environment_name,
-                    },
+                    agent_identifying_attributes=agent_identifying_attributes,
                 )
                 opamp_agent = OpAMPAgent(
                     interval=30,

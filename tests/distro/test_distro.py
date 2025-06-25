@@ -164,6 +164,29 @@ class TestDistribution(TestCase):
         agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
         agent_mock.start.assert_called_once_with()
 
+    @mock.patch.dict(
+        "os.environ",
+        {
+            ELASTIC_OTEL_OPAMP_ENDPOINT: "https://localhost:4320/v1/opamp",
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=service",
+        },
+        clear=True,
+    )
+    @mock.patch("elasticotel.distro.OpAMPAgent")
+    @mock.patch("elasticotel.distro.OpAMPClient")
+    def test_configurator_sets_up_opamp_without_deployment_environment_name(self, client_mock, agent_mock):
+        client_mock.return_value = client_mock
+        agent_mock.return_value = agent_mock
+
+        ElasticOpenTelemetryConfigurator()._configure()
+
+        client_mock.assert_called_once_with(
+            endpoint="https://localhost:4320/v1/opamp",
+            agent_identifying_attributes={"service.name": "service"},
+        )
+        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.start.assert_called_once_with()
+
     @mock.patch.dict("os.environ", {ELASTIC_OTEL_OPAMP_ENDPOINT: "localhost:4320/v1/opamp"}, clear=True)
     @mock.patch("elasticotel.distro.OpAMPAgent")
     @mock.patch("elasticotel.distro.OpAMPClient")
