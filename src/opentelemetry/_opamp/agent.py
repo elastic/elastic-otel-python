@@ -181,7 +181,7 @@ class OpAMPAgent:
             # we can't do much if the handler fails other than logging
             if message is not None:
                 try:
-                    self._handler(message)
+                    self._handler(self._client, message)
                     logger.debug("Called Job message handler for: %r", message)
                 except Exception as exc:
                     logger.warning("Job %r handler failed with: %s", job.payload, exc)

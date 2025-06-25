@@ -219,29 +219,32 @@ class TestOpAMPHandler(TestCase):
     @mock.patch.object(logging, "getLogger")
     def test_does_not_nothing_without_remote_config(self, get_logger_mock):
         message = opamp_pb2.ServerToAgent()
-        opamp_handler(message)
+        client = mock.Mock()
+        opamp_handler(client, message)
 
         get_logger_mock.assert_not_called()
 
     @mock.patch.object(logging, "getLogger")
     def test_ignores_non_elastic_filename(self, get_logger_mock):
+        client = mock.Mock()
         config = opamp_pb2.AgentConfigMap()
         config.config_map["non-elastic"].body = json.dumps({"logging_level": "trace"}).encode()
         config.config_map["non-elastic"].content_type = "application/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=config)
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(message)
+        opamp_handler(client, message)
 
         get_logger_mock.assert_not_called()
 
     @mock.patch.object(logging, "getLogger")
     def test_sets_matching_logging_level(self, get_logger_mock):
+        client = mock.Mock()
         config = opamp_pb2.AgentConfigMap()
         config.config_map["elastic"].body = json.dumps({"logging_level": "trace"}).encode()
         config.config_map["elastic"].content_type = "application/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=config)
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(message)
+        opamp_handler(client, message)
 
         get_logger_mock.assert_has_calls(
             [mock.call("opentelemetry"), mock.call().setLevel(5), mock.call("elasticotel"), mock.call().setLevel(5)]
@@ -249,12 +252,13 @@ class TestOpAMPHandler(TestCase):
 
     @mock.patch.object(logging, "getLogger")
     def test_sets_logging_to_default_info_without_logging_level_entry_in_config(self, get_logger_mock):
+        client = mock.Mock()
         config = opamp_pb2.AgentConfigMap()
         config.config_map["elastic"].body = json.dumps({}).encode()
         config.config_map["elastic"].content_type = "application/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=config)
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(message)
+        opamp_handler(client, message)
 
         get_logger_mock.assert_has_calls(
             [
@@ -267,6 +271,7 @@ class TestOpAMPHandler(TestCase):
 
     @mock.patch.object(logging, "getLogger")
     def test_warns_if_logging_level_does_not_match_our_map(self, get_logger_mock):
+        client = mock.Mock()
         config = opamp_pb2.AgentConfigMap()
         config.config_map["elastic"].body = json.dumps({"logging_level": "unexpected"}).encode()
         config.config_map["elastic"].content_type = "application/json"
@@ -274,4 +279,4 @@ class TestOpAMPHandler(TestCase):
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
 
         with self.assertLogs(config_logger, logging.WARNING):
-            opamp_handler(message)
+            opamp_handler(client, message)

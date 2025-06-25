@@ -17,6 +17,7 @@
 import logging
 
 from opentelemetry._opamp import messages
+from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
 
@@ -33,7 +34,7 @@ _LOG_LEVELS_MAP = {
 }
 
 
-def opamp_handler(message: opamp_pb2.ServerToAgent):
+def opamp_handler(client: OpAMPClient, message: opamp_pb2.ServerToAgent):
     if not message.remote_config:
         return
 
