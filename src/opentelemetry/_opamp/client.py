@@ -1,0 +1,112 @@
+# Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+# or more contributor license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright
+# ownership. Elasticsearch B.V. licenses this file to you under
+# the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from __future__ import annotations
+
+from logging import getLogger
+from typing import Generator, Mapping
+
+from uuid_utils import uuid7
+from opentelemetry.util.types import AnyValue
+
+import opentelemetry._opamp.messages as messages
+from opentelemetry._opamp.transport.requests import RequestsTransport
+from opentelemetry._opamp.version import __version__
+from opentelemetry._opamp.proto import opamp_pb2
+
+
+_logger = getLogger(__name__)
+
+_DEFAULT_OPAMP_TIMEOUT_MS = 1_000
+
+_OTLP_HTTP_HEADERS = {
+    "Content-Type": "application/x-protobuf",
+    "User-Agent": "OTel-OpAMP-Python/" + __version__,
+}
+
+_HANDLED_CAPABILITIES = (
+    opamp_pb2.AgentCapabilities.AgentCapabilities_ReportsStatus
+    | opamp_pb2.AgentCapabilities.AgentCapabilities_ReportsHeartbeat
+    | opamp_pb2.AgentCapabilities.AgentCapabilities_AcceptsRemoteConfig
+)
+
+
+class OpAMPClient:
+    def __init__(
+        self,
+        *,
+        endpoint: str,
+        headers: Mapping[str, str] | None = None,
+        timeout_millis: int = _DEFAULT_OPAMP_TIMEOUT_MS,
+        agent_identifying_attributes: Mapping[str, AnyValue],
+        agent_non_identifying_attributes: Mapping[str, AnyValue] | None = None,
+    ):
+        self._timeout_millis = timeout_millis
+        self._transport = RequestsTransport()
+
+        self._endpoint = endpoint
+        headers = headers or {}
+        self._headers = {**_OTLP_HTTP_HEADERS, **headers}
+
+        self._agent_description = messages._build_agent_description(
+            identifying_attributes=agent_identifying_attributes,
+            non_identifying_attributes=agent_non_identifying_attributes,
+        )
+        self._sequence_num: int = 0
+        self._instance_uid: bytes = uuid7().bytes
+
+    def _build_connection_message(self) -> bytes:
+        message = messages._build_presentation_message(
+            instance_uid=self._instance_uid,
+            agent_description=self._agent_description,
+            sequence_num=self._sequence_num,
+            capabilities=_HANDLED_CAPABILITIES,
+        )
+        data = messages._encode_message(message)
+        return data
+
+    def _build_agent_disconnect_message(self) -> bytes:
+        message = messages._build_agent_disconnect_message(
+            instance_uid=self._instance_uid,
+            sequence_num=self._sequence_num,
+            capabilities=_HANDLED_CAPABILITIES,
+        )
+        data = messages._encode_message(message)
+        return data
+
+    def _build_heartbeat_message(self) -> bytes:
+        message = messages._build_heartbeat_message(
+            instance_uid=self._instance_uid, sequence_num=self._sequence_num, capabilities=_HANDLED_CAPABILITIES
+        )
+        data = messages._encode_message(message)
+        return data
+
+    def _send(self, data: bytes):
+        try:
+            response = self._transport.send(
+                url=self._endpoint, headers=self._headers, data=data, timeout_millis=self._timeout_millis
+            )
+            return response
+        except:
+            raise
+        finally:
+            self._sequence_num += 1
+
+    def _decode_remote_config(
+        self, remote_config: opamp_pb2.AgentRemoteConfig
+    ) -> Generator[tuple[str, Mapping[str, AnyValue]]]:
+        for config_file, config in messages._decode_remote_config(remote_config):
+            yield config_file, config

@@ -14,11 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
+import logging
 import os
 from unittest import TestCase, mock
 
-from elasticotel.distro import ElasticOpenTelemetryDistro
-from elasticotel.distro.environment_variables import ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
+from elasticotel.distro import ElasticOpenTelemetryConfigurator, ElasticOpenTelemetryDistro, logger as distro_logger
+from elasticotel.distro.config import opamp_handler, logger as config_logger
+from elasticotel.distro.environment_variables import ELASTIC_OTEL_OPAMP_ENDPOINT, ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
 from opentelemetry.environment_variables import (
     OTEL_LOGS_EXPORTER,
     OTEL_METRICS_EXPORTER,
@@ -30,6 +33,7 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
     OTEL_EXPORTER_OTLP_PROTOCOL,
 )
+from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
 
 class TestDistribution(TestCase):
@@ -90,3 +94,189 @@ class TestDistribution(TestCase):
         distro.load_instrumentor(entryPoint_mock)
 
         instrumentor_mock.assert_called_once_with()
+
+    @mock.patch.dict(
+        "os.environ",
+        {
+            ELASTIC_OTEL_OPAMP_ENDPOINT: "http://localhost:4320/v1/opamp",
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=service,deployment.environment.name=dev",
+        },
+        clear=True,
+    )
+    @mock.patch("elasticotel.distro.OpAMPAgent")
+    @mock.patch("elasticotel.distro.OpAMPClient")
+    def test_configurator_sets_up_opamp_with_http_endpoint(self, client_mock, agent_mock):
+        client_mock.return_value = client_mock
+        agent_mock.return_value = agent_mock
+
+        ElasticOpenTelemetryConfigurator()._configure()
+
+        client_mock.assert_called_once_with(
+            endpoint="http://localhost:4320/v1/opamp",
+            agent_identifying_attributes={"service.name": "service", "deployment.environment.name": "dev"},
+        )
+        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.start.assert_called_once_with()
+
+    @mock.patch.dict(
+        "os.environ",
+        {
+            ELASTIC_OTEL_OPAMP_ENDPOINT: "https://localhost:4320/v1/opamp",
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=service,deployment.environment.name=dev",
+        },
+        clear=True,
+    )
+    @mock.patch("elasticotel.distro.OpAMPAgent")
+    @mock.patch("elasticotel.distro.OpAMPClient")
+    def test_configurator_sets_up_opamp_with_https_endpoint(self, client_mock, agent_mock):
+        client_mock.return_value = client_mock
+        agent_mock.return_value = agent_mock
+
+        ElasticOpenTelemetryConfigurator()._configure()
+
+        client_mock.assert_called_once_with(
+            endpoint="https://localhost:4320/v1/opamp",
+            agent_identifying_attributes={"service.name": "service", "deployment.environment.name": "dev"},
+        )
+        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.start.assert_called_once_with()
+
+    @mock.patch.dict(
+        "os.environ",
+        {
+            ELASTIC_OTEL_OPAMP_ENDPOINT: "https://localhost:4320",
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=service,deployment.environment.name=dev",
+        },
+        clear=True,
+    )
+    @mock.patch("elasticotel.distro.OpAMPAgent")
+    @mock.patch("elasticotel.distro.OpAMPClient")
+    def test_configurator_adds_path_to_opamp_endpoint_if_missing(self, client_mock, agent_mock):
+        client_mock.return_value = client_mock
+        agent_mock.return_value = agent_mock
+
+        ElasticOpenTelemetryConfigurator()._configure()
+
+        client_mock.assert_called_once_with(
+            endpoint="https://localhost:4320/v1/opamp",
+            agent_identifying_attributes={"service.name": "service", "deployment.environment.name": "dev"},
+        )
+        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.start.assert_called_once_with()
+
+    @mock.patch.dict(
+        "os.environ",
+        {
+            ELASTIC_OTEL_OPAMP_ENDPOINT: "https://localhost:4320/v1/opamp",
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=service",
+        },
+        clear=True,
+    )
+    @mock.patch("elasticotel.distro.OpAMPAgent")
+    @mock.patch("elasticotel.distro.OpAMPClient")
+    def test_configurator_sets_up_opamp_without_deployment_environment_name(self, client_mock, agent_mock):
+        client_mock.return_value = client_mock
+        agent_mock.return_value = agent_mock
+
+        ElasticOpenTelemetryConfigurator()._configure()
+
+        client_mock.assert_called_once_with(
+            endpoint="https://localhost:4320/v1/opamp",
+            agent_identifying_attributes={"service.name": "service"},
+        )
+        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.start.assert_called_once_with()
+
+    @mock.patch.dict("os.environ", {ELASTIC_OTEL_OPAMP_ENDPOINT: "localhost:4320/v1/opamp"}, clear=True)
+    @mock.patch("elasticotel.distro.OpAMPAgent")
+    @mock.patch("elasticotel.distro.OpAMPClient")
+    def test_configurator_ignores_invalid_url(self, client_mock, agent_mock):
+        with self.assertLogs(distro_logger, logging.WARNING):
+            ElasticOpenTelemetryConfigurator()._configure()
+
+        client_mock.assert_not_called()
+        agent_mock.assert_not_called()
+
+    @mock.patch.dict("os.environ", {ELASTIC_OTEL_OPAMP_ENDPOINT: "ws://localhost:4320/v1/opamp"}, clear=True)
+    @mock.patch("elasticotel.distro.OpAMPAgent")
+    @mock.patch("elasticotel.distro.OpAMPClient")
+    def test_configurator_ignores_ws_url(self, client_mock, agent_mock):
+        with self.assertLogs(distro_logger, logging.WARNING):
+            ElasticOpenTelemetryConfigurator()._configure()
+        client_mock.assert_not_called()
+        agent_mock.assert_not_called()
+
+    @mock.patch.dict("os.environ", {}, clear=True)
+    @mock.patch("elasticotel.distro.OpAMPAgent")
+    @mock.patch("elasticotel.distro.OpAMPClient")
+    def test_configurator_ignores_opamp_without_endpoint(self, client_mock, agent_mock):
+        ElasticOpenTelemetryConfigurator()._configure()
+        client_mock.assert_not_called()
+        agent_mock.assert_not_called()
+
+
+class TestOpAMPHandler(TestCase):
+    @mock.patch.object(logging, "getLogger")
+    def test_does_not_nothing_without_remote_config(self, get_logger_mock):
+        message = opamp_pb2.ServerToAgent()
+        client = mock.Mock()
+        opamp_handler(client, message)
+
+        get_logger_mock.assert_not_called()
+
+    @mock.patch.object(logging, "getLogger")
+    def test_ignores_non_elastic_filename(self, get_logger_mock):
+        client = mock.Mock()
+        config = opamp_pb2.AgentConfigMap()
+        config.config_map["non-elastic"].body = json.dumps({"logging_level": "trace"}).encode()
+        config.config_map["non-elastic"].content_type = "application/json"
+        remote_config = opamp_pb2.AgentRemoteConfig(config=config)
+        message = opamp_pb2.ServerToAgent(remote_config=remote_config)
+        opamp_handler(client, message)
+
+        get_logger_mock.assert_not_called()
+
+    @mock.patch.object(logging, "getLogger")
+    def test_sets_matching_logging_level(self, get_logger_mock):
+        client = mock.Mock()
+        config = opamp_pb2.AgentConfigMap()
+        config.config_map["elastic"].body = json.dumps({"logging_level": "trace"}).encode()
+        config.config_map["elastic"].content_type = "application/json"
+        remote_config = opamp_pb2.AgentRemoteConfig(config=config)
+        message = opamp_pb2.ServerToAgent(remote_config=remote_config)
+        opamp_handler(client, message)
+
+        get_logger_mock.assert_has_calls(
+            [mock.call("opentelemetry"), mock.call().setLevel(5), mock.call("elasticotel"), mock.call().setLevel(5)]
+        )
+
+    @mock.patch.object(logging, "getLogger")
+    def test_sets_logging_to_default_info_without_logging_level_entry_in_config(self, get_logger_mock):
+        client = mock.Mock()
+        config = opamp_pb2.AgentConfigMap()
+        config.config_map["elastic"].body = json.dumps({}).encode()
+        config.config_map["elastic"].content_type = "application/json"
+        remote_config = opamp_pb2.AgentRemoteConfig(config=config)
+        message = opamp_pb2.ServerToAgent(remote_config=remote_config)
+        opamp_handler(client, message)
+
+        get_logger_mock.assert_has_calls(
+            [
+                mock.call("opentelemetry"),
+                mock.call().setLevel(logging.INFO),
+                mock.call("elasticotel"),
+                mock.call().setLevel(logging.INFO),
+            ]
+        )
+
+    @mock.patch.object(logging, "getLogger")
+    def test_warns_if_logging_level_does_not_match_our_map(self, get_logger_mock):
+        client = mock.Mock()
+        config = opamp_pb2.AgentConfigMap()
+        config.config_map["elastic"].body = json.dumps({"logging_level": "unexpected"}).encode()
+        config.config_map["elastic"].content_type = "application/json"
+        remote_config = opamp_pb2.AgentRemoteConfig(config=config)
+        message = opamp_pb2.ServerToAgent(remote_config=remote_config)
+
+        with self.assertLogs(config_logger, logging.WARNING):
+            opamp_handler(client, message)

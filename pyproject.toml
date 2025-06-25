@@ -38,10 +38,11 @@ dependencies = [
     "opentelemetry-sdk-extension-aws ~= 2.1.0",
     "opentelemetry-semantic-conventions == 0.55b1",
     "packaging",
+    "uuid-utils",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest", "pip-tools", "oteltest==0.24.0", "leb128"]
+dev = ["pytest", "pip-tools", "oteltest==0.24.0", "leb128", "pytest-vcr ; python_version > '3.9'"]
 
 [project.entry-points.opentelemetry_configurator]
 configurator = "elasticotel.distro:ElasticOpenTelemetryConfigurator"
@@ -86,9 +87,26 @@ build-backend = "setuptools.build_meta"
 [tool.ruff]
 target-version = "py38"
 line-length = 120
+extend-exclude = [
+  "*_pb2*.py*",
+]
 
 [tool.ruff.lint.isort]
 known-third-party = [
   "opentelemetry",
 ]
 known-first-party = ["elasticotel"]
+
+[tool.pyright]
+typeCheckingMode = "standard"
+pythonVersion = "3.9"
+
+include = [
+  "src/elasticotel",
+  "src/opentelemetry",
+]
+
+exclude = [
+  "**/__pycache__",
+  "src/opentelemetry/_opamp/proto",
+]
