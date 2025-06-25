@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Mapping
+
 import requests
 
 from opentelemetry._opamp import messages
@@ -27,7 +29,7 @@ class RequestsTransport(HttpTransport):
         self.session = requests.Session()
 
     # TODO: support basic-auth?
-    def send(self, url: str, headers: dict[str, str], data: bytes, timeout_millis: int):
+    def send(self, url: str, headers: Mapping[str, str], data: bytes, timeout_millis: int):
         headers = {**base_headers, **headers}
         timeout: float = timeout_millis / 1e3
         try:

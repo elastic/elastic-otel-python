@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 import json
-from typing import Generator
+from typing import Generator, Mapping
 
 from opentelemetry.util.types import AnyValue
 
@@ -49,13 +49,13 @@ def _encode_value(value: AnyValue) -> PB2AnyValue:
     raise ValueError(f"Invalid type {type(value)} of value {value}")
 
 
-def _encode_attributes(attributes: dict[str, AnyValue]):
+def _encode_attributes(attributes: Mapping[str, AnyValue]):
     return [PB2KeyValue(key=key, value=_encode_value(value)) for key, value in attributes.items()]
 
 
 def _build_agent_description(
-    identifying_attributes: dict[str, AnyValue],
-    non_identifying_attributes: dict[str, AnyValue] | None = None,
+    identifying_attributes: Mapping[str, AnyValue],
+    non_identifying_attributes: Mapping[str, AnyValue] | None = None,
 ) -> opamp_pb2.AgentDescription:
     identifying_attrs = _encode_attributes(identifying_attributes)
     non_identifying_attrs = _encode_attributes(non_identifying_attributes) if non_identifying_attributes else None
@@ -97,7 +97,7 @@ def _encode_message(data: opamp_pb2.AgentToServer) -> bytes:
     return data.SerializeToString()
 
 
-def _decode_remote_config(remote_config: opamp_pb2.AgentRemoteConfig) -> Generator[tuple[str, dict[str, AnyValue]]]:
+def _decode_remote_config(remote_config: opamp_pb2.AgentRemoteConfig) -> Generator[tuple[str, Mapping[str, AnyValue]]]:
     for config_file_name, config_file in remote_config.config.config_map.items():
         if config_file.content_type in ("application/json", "text/json"):
             try:

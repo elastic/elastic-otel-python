@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Generator
+from typing import Generator, Mapping
 
 from uuid_utils import uuid7
 from opentelemetry.util.types import AnyValue
@@ -49,10 +49,10 @@ class OpAMPClient:
         self,
         *,
         endpoint: str,
-        headers: dict[str, str] | None = None,
+        headers: Mapping[str, str] | None = None,
         timeout_millis: int = _DEFAULT_OPAMP_TIMEOUT_MS,
-        agent_identifying_attributes: dict[str, AnyValue],
-        agent_non_identifying_attributes: dict[str, AnyValue] | None = None,
+        agent_identifying_attributes: Mapping[str, AnyValue],
+        agent_non_identifying_attributes: Mapping[str, AnyValue] | None = None,
     ):
         self._timeout_millis = timeout_millis
         self._transport = RequestsTransport()
@@ -107,6 +107,6 @@ class OpAMPClient:
 
     def _decode_remote_config(
         self, remote_config: opamp_pb2.AgentRemoteConfig
-    ) -> Generator[tuple[str, dict[str, AnyValue]]]:
+    ) -> Generator[tuple[str, Mapping[str, AnyValue]]]:
         for config_file, config in messages._decode_remote_config(remote_config):
             yield config_file, config

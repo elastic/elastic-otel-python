@@ -71,7 +71,7 @@ class OpAMPAgent:
         self,
         *,
         interval: float,
-        message_handler: Callable[[opamp_pb2.ServerToAgent], None],
+        message_handler: Callable[[OpAMPClient, opamp_pb2.ServerToAgent], None],
         max_retries: int = 10,
         heartbeat_max_retries: int = 1,
         initial_backoff: float = 1.0,
