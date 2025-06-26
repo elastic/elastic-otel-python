@@ -99,7 +99,7 @@ pip-tools==7.4.1
     # via elastic-opentelemetry (pyproject.toml)
 pluggy==1.6.0
     # via pytest
-protobuf==5.29.5
+protobuf==6.31.1
     # via
     #   googleapis-common-protos
     #   opentelemetry-proto
