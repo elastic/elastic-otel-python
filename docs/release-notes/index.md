@@ -27,6 +27,12 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.4.0 [edot-python-1.4.0-release-notes]
+
+### Features and enhancements [edot-python-1.4.0-features-enhancements]
+
+* Introduced OpAMP agent for Central configuration in Tech Preview: the first option implemented is changing the logging level of EDOT Python. Central configuration will be available as Tech Preview in Elastic Stack 9.1 (#320)
+
 ## 1.3.0 [edot-python-1.3.0-release-notes]
 
 - Bump to OTel 1.34.1: dropped support for Python 3.8 (#321)
