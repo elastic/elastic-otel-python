@@ -1,5 +1,9 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.4.0
+
+- Introduce OpAMP agent for Central configuration. Central configuration will be available in Elastic Stack 9.1 (#320)
+
 ## v1.3.0
 
 - Bump to OTel 1.34.1: dropped support for Python 3.8 (#321)

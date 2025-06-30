@@ -119,7 +119,7 @@ Then make sure you have SSO figured out for the key you are using to push to git
 If you have commit access, the process is as follows:
 
 1. Update the version in `src/elasticotel/distro/version.py` according to the scale of the change (major, minor or patch).
-1. Update `CHANGELOG.md` as necessary.
+1. Update `CHANGELOG.md` and `docs/release-notes/` as necessary.
 1. For Majors: Follow [website-requests README](https://github.com/elastic/website-requests/) to request an update of the [EOL table](https://www.elastic.co/support/eol).
 1. Commit changes with message `update CHANGELOG and bump version to X.Y.Z`
    where `X.Y.Z` is the version in `src/elasticotel/distro/version.py`
