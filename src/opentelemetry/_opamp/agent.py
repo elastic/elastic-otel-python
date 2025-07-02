@@ -178,10 +178,10 @@ class OpAMPAgent:
                         logger.debug("Stop signaled, abandoning job %r", job.payload)
                         break
 
-            # we can't do much if the handler fails other than logging
             if message is not None:
+                # we can't do much if the handler fails other than logging
                 try:
-                    self._handler(self._client, message)
+                    self._handler(agent=self, client=self._client, message=message)
                     logger.debug("Called Job message handler for: %r", message)
                 except Exception as exc:
                     logger.warning("Job %r handler failed with: %s", job.payload, exc)

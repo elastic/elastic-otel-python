@@ -93,6 +93,28 @@ def _build_agent_disconnect_message(
     return command
 
 
+def _build_remote_config_status_message(
+    last_remote_config_hash: bytes, status: opamp_pb2.RemoteConfigStatuses, error_message: str = ""
+) -> opamp_pb2.RemoteConfigStatus:
+    return opamp_pb2.RemoteConfigStatus(
+        last_remote_config_hash=last_remote_config_hash,
+        status=status,
+        error_message=error_message,
+    )
+
+
+def _build_remote_config_status_response_message(
+    instance_uid: bytes, sequence_num: int, capabilities: int, remote_config_status: opamp_pb2.RemoteConfigStatus
+) -> opamp_pb2.AgentToServer:
+    command = opamp_pb2.AgentToServer(
+        instance_uid=instance_uid,
+        sequence_num=sequence_num,
+        remote_config_status=remote_config_status,
+        capabilities=capabilities,
+    )
+    return command
+
+
 def _encode_message(data: opamp_pb2.AgentToServer) -> bytes:
     return data.SerializeToString()
 
