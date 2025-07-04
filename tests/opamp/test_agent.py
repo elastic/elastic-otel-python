@@ -48,7 +48,7 @@ def test_agent_start_will_send_connection_and_disconnetion_messages():
     # connection callback has been called
     assert agent._schedule is True
     # connection message response has been received
-    message_handler.assert_called_once_with(agent=agent, client=client_mock, message=mock_message)
+    message_handler.assert_called_once_with(agent, client_mock, mock_message)
 
 
 def test_agent_can_call_agent_stop_multiple_times():
