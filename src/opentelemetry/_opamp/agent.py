@@ -71,7 +71,7 @@ class OpAMPAgent:
         self,
         *,
         interval: float,
-        message_handler: Callable[[OpAMPClient, opamp_pb2.ServerToAgent], None],
+        message_handler: Callable[["OpAMPAgent", OpAMPClient, opamp_pb2.ServerToAgent], None],
         max_retries: int = 10,
         heartbeat_max_retries: int = 1,
         initial_backoff: float = 1.0,
@@ -181,7 +181,7 @@ class OpAMPAgent:
             if message is not None:
                 # we can't do much if the handler fails other than logging
                 try:
-                    self._handler(agent=self, client=self._client, message=message)
+                    self._handler(self, self._client, message)
                     logger.debug("Called Job message handler for: %r", message)
                 except Exception as exc:
                     logger.warning("Job %r handler failed with: %s", job.payload, exc)

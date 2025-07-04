@@ -94,7 +94,7 @@ def _build_agent_disconnect_message(
 
 
 def _build_remote_config_status_message(
-    last_remote_config_hash: bytes, status: opamp_pb2.RemoteConfigStatuses, error_message: str = ""
+    last_remote_config_hash: bytes, status: opamp_pb2.RemoteConfigStatuses.ValueType, error_message: str = ""
 ) -> opamp_pb2.RemoteConfigStatus:
     return opamp_pb2.RemoteConfigStatus(
         last_remote_config_hash=last_remote_config_hash,

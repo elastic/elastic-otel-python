@@ -66,5 +66,5 @@ def opamp_handler(agent: OpAMPAgent, client: OpAMPClient, message: opamp_pb2.Ser
     )
     # if we changed the config send an ack to the server so we don't receive the same config at every heartbeat response
     if updated_remote_config is not None:
-        message = client._build_remote_config_status_response_message(updated_remote_config)
-        agent.send(payload=message)
+        payload = client._build_remote_config_status_response_message(updated_remote_config)
+        agent.send(payload=payload)

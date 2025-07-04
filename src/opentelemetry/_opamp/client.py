@@ -68,7 +68,7 @@ class OpAMPClient:
         )
         self._sequence_num: int = 0
         self._instance_uid: bytes = uuid7().bytes
-        self._remote_config_status: opamp_pb2.RemoteConfigStatuses | None = None
+        self._remote_config_status: opamp_pb2.RemoteConfigStatus | None = None
 
     def _build_connection_message(self) -> bytes:
         message = messages._build_presentation_message(
@@ -97,7 +97,7 @@ class OpAMPClient:
         return data
 
     def _update_remote_config_status(
-        self, remote_config_hash: bytes, status: opamp_pb2.RemoteConfigStatuses, error_message: str = ""
+        self, remote_config_hash: bytes, status: opamp_pb2.RemoteConfigStatuses.ValueType, error_message: str = ""
     ) -> opamp_pb2.RemoteConfigStatus | None:
         status_changed = (
             not self._remote_config_status
