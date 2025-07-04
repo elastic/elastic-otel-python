@@ -41,6 +41,7 @@ _HANDLED_CAPABILITIES = (
     opamp_pb2.AgentCapabilities.AgentCapabilities_ReportsStatus
     | opamp_pb2.AgentCapabilities.AgentCapabilities_ReportsHeartbeat
     | opamp_pb2.AgentCapabilities.AgentCapabilities_AcceptsRemoteConfig
+    | opamp_pb2.AgentCapabilities.AgentCapabilities_ReportsRemoteConfig
 )
 
 
@@ -67,6 +68,7 @@ class OpAMPClient:
         )
         self._sequence_num: int = 0
         self._instance_uid: bytes = uuid7().bytes
+        self._remote_config_status: opamp_pb2.RemoteConfigStatus | None = None
 
     def _build_connection_message(self) -> bytes:
         message = messages._build_presentation_message(
@@ -90,6 +92,37 @@ class OpAMPClient:
     def _build_heartbeat_message(self) -> bytes:
         message = messages._build_heartbeat_message(
             instance_uid=self._instance_uid, sequence_num=self._sequence_num, capabilities=_HANDLED_CAPABILITIES
+        )
+        data = messages._encode_message(message)
+        return data
+
+    def _update_remote_config_status(
+        self, remote_config_hash: bytes, status: opamp_pb2.RemoteConfigStatuses.ValueType, error_message: str = ""
+    ) -> opamp_pb2.RemoteConfigStatus | None:
+        status_changed = (
+            not self._remote_config_status
+            or self._remote_config_status.last_remote_config_hash != remote_config_hash
+            or self._remote_config_status.status != status
+            or self._remote_config_status.error_message != error_message
+        )
+        # if the status changed update we return the RemoteConfigStatus message so that we can send it to the server
+        if status_changed:
+            _logger.debug("Update remote config status changed for %s", remote_config_hash)
+            self._remote_config_status = messages._build_remote_config_status_message(
+                last_remote_config_hash=remote_config_hash,
+                status=status,
+                error_message=error_message,
+            )
+            return self._remote_config_status
+        else:
+            return None
+
+    def _build_remote_config_status_response_message(self, remote_config_status: opamp_pb2.RemoteConfigStatus) -> bytes:
+        message = messages._build_remote_config_status_response_message(
+            instance_uid=self._instance_uid,
+            sequence_num=self._sequence_num,
+            capabilities=_HANDLED_CAPABILITIES,
+            remote_config_status=remote_config_status,
         )
         data = messages._encode_message(message)
         return data

@@ -19,6 +19,7 @@ from unittest import mock
 
 import pytest
 
+from opentelemetry._opamp import messages
 from opentelemetry._opamp.client import OpAMPClient, _HANDLED_CAPABILITIES
 from opentelemetry._opamp.exceptions import OpAMPRemoteConfigDecodeException, OpAMPRemoteConfigParseException
 from opentelemetry._opamp.proto import opamp_pb2
@@ -141,6 +142,7 @@ def test_build_agent_disconnect_message(client):
     assert message.instance_uid == client._instance_uid
     assert message.sequence_num == 0
     assert message.agent_disconnect == opamp_pb2.AgentDisconnect()
+    assert message.capabilities == _HANDLED_CAPABILITIES
 
 
 def test_build_heartbeat_message(client):
@@ -152,6 +154,111 @@ def test_build_heartbeat_message(client):
     assert message
     assert message.instance_uid == client._instance_uid
     assert message.sequence_num == 0
+    assert message.capabilities == _HANDLED_CAPABILITIES
+
+
+def test_update_remote_config_status_without_previous_config(client):
+    remote_config_status = client._update_remote_config_status(
+        remote_config_hash=b"12345678",
+        status=opamp_pb2.RemoteConfigStatuses_APPLIED,
+    )
+
+    assert remote_config_status is not None
+    assert remote_config_status.last_remote_config_hash == b"12345678"
+    assert remote_config_status.status == opamp_pb2.RemoteConfigStatuses_APPLIED
+    assert remote_config_status.error_message == ""
+
+
+def test_update_remote_config_status_with_same_config(client):
+    remote_config_status = client._update_remote_config_status(
+        remote_config_hash=b"12345678",
+        status=opamp_pb2.RemoteConfigStatuses_APPLIED,
+    )
+
+    assert remote_config_status is not None
+
+    remote_config_status = client._update_remote_config_status(
+        remote_config_hash=b"12345678",
+        status=opamp_pb2.RemoteConfigStatuses_APPLIED,
+    )
+
+    assert remote_config_status is None
+
+
+def test_update_remote_config_status_with_diffent_config(client):
+    remote_config_status = client._update_remote_config_status(
+        remote_config_hash=b"12345678",
+        status=opamp_pb2.RemoteConfigStatuses_APPLIED,
+    )
+
+    assert remote_config_status is not None
+
+    # different status
+    remote_config_status = client._update_remote_config_status(
+        remote_config_hash=b"12345678",
+        status=opamp_pb2.RemoteConfigStatuses_FAILED,
+    )
+
+    assert remote_config_status is not None
+
+    # different error message
+    remote_config_status = client._update_remote_config_status(
+        remote_config_hash=b"12345678",
+        status=opamp_pb2.RemoteConfigStatuses_FAILED,
+        error_message="different error message",
+    )
+
+    assert remote_config_status is not None
+
+    # different hash
+    remote_config_status = client._update_remote_config_status(
+        remote_config_hash=b"1234",
+        status=opamp_pb2.RemoteConfigStatuses_FAILED,
+        error_message="different error message",
+    )
+
+    assert remote_config_status is not None
+
+
+def test_build_remote_config_status_response_message_no_error_message(client):
+    remote_config_status = messages._build_remote_config_status_message(
+        last_remote_config_hash=b"12345678",
+        status=opamp_pb2.RemoteConfigStatuses_APPLIED,
+    )
+    data = client._build_remote_config_status_response_message(remote_config_status)
+
+    message = opamp_pb2.AgentToServer()
+    message.ParseFromString(data)
+
+    assert message
+    assert message.instance_uid == client._instance_uid
+    assert message.sequence_num == 0
+    assert message.capabilities == _HANDLED_CAPABILITIES
+    assert message.remote_config_status
+    assert message.remote_config_status.last_remote_config_hash == b"12345678"
+    assert message.remote_config_status.status == opamp_pb2.RemoteConfigStatuses_APPLIED
+    assert not message.remote_config_status.error_message
+
+
+def test_build_remote_config_status_response_message_with_error_message(client):
+    remote_config_status = messages._build_remote_config_status_message(
+        last_remote_config_hash=b"12345678",
+        status=opamp_pb2.RemoteConfigStatuses_FAILED,
+        error_message="an error message",
+    )
+    data = client._build_remote_config_status_response_message(remote_config_status)
+
+    message = opamp_pb2.AgentToServer()
+    message.ParseFromString(data)
+
+    assert message
+    assert message.instance_uid == client._instance_uid
+    assert message.sequence_num == 0
+    assert message.capabilities == _HANDLED_CAPABILITIES
+    assert message.remote_config_status
+    assert message.remote_config_status.last_remote_config_hash == b"12345678"
+    assert message.remote_config_status.status == opamp_pb2.RemoteConfigStatuses_FAILED
+    assert message.remote_config_status.error_message == "an error message"
 
 
 def test_message_sequence_num_increases_in_send(client):

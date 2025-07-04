@@ -17,6 +17,7 @@
 import logging
 
 from opentelemetry._opamp import messages
+from opentelemetry._opamp.agent import OpAMPAgent
 from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
@@ -34,10 +35,12 @@ _LOG_LEVELS_MAP = {
 }
 
 
-def opamp_handler(client: OpAMPClient, message: opamp_pb2.ServerToAgent):
-    if not message.remote_config:
+def opamp_handler(agent: OpAMPAgent, client: OpAMPClient, message: opamp_pb2.ServerToAgent):
+    # we check config_hash because we need to track last received config and remote_config seems to be always truthy
+    if not message.remote_config or not message.remote_config.config_hash:
         return
 
+    error_message = ""
     for config_filename, config in messages._decode_remote_config(message.remote_config):
         # we don't have standardized config values so limit to configs coming from our backend
         if config_filename == "elastic":
@@ -51,7 +54,17 @@ def opamp_handler(client: OpAMPClient, message: opamp_pb2.ServerToAgent):
 
             if logging_level is None:
                 logger.warning("Logging level not handled: %s", config_logging_level)
+                error_message = f"Logging level not handled: {config_logging_level}"
             else:
                 # update upstream and distro logging levels
                 logging.getLogger("opentelemetry").setLevel(logging_level)
                 logging.getLogger("elasticotel").setLevel(logging_level)
+
+    status = opamp_pb2.RemoteConfigStatuses_FAILED if error_message else opamp_pb2.RemoteConfigStatuses_APPLIED
+    updated_remote_config = client._update_remote_config_status(
+        remote_config_hash=message.remote_config.config_hash, status=status, error_message=error_message
+    )
+    # if we changed the config send an ack to the server so we don't receive the same config at every heartbeat response
+    if updated_remote_config is not None:
+        payload = client._build_remote_config_status_response_message(updated_remote_config)
+        agent.send(payload=payload)
