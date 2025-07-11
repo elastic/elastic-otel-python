@@ -159,7 +159,7 @@ class OpAMPAgent:
             while job.should_retry() and not self._stop.is_set():
                 try:
                     message = self._client._send(job.payload)
-                    logger.info("Job succeeded: %r", job.payload)
+                    logger.debug("Job succeeded: %r", job.payload)
                     break
                 except Exception as exc:
                     job.attempt += 1
