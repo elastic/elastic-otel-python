@@ -31,8 +31,8 @@ To check for security updates, go to [Security announcements for the Elastic sta
 
 ### Features and enhancements [edot-python-1.5.0-features-enhancements]
 
-- Switch default Tracing Sampler to `parentbased_traceidratio` ([#351]((https://github.com/elastic/elastic-otel-python/pull/351))
-- Acknowledge OpAMP remote config status changes ([#340](https://github.com/elastic/elastic-otel-python/pull/340)
+- Switch default Tracing Sampler to `parentbased_traceidratio` ([#351](https://github.com/elastic/elastic-otel-python/pull/351))
+- Acknowledge OpAMP remote config status changes ([#340](https://github.com/elastic/elastic-otel-python/pull/340))
 
 ## 1.4.0 [edot-python-1.4.0-release-notes]
 
