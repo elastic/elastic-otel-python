@@ -1,5 +1,10 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.5.0
+
+- Switch default sampler to `parentbased_traceidratio` (#351)
+- Acknowledge OpAMP remote config status changes (#340)
+
 ## v1.4.0
 
 - Introduce OpAMP agent for Central configuration. Central configuration will be available in Elastic Stack 9.1 (#320)
