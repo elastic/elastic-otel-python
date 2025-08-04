@@ -33,6 +33,7 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
     OTEL_EXPORTER_OTLP_PROTOCOL,
     OTEL_TRACES_SAMPLER,
+    OTEL_TRACES_SAMPLER_ARG,
 )
 from opentelemetry.sdk.trace import sampling
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
@@ -54,6 +55,7 @@ class TestDistribution(TestCase):
         self.assertEqual("always_off", os.environ.get(OTEL_METRICS_EXEMPLAR_FILTER))
         self.assertEqual("DELTA", os.environ.get(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE))
         self.assertEqual("parentbased_traceidratio", os.environ.get(OTEL_TRACES_SAMPLER))
+        self.assertEqual("1.0", os.environ.get(OTEL_TRACES_SAMPLER_ARG))
 
     @mock.patch.dict("os.environ", {}, clear=True)
     def test_sampler_configuration(self):
