@@ -36,6 +36,7 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
     OTEL_EXPORTER_OTLP_PROTOCOL,
     OTEL_TRACES_SAMPLER,
+    OTEL_TRACES_SAMPLER_ARG,
 )
 from opentelemetry.sdk.resources import OTELResourceDetector
 from opentelemetry.util._importlib_metadata import EntryPoint
@@ -116,6 +117,7 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         # preference to use DELTA temporality as we can handle only this kind of Histograms
         os.environ.setdefault(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE, "DELTA")
         os.environ.setdefault(OTEL_TRACES_SAMPLER, "parentbased_traceidratio")
+        os.environ.setdefault(OTEL_TRACES_SAMPLER_ARG, "1.0")
 
         base_resource_detectors = ["process_runtime", "os", "otel", "telemetry_distro", "service_instance"]
         detectors = base_resource_detectors + get_cloud_resource_detectors()
