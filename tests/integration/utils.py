@@ -156,6 +156,7 @@ class ElasticIntegrationTestCase(unittest.TestCase):
             return dict_values
 
         metrics = []
+        metrics_headers = []
         for request in telemetry["metric_requests"]:
             elems = []
             for proto_elem in request["pbreq"]["resourceMetrics"]:
@@ -176,7 +177,10 @@ class ElasticIntegrationTestCase(unittest.TestCase):
             metric = {"resourceMetrics": elems}
             metrics.append(metric)
 
+            metrics_headers.append(request["headers"])
+
         traces = []
+        traces_headers = []
         for request in telemetry["trace_requests"]:
             for resource_span in request["pbreq"]["resourceSpans"]:
                 resource_attributes = normalize_attributes(resource_span["resource"]["attributes"])
@@ -188,8 +192,10 @@ class ElasticIntegrationTestCase(unittest.TestCase):
                         span["spanId"] = decode_id(span["spanId"])
                         span["traceId"] = decode_id(span["traceId"])
                         traces.append(span)
+            traces_headers.append(request["headers"])
 
         logs = []
+        logs_headers = []
         for request in telemetry["log_requests"]:
             for resource_log in request["pbreq"]["resourceLogs"]:
                 resource_attributes = normalize_attributes(resource_log["resource"]["attributes"])
@@ -200,11 +206,15 @@ class ElasticIntegrationTestCase(unittest.TestCase):
                         log["body"] = normalize_kvlist(log["body"])
                         log["resource"] = resource_attributes
                         logs.append(log)
+            logs_headers.append(request["headers"])
 
         return {
             "logs": logs,
+            "logs_headers": logs_headers,
             "metrics": metrics,
+            "metrics_headers": metrics_headers,
             "traces": traces,
+            "traces_headers": traces_headers,
         }
 
     def run_script(
