@@ -22,6 +22,7 @@ from opentelemetry.resource.detector.containerid import (
     ContainerResourceDetector,
 )
 
+from elasticotel.distro import version
 from .utils import ElasticIntegrationTestCase, OTEL_INSTRUMENTATION_VERSION, ROOT_DIR
 
 
@@ -136,8 +137,7 @@ class IntegrationTestCase(ElasticIntegrationTestCase):
 
     def test_log_events_are_sent(self):
         def send_event():
-            from opentelemetry._events import Event
-            from opentelemetry._events import get_event_logger
+            from opentelemetry._events import Event, get_event_logger
 
             event = Event(name="test.event", attributes={}, body={"key": "value", "dict": {"nestedkey": "nestedvalue"}})
             event_logger = get_event_logger(__name__)
@@ -149,6 +149,38 @@ class IntegrationTestCase(ElasticIntegrationTestCase):
         (log,) = telemetry["logs"]
         self.assertEqual(log["attributes"]["event.name"], "test.event")
         self.assertEqual(log["body"], {"key": "value", "dict": {"nestedkey": "nestedvalue"}})
+
+    def test_edot_user_agent_is_used_in_otlp_grpc_exporter(self):
+        def test_script():
+            import sqlite3
+
+            from opentelemetry._events import Event, get_event_logger
+
+            connection = sqlite3.connect(":memory:")
+            cursor = connection.cursor()
+            cursor.execute("CREATE TABLE movie(title, year, score)")
+
+            event = Event(name="test.event", attributes={}, body={"key": "value"})
+            event_logger = get_event_logger(__name__)
+            event_logger.emit(event)
+
+        stdout, stderr, returncode = self.run_script(test_script, wrapper_script="opentelemetry-instrument")
+
+        telemetry = self.get_telemetry()
+        (metrics_headers, logs_headers, traces_headers) = (
+            telemetry["metrics_headers"],
+            telemetry["logs_headers"],
+            telemetry["traces_headers"],
+        )
+
+        assert metrics_headers
+        assert traces_headers
+        assert logs_headers
+
+        edot_user_agent = "elastic-otlp-grpc-python/" + version.__version__
+        self.assertIn(edot_user_agent, metrics_headers[0]["user-agent"])
+        self.assertIn(edot_user_agent, traces_headers[0]["user-agent"])
+        self.assertIn(edot_user_agent, logs_headers[0]["user-agent"])
 
 
 @pytest.mark.integration
