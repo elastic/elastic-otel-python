@@ -119,6 +119,13 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         os.environ.setdefault(OTEL_TRACES_SAMPLER, "parentbased_traceidratio")
         os.environ.setdefault(OTEL_TRACES_SAMPLER_ARG, "1.0")
 
-        base_resource_detectors = ["process_runtime", "os", "otel", "telemetry_distro", "service_instance"]
+        base_resource_detectors = [
+            "process_runtime",
+            "os",
+            "otel",
+            "telemetry_distro",
+            "service_instance",
+            "containerid",
+        ]
         detectors = base_resource_detectors + get_cloud_resource_detectors()
         os.environ.setdefault(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS, ",".join(detectors))

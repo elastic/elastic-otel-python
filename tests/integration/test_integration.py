@@ -18,6 +18,10 @@ import os.path
 
 import pytest
 
+from opentelemetry.resource.detector.containerid import (
+    ContainerResourceDetector,
+)
+
 from .utils import ElasticIntegrationTestCase, OTEL_INSTRUMENTATION_VERSION, ROOT_DIR
 
 
@@ -48,6 +52,10 @@ class IntegrationTestCase(ElasticIntegrationTestCase):
         self.assertTrue(resource["process.runtime.version"])
         self.assertTrue(resource["os.type"])
         self.assertTrue(resource["os.version"])
+
+        container_id = ContainerResourceDetector().detect().attributes.get("container.id")
+        if container_id:
+            self.assertEqual(resource["container.id"], container_id)
 
     def test_traces_sets_resource_attributes_from_env(self):
         env = {"OTEL_RESOURCE_ATTRIBUTES": "service.name=my-service"}
