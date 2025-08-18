@@ -23,11 +23,16 @@ from opentelemetry.resource.detector.containerid import (
 )
 
 from elasticotel.distro import version
-from .utils import ElasticIntegrationTestCase, OTEL_INSTRUMENTATION_VERSION, ROOT_DIR
+from .utils import (
+    ElasticIntegrationGRPCTestCase,
+    ElasticIntegrationHTTPTestCase,
+    OTEL_INSTRUMENTATION_VERSION,
+    ROOT_DIR,
+)
 
 
 @pytest.mark.integration
-class IntegrationTestCase(ElasticIntegrationTestCase):
+class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
     @classmethod
     def requirements(cls):
         requirements = super().requirements()
@@ -184,7 +189,47 @@ class IntegrationTestCase(ElasticIntegrationTestCase):
 
 
 @pytest.mark.integration
-class OperatorTestCase(ElasticIntegrationTestCase):
+class HTTPIntegrationTestCase(ElasticIntegrationHTTPTestCase):
+    @classmethod
+    def requirements(cls):
+        requirements = super().requirements()
+        return requirements + [f"opentelemetry-instrumentation-sqlite3=={OTEL_INSTRUMENTATION_VERSION}"]
+
+    def test_edot_user_agent_is_used_in_otlp_http_exporter(self):
+        def test_script():
+            import sqlite3
+
+            from opentelemetry._events import Event, get_event_logger
+
+            connection = sqlite3.connect(":memory:")
+            cursor = connection.cursor()
+            cursor.execute("CREATE TABLE movie(title, year, score)")
+
+            event = Event(name="test.event", attributes={}, body={"key": "value"})
+            event_logger = get_event_logger(__name__)
+            event_logger.emit(event)
+
+        stdout, stderr, returncode = self.run_script(test_script, wrapper_script="opentelemetry-instrument")
+
+        telemetry = self.get_telemetry()
+        (metrics_headers, logs_headers, traces_headers) = (
+            telemetry["metrics_headers"],
+            telemetry["logs_headers"],
+            telemetry["traces_headers"],
+        )
+
+        assert metrics_headers
+        assert traces_headers
+        assert logs_headers
+
+        edot_user_agent = "elastic-otlp-http-python/" + version.__version__
+        self.assertIn(edot_user_agent, metrics_headers[0]["User-Agent"])
+        self.assertIn(edot_user_agent, traces_headers[0]["User-Agent"])
+        self.assertIn(edot_user_agent, logs_headers[0]["User-Agent"])
+
+
+@pytest.mark.integration
+class OperatorTestCase(ElasticIntegrationHTTPTestCase):
     @staticmethod
     def _read_operator_requirements():
         requirements = []
