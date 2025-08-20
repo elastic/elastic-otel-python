@@ -23,6 +23,14 @@ from opentelemetry.environment_variables import (
     OTEL_METRICS_EXPORTER,
     OTEL_TRACES_EXPORTER,
 )
+from opentelemetry.exporter.otlp.proto.grpc import _USER_AGENT_HEADER_VALUE
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter as GRPCOTLPLogExporter
+from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter as GRPCOTLPMetricExporter
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter as GRPCOTLPSpanExporter
+from opentelemetry.exporter.otlp.proto.http import _OTLP_HTTP_HEADERS
+from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter as HTTPOTLPLogExporter
+from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter as HTTPOTLPMetricExporter
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter as HTTPOTLPSpanExporter
 from opentelemetry.instrumentation.distro import BaseDistro
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.system_metrics import (
@@ -44,6 +52,7 @@ from opentelemetry._opamp.agent import OpAMPAgent
 from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
+from elasticotel.distro import version
 from elasticotel.distro.environment_variables import ELASTIC_OTEL_OPAMP_ENDPOINT, ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
 from elasticotel.distro.config import opamp_handler
@@ -51,9 +60,35 @@ from elasticotel.distro.config import opamp_handler
 
 logger = logging.getLogger(__name__)
 
+EDOT_GRPC_USER_AGENT_HEADER_VALUE = "elastic-otlp-grpc-python/" + version.__version__
+EDOT_HTTP_USER_AGENT_HEADER_VALUE = "elastic-otlp-http-python/" + version.__version__
+
 
 class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
     def _configure(self, **kwargs):
+        # override GRPC and HTTP user agent headers, GRPC works since OTel SDK 1.35.0, HTTP currently requires an hack
+        otlp_grpc_exporter_options = {
+            "channel_options": (
+                ("grpc.primary_user_agent", f"{EDOT_GRPC_USER_AGENT_HEADER_VALUE} {_USER_AGENT_HEADER_VALUE}"),
+            )
+        }
+        otlp_http_exporter_options = {
+            "headers": {
+                **_OTLP_HTTP_HEADERS,
+                "User-Agent": f"{EDOT_HTTP_USER_AGENT_HEADER_VALUE} {_OTLP_HTTP_HEADERS['User-Agent']}",
+            }
+        }
+        kwargs["exporter_args_map"] = {
+            GRPCOTLPLogExporter: otlp_grpc_exporter_options,
+            GRPCOTLPMetricExporter: otlp_grpc_exporter_options,
+            GRPCOTLPSpanExporter: otlp_grpc_exporter_options,
+            HTTPOTLPLogExporter: otlp_http_exporter_options,
+            HTTPOTLPMetricExporter: otlp_http_exporter_options,
+            HTTPOTLPSpanExporter: otlp_http_exporter_options,
+        }
+        # TODO: Remove the following line after rebasing on top of upstream 1.37.0
+        _OTLP_HTTP_HEADERS["User-Agent"] = otlp_http_exporter_options["headers"]["User-Agent"]
+
         super()._configure(**kwargs)
 
         enable_opamp = False

@@ -16,10 +16,12 @@
 
 import base64
 import inspect
+import random
 import subprocess
 import os
 import tempfile
 import unittest
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from typing import Callable, Mapping, Optional
 
@@ -33,7 +35,7 @@ OTEL_INSTRUMENTATION_VERSION = version("opentelemetry-instrumentation")
 ROOT_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 
-class ElasticIntegrationTestCase(unittest.TestCase):
+class ElasticIntegrationGRPCTestCase(unittest.TestCase):
     """This is an experimental reimplementation of OtelTest using unittest
 
     The idea is to do integration testing by creating a separate virtualenv for each TestCase inheriting
@@ -42,7 +44,7 @@ class ElasticIntegrationTestCase(unittest.TestCase):
 
     A basic TestCase would look like:
 
-    class MyTestCase(ElasticIntegrationTestCase):
+    class MyTestCase(ElasticIntegrationGRPCTestCase):
         @classmethod
         def requirements(cls):
             requirements = super().requirements()
@@ -156,6 +158,7 @@ class ElasticIntegrationTestCase(unittest.TestCase):
             return dict_values
 
         metrics = []
+        metrics_headers = []
         for request in telemetry["metric_requests"]:
             elems = []
             for proto_elem in request["pbreq"]["resourceMetrics"]:
@@ -176,7 +179,10 @@ class ElasticIntegrationTestCase(unittest.TestCase):
             metric = {"resourceMetrics": elems}
             metrics.append(metric)
 
+            metrics_headers.append(request["headers"])
+
         traces = []
+        traces_headers = []
         for request in telemetry["trace_requests"]:
             for resource_span in request["pbreq"]["resourceSpans"]:
                 resource_attributes = normalize_attributes(resource_span["resource"]["attributes"])
@@ -188,8 +194,10 @@ class ElasticIntegrationTestCase(unittest.TestCase):
                         span["spanId"] = decode_id(span["spanId"])
                         span["traceId"] = decode_id(span["traceId"])
                         traces.append(span)
+            traces_headers.append(request["headers"])
 
         logs = []
+        logs_headers = []
         for request in telemetry["log_requests"]:
             for resource_log in request["pbreq"]["resourceLogs"]:
                 resource_attributes = normalize_attributes(resource_log["resource"]["attributes"])
@@ -200,11 +208,15 @@ class ElasticIntegrationTestCase(unittest.TestCase):
                         log["body"] = normalize_kvlist(log["body"])
                         log["resource"] = resource_attributes
                         logs.append(log)
+            logs_headers.append(request["headers"])
 
         return {
             "logs": logs,
+            "logs_headers": logs_headers,
             "metrics": metrics,
+            "metrics_headers": metrics_headers,
             "traces": traces,
+            "traces_headers": traces_headers,
         }
 
     def run_script(
@@ -264,3 +276,101 @@ class ElasticIntegrationTestCase(unittest.TestCase):
                     ex.stderr.decode() if ex.stderr else None,
                     proc.returncode,
                 )
+
+
+class HttpSink(ot.HttpSink):
+    """Backport of teardown fixes, drop if we ever rebase on top of oteltest 0.37.0+"""
+
+    # This code is copyright Pablo Collins under Apache-2.0
+
+    def __init__(self, listener, port=4318, daemon=True):
+        self.httpd = None
+        super().__init__(listener, port, daemon)
+
+    def run_server(self):
+        class Handler(BaseHTTPRequestHandler):
+            def do_POST(this):
+                # /v1/traces
+                content_length = int(this.headers["Content-Length"])
+                post_data = this.rfile.read(content_length)
+
+                otlp_handler_func = self.handlers.get(this.path)
+                if otlp_handler_func:
+                    otlp_handler_func(post_data, {k: v for k, v in this.headers.items()})
+
+                this.send_response(200)
+                this.send_header("Content-type", "text/html")
+                this.end_headers()
+
+                this.wfile.write("OK".encode("utf-8"))
+
+        self.httpd = HTTPServer(("", self.port), Handler)
+        self.httpd.serve_forever()
+
+    def stop(self):
+        if self.httpd:
+            self.httpd.shutdown()
+        super().stop()
+
+
+class ElasticIntegrationHTTPTestCase(ElasticIntegrationGRPCTestCase):
+    """This is an experimental reimplementation of OtelTest using unittest
+
+    The idea is to do integration testing by creating a separate virtualenv for each TestCase inheriting
+    from ElasticIntegrationTestCase, run a script, collect OTLP http/protobuf calls and make the received data
+    available in order to add assertions.
+
+    A basic TestCase would look like:
+
+    class MyTestCase(ElasticIntegrationHTTPTestCase):
+        @classmethod
+        def requirements(cls):
+            requirements = super().requirements()
+            return requirements + [f"my-library"]
+
+        def script(self):
+            import sqlite3
+
+            connection = sqlite3.connect(":memory:")
+            cursor = connection.cursor()
+            cursor.execute("CREATE TABLE movie(title, year, score)")
+
+        def test_one_span_generated(self):
+            stdout, stderr, returncode = self.run_script(self.script, wrapper_script="opentelemetry-instrument")
+
+            telemetry.get_telemetry()
+            assert len(telemetry["traces"], 1)
+
+
+    Each TestCase costs around 10 seconds for settings up the virtualenv so split tests accordingly.
+    """
+
+    def set_http_port(self):
+        self._http_port = int(random.uniform(44318, 45000))
+        return self._http_port
+
+    def get_http_port(self):
+        return self._http_port
+
+    def setUp(self):
+        self.handler = ot.AccumulatingHandler()
+        # pick a new port each time because otherwise the next test will fail to bind to the same port, even with SO_REUSEPORT :(
+        port = self.set_http_port()
+        self.sink = HttpSink(self.handler, port=port)
+        self.sink.start()
+
+    def run_script(
+        self,
+        script_func: Callable[[], None],
+        environment_variables: Optional[Mapping[str, str]] = None,
+        wrapper_script: Optional[str] = None,
+        on_start: Optional[Callable[[], Optional[float]]] = None,
+    ):
+        # Add a sane default so that callers don't need to remember to set that
+        if environment_variables is None:
+            otlp_endpoint = f"http://localhost:{self.get_http_port()}"
+            environment_variables = {
+                "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+                "OTEL_EXPORTER_OTLP_ENDPOINT": otlp_endpoint,
+            }
+        return super().run_script(script_func, environment_variables, wrapper_script, on_start)
