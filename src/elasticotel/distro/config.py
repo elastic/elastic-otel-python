@@ -82,12 +82,13 @@ def _handle_sampling_rate(config) -> str:
         return ""
 
     # since sampler is parent based we need to update its root sampler
-    root_sampler = sampler._root
-    if root_sampler.rate != sampling_rate:
+    root_sampler = sampler._root  # type: ignore[reportAttributeAccessIssue]
+    if root_sampler.rate != sampling_rate:  # type: ignore[reportAttributeAccessIssue]
         # we don't have a proper way to update it :)
-        root_sampler._rate = sampling_rate
-        root_sampler._bound = root_sampler.get_bound_for_rate(root_sampler._rate)
+        root_sampler._rate = sampling_rate  # type: ignore[reportAttributeAccessIssue]
+        root_sampler._bound = root_sampler.get_bound_for_rate(root_sampler._rate)  # type: ignore[reportAttributeAccessIssue]
         logger.debug("Updated sampler rate to %s", sampling_rate)
+    return ""
 
 
 def opamp_handler(agent: OpAMPAgent, client: OpAMPClient, message: opamp_pb2.ServerToAgent):
