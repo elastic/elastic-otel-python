@@ -27,6 +27,25 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.6.0 [edot-python-1.6.0-release-notes]
+
+### Features and enhancements [edot-python-1.6.0-features-enhancements]
+
+- Prepend our own User agent to the OpenTelemetry SDK one ([#363](https://github.com/elastic/elastic-otel-python/pull/363))
+
+  For the GRPC exported they will look like `elastic-otlp-grpc-python/1.6.0 OTel-OTLP-Exporter-Python/1.35.0 grpc-python/1.74.0 grpc-c/49.0.0 (linux; chttp2)` and for the http exporter like `elastic-otlp-http-python/1.6.0 OTel-OTLP-Exporter-Python/1.35.0`.
+- Enable containerid resource detector to set the `container.id` attribute when running under a container using Linux cgroups ([#361](https://github.com/elastic/elastic-otel-python/pull/361))
+- Bump to OTel 1.35.0: better handling of exporters timeout ([#360](https://github.com/elastic/elastic-otel-python/pull/360))
+
+  Upstream changes:
+  * [opentelemetry-python](https://github.com/open-telemetry/opentelemetry-python/discussions/4682)
+  * [opentelemetry-python-contrib](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3634)
+
+
+### Fixes [edot-python-1.6.0-fixes]
+
+- Silence harmless warning about trace sampler rate not set ([#356](https://github.com/elastic/elastic-otel-python/pull/356))
+
 ## 1.5.0 [edot-python-1.5.0-release-notes]
 
 ### Features and enhancements [edot-python-1.5.0-features-enhancements]

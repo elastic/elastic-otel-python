@@ -1,5 +1,16 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.6.0
+
+- Prepend our own User agent to the OpenTelemetry SDK one (#363)
+- Enable containerid resource detector (#361)
+- Silence harmless warning about trace sampler rate not set (#356)
+- Bump to OTel 1.35.0 (#360)
+
+  Upstream changes:
+  * https://github.com/open-telemetry/opentelemetry-python/discussions/4682
+  * https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3634
+
 ## v1.5.0
 
 - Switch default sampler to `parentbased_traceidratio` (#351)
