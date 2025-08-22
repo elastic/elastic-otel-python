@@ -76,7 +76,7 @@ def _handle_sampling_rate(config) -> str:
         logger.debug("Cannot get sampler from tracer provider.")
         return ""
 
-    # FIXME: double check this is fine with Anuraag work
+    # FIXME: this needs to be updated for the consistent probability samplers
     if not isinstance(sampler, ParentBasedTraceIdRatio):
         logger.warning("Sampler %s is not supported, not applying sampling_rate.", type(sampler))
         return ""
