@@ -13,27 +13,27 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: ./.github/actions/env-install
     - uses: pre-commit/action@v3.0.1
 
   license-header-check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - run: ./scripts/license_headers_check.sh
 
   pip-installable:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: ./.github/actions/env-install
     - run: pip install -e .
 
   pip-licenses:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: ./.github/actions/env-install
     - run: pip install -e .
     - run: pip install pip-licenses
@@ -44,7 +44,7 @@ jobs:
       USE_ELASTIC_REGISTRY: ${{ github.event_name != 'pull_request' || ( github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]' ) }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - uses: ./.github/actions/env-install
     - run: pip install build
     - run: python -m build
@@ -75,7 +75,7 @@ jobs:
       matrix:
         python-version: [py39, py310, py311, py312, py313]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     - name: Set up Python ${{ env[matrix.python-version] }}
       uses: actions/setup-python@v5
       with:
@@ -90,7 +90,7 @@ jobs:
   typecheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./.github/actions/env-install
       - run: pip install -r dev-requirements.txt
       - run: pip install pyright
