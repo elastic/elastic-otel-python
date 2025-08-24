@@ -51,7 +51,7 @@ opentelemetry-exporter-otlp-proto-common==1.35.0
     #   opentelemetry-exporter-otlp-proto-http
 opentelemetry-exporter-otlp-proto-grpc==1.35.0
     # via opentelemetry-exporter-otlp
-opentelemetry-exporter-otlp-proto-http==1.35.0
+opentelemetry-exporter-otlp-proto-http==1.36.0
     # via opentelemetry-exporter-otlp
 opentelemetry-instrumentation==0.56b0
     # via
