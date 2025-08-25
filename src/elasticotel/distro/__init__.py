@@ -55,7 +55,7 @@ from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 from elasticotel.distro import version
 from elasticotel.distro.environment_variables import ELASTIC_OTEL_OPAMP_ENDPOINT, ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
-from elasticotel.distro.config import opamp_handler
+from elasticotel.distro.config import opamp_handler, DEFAULT_SAMPLING_RATE
 
 
 logger = logging.getLogger(__name__)
@@ -152,7 +152,7 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         # preference to use DELTA temporality as we can handle only this kind of Histograms
         os.environ.setdefault(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE, "DELTA")
         os.environ.setdefault(OTEL_TRACES_SAMPLER, "parentbased_traceidratio")
-        os.environ.setdefault(OTEL_TRACES_SAMPLER_ARG, "1.0")
+        os.environ.setdefault(OTEL_TRACES_SAMPLER_ARG, str(DEFAULT_SAMPLING_RATE))
 
         base_resource_detectors = [
             "process_runtime",
