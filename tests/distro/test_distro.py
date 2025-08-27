@@ -325,9 +325,133 @@ class TestOpAMPHandler(TestCase):
         remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
 
-        with self.assertLogs(config_logger, logging.WARNING):
+        with self.assertLogs(config_logger, logging.ERROR) as cm:
             opamp_handler(agent, client, message)
+        self.assertEqual(cm.output, ["ERROR:elasticotel.distro.config:Logging level not handled: unexpected"])
 
+        client._build_remote_config_status_response_message.assert_called_once_with(
+            client._update_remote_config_status()
+        )
+        agent.send.assert_called_once_with(payload=mock.ANY)
+
+    @mock.patch("opentelemetry.trace.get_tracer_provider")
+    def test_sets_matching_sampling_rate(self, get_tracer_provider_mock):
+        sampler = sampling.ParentBasedTraceIdRatio(rate=1.0)
+        get_tracer_provider_mock.return_value.sampler = sampler
+        agent = mock.Mock()
+        client = mock.Mock()
+        config = opamp_pb2.AgentConfigMap()
+        config.config_map["elastic"].body = json.dumps({"sampling_rate": "0.5"}).encode()
+        config.config_map["elastic"].content_type = "application/json"
+        remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
+        message = opamp_pb2.ServerToAgent(remote_config=remote_config)
+        opamp_handler(agent, client, message)
+
+        self.assertEqual(sampler._root.rate, 0.5)
+
+        client._update_remote_config_status.assert_called_once_with(
+            remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
+        )
+        client._build_remote_config_status_response_message.assert_called_once_with(
+            client._update_remote_config_status()
+        )
+        agent.send.assert_called_once_with(payload=mock.ANY)
+
+    @mock.patch("opentelemetry.trace.get_tracer_provider")
+    def test_sets_sampling_rate_to_default_info_without_sampling_rate_entry_in_config(self, get_tracer_provider_mock):
+        sampler = sampling.ParentBasedTraceIdRatio(rate=1.0)
+        get_tracer_provider_mock.return_value.sampler = sampler
+        agent = mock.Mock()
+        client = mock.Mock()
+        config = opamp_pb2.AgentConfigMap()
+        config.config_map["elastic"].body = json.dumps({}).encode()
+        config.config_map["elastic"].content_type = "application/json"
+        remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
+        message = opamp_pb2.ServerToAgent(remote_config=remote_config)
+        opamp_handler(agent, client, message)
+
+        self.assertEqual(sampler._root.rate, 1.0)
+
+        client._update_remote_config_status.assert_called_once_with(
+            remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
+        )
+        client._build_remote_config_status_response_message.assert_called_once_with(
+            client._update_remote_config_status()
+        )
+        agent.send.assert_called_once_with(payload=mock.ANY)
+
+    @mock.patch("opentelemetry.trace.get_tracer_provider")
+    def test_warns_if_sampling_rate_value_is_invalid(self, get_tracer_provider_mock):
+        sampler = sampling.ParentBasedTraceIdRatio(rate=1.0)
+        get_tracer_provider_mock.return_value.sampler = sampler
+        agent = mock.Mock()
+        client = mock.Mock()
+        config = opamp_pb2.AgentConfigMap()
+        config.config_map["elastic"].body = json.dumps({"sampling_rate": "unexpected"}).encode()
+        config.config_map["elastic"].content_type = "application/json"
+        remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
+        message = opamp_pb2.ServerToAgent(remote_config=remote_config)
+
+        with self.assertLogs(config_logger, logging.ERROR) as cm:
+            opamp_handler(agent, client, message)
+        self.assertEqual(
+            cm.output, ["ERROR:elasticotel.distro.config:Invalid `sampling_rate` from config `unexpected`"]
+        )
+
+        client._update_remote_config_status.assert_called_once_with(
+            remote_config_hash=b"1234",
+            status=opamp_pb2.RemoteConfigStatuses_FAILED,
+            error_message="Invalid sampling_rate unexpected",
+        )
+        client._build_remote_config_status_response_message.assert_called_once_with(
+            client._update_remote_config_status()
+        )
+        agent.send.assert_called_once_with(payload=mock.ANY)
+
+    @mock.patch("opentelemetry.trace.get_tracer_provider")
+    def test_warns_if_sampler_is_not_what_we_expect(self, get_tracer_provider_mock):
+        get_tracer_provider_mock.return_value.sampler = 5
+        agent = mock.Mock()
+        client = mock.Mock()
+        config = opamp_pb2.AgentConfigMap()
+        config.config_map["elastic"].body = json.dumps({"sampling_rate": "1.0"}).encode()
+        config.config_map["elastic"].content_type = "application/json"
+        remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
+        message = opamp_pb2.ServerToAgent(remote_config=remote_config)
+
+        with self.assertLogs(config_logger, logging.WARNING) as cm:
+            opamp_handler(agent, client, message)
+        self.assertEqual(
+            cm.output,
+            ["WARNING:elasticotel.distro.config:Sampler <class 'int'> is not supported, not applying sampling_rate."],
+        )
+
+        client._update_remote_config_status.assert_called_once_with(
+            remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
+        )
+        client._build_remote_config_status_response_message.assert_called_once_with(
+            client._update_remote_config_status()
+        )
+        agent.send.assert_called_once_with(payload=mock.ANY)
+
+    @mock.patch("opentelemetry.trace.get_tracer_provider")
+    def test_ignores_tracer_provider_without_a_sampler(self, get_tracer_provider_mock):
+        get_tracer_provider_mock.return_value.sampler = None
+        agent = mock.Mock()
+        client = mock.Mock()
+        config = opamp_pb2.AgentConfigMap()
+        config.config_map["elastic"].body = json.dumps({"sampling_rate": "1.0"}).encode()
+        config.config_map["elastic"].content_type = "application/json"
+        remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
+        message = opamp_pb2.ServerToAgent(remote_config=remote_config)
+
+        with self.assertLogs(config_logger, logging.DEBUG) as cm:
+            opamp_handler(agent, client, message)
+        self.assertIn("DEBUG:elasticotel.distro.config:Cannot get sampler from tracer provider.", cm.output)
+
+        client._update_remote_config_status.assert_called_once_with(
+            remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
+        )
         client._build_remote_config_status_response_message.assert_called_once_with(
             client._update_remote_config_status()
         )
