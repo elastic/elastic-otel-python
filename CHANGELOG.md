@@ -1,5 +1,14 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.7.0
+
+- distro: handle dynamic tracing sampling rate from central config (requires stack 9.2) (#367)
+- Bump OpenTelemetry to 1.36.0/0.57b0 (#373)
+
+  Upstream changes:
+  * https://github.com/open-telemetry/opentelemetry-python/discussions/4706
+  * https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3710
+
 ## v1.6.0
 
 - Prepend our own User agent to the OpenTelemetry SDK one (#363)

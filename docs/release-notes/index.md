@@ -27,6 +27,17 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.7.0 [edot-python-1.7.0-release-notes]
+
+### Features and enhancements [edot-python-1.7.0-features-enhancements]
+
+- distro: handle dynamic tracing sampling rate from central config (Tech Preview, requires stack 9.2) ([#367](https://github.com/elastic/elastic-otel-python/pull/367))
+- Bump OpenTelemetry to 1.36.0/0.57b0 ([#373](https://github.com/elastic/elastic-otel-python/pull/373))
+
+  Upstream changes:
+  * [opentelemetry-python](https://github.com/open-telemetry/opentelemetry-python/discussions/4706)
+  * [opentelemetry-python-contrib](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3710)
+
 ## 1.6.0 [edot-python-1.6.0-release-notes]
 
 ### Features and enhancements [edot-python-1.6.0-features-enhancements]
@@ -40,7 +51,6 @@ To check for security updates, go to [Security announcements for the Elastic sta
   Upstream changes:
   * [opentelemetry-python](https://github.com/open-telemetry/opentelemetry-python/discussions/4682)
   * [opentelemetry-python-contrib](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3634)
-
 
 ### Fixes [edot-python-1.6.0-fixes]
 
