@@ -123,7 +123,7 @@ tomli==2.2.1
     #   build
     #   pip-tools
     #   pytest
-typing-extensions==4.14.1
+typing-extensions==4.15.0
     # via
     #   exceptiongroup
     #   opentelemetry-api
