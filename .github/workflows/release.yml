@@ -25,7 +25,7 @@ jobs:
       - run: python -m build
 
       - name: generate build provenance
-        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
+        uses: actions/attest-build-provenance@v3
         with:
           subject-path: "${{ github.workspace }}/dist/*"
 
@@ -112,7 +112,7 @@ jobs:
             DISTRO_DIR=./dist/
 
       - name: generate build provenance (containers)
-        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a  # v3.0.0
+        uses: actions/attest-build-provenance@v3
         with:
           subject-name: "${{ env.DOCKER_IMAGE_NAME }}"
           subject-digest: ${{ steps.docker-push.outputs.digest }}
