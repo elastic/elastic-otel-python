@@ -36,7 +36,10 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
     @classmethod
     def requirements(cls):
         requirements = super().requirements()
-        return requirements + [f"opentelemetry-instrumentation-sqlite3=={OTEL_INSTRUMENTATION_VERSION}"]
+        return requirements + [
+            f"opentelemetry-instrumentation-sqlite3=={OTEL_INSTRUMENTATION_VERSION}",
+            f"opentelemetry-instrumentation-requests=={OTEL_INSTRUMENTATION_VERSION}",
+        ]
 
     def script(self):
         import sqlite3
@@ -186,6 +189,23 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
         self.assertIn(edot_user_agent, metrics_headers[0]["user-agent"])
         self.assertIn(edot_user_agent, traces_headers[0]["user-agent"])
         self.assertIn(edot_user_agent, logs_headers[0]["user-agent"])
+
+    def test_opamp_client_requests_are_not_instrumented(self):
+        def test_script():
+            from opentelemetry._events import Event, get_event_logger
+
+            event = Event(name="test.event", attributes={}, body={"key": "value"})
+            event_logger = get_event_logger(__name__)
+            event_logger.emit(event)
+
+        env = {"ELASTIC_OTEL_OPAMP_ENDPOINT": "https://httpbin.org/"}
+        stdout, stderr, returncode = self.run_script(
+            test_script, environment_variables=env, wrapper_script="opentelemetry-instrument"
+        )
+
+        telemetry = self.get_telemetry()
+        self.assertFalse(telemetry["traces"])
+        self.assertTrue(telemetry["logs"])
 
 
 @pytest.mark.integration
