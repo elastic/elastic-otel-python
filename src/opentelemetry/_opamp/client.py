@@ -20,13 +20,18 @@ from logging import getLogger
 from typing import Generator, Mapping
 
 from uuid_utils import uuid7
-from opentelemetry.util.types import AnyValue
 
-import opentelemetry._opamp.messages as messages
+from opentelemetry._opamp import messages
 from opentelemetry._opamp.transport.requests import RequestsTransport
 from opentelemetry._opamp.version import __version__
 from opentelemetry._opamp.proto import opamp_pb2
-
+from opentelemetry.context import (
+    _SUPPRESS_INSTRUMENTATION_KEY,
+    attach,
+    detach,
+    set_value,
+)
+from opentelemetry.util.types import AnyValue
 
 _logger = getLogger(__name__)
 
@@ -128,15 +133,15 @@ class OpAMPClient:
         return data
 
     def _send(self, data: bytes):
+        token = attach(set_value(_SUPPRESS_INSTRUMENTATION_KEY, True))
         try:
             response = self._transport.send(
                 url=self._endpoint, headers=self._headers, data=data, timeout_millis=self._timeout_millis
             )
             return response
-        except:
-            raise
         finally:
             self._sequence_num += 1
+            detach(token)
 
     def _decode_remote_config(
         self, remote_config: opamp_pb2.AgentRemoteConfig
