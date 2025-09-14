@@ -1,4 +1,4 @@
-opentelemetry-exporter-prometheus==0.57b0
+opentelemetry-exporter-prometheus==0.58b0
 
 opentelemetry-propagator-aws-xray==1.0.2
 opentelemetry-propagator-b3==1.36.0
