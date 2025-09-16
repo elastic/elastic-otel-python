@@ -41,7 +41,7 @@ This follows the [OpenTelemetry Python Version Support](https://github.com/open-
 
 ## Instrumentations
 
-Instrumentations are not installed by default. Use the [edot-bootstrap](/reference/setup/index.md) command to automatically install the available instrumentations.
+Instrumentations are not installed by default. Use the [edot-bootstrap](/reference/edot-python/setup/index.md) command to automatically install the available instrumentations.
 
 | Name | Packages instrumented | Semantic conventions status |
 |---|---|---|---|

@@ -6,7 +6,7 @@ cross_links:
   - apm-agent-python
 toc:
   - toc: release-notes
-  - toc: reference
+  - toc: reference/edot-python
 subs:
   motlp: Elastic Cloud Managed OTLP Endpoint
   edot: Elastic Distribution of OpenTelemetry
