@@ -35,3 +35,5 @@ tests/*-junit.xml
 .aws
 .arn-file.md
 __pycache__
+.artifacts
+docs/.artifacts
