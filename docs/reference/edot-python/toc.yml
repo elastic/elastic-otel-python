@@ -10,3 +10,5 @@ toc:
   - file: overhead.md
   - title: Troubleshooting
     crosslink: docs-content://troubleshoot/ingest/opentelemetry/edot-sdks/python/index.md
+  - title: Release notes
+    crosslink: elastic-otel-python://release-notes/index.md

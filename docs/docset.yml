@@ -4,6 +4,7 @@ cross_links:
   - opentelemetry
   - elastic-agent
   - apm-agent-python
+  - elastic-otel-python
 toc:
   - toc: release-notes
   - toc: reference/edot-python
