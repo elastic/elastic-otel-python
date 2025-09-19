@@ -27,6 +27,21 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.8.0 [edot-python-1.8.0-release-notes]
+
+### Features and enhancements [edot-python-1.8.0-features-enhancements]
+
+- Central configuration: make the OpAMP agent more robust against server restarts ([#388](https://github.com/elastic/elastic-otel-python/pull/388))
+- Bump OpenTelemetry to 1.37.0/0.58b0 ([#389](https://github.com/elastic/elastic-otel-python/pull/389))
+
+  Upstream changes:
+  * [opentelemetry-python](https://github.com/open-telemetry/opentelemetry-python/discussions/4747)
+  * [opentelemetry-python-contrib](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3750)
+
+### Fixes [edot-python-1.8.0-fixes]
+
+- Central configuration: suppress instrumentations for OpAMP client requests ([#384](https://github.com/elastic/elastic-otel-python/pull/384))
+
 ## 1.7.0 [edot-python-1.7.0-release-notes]
 
 ### Features and enhancements [edot-python-1.7.0-features-enhancements]
