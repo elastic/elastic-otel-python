@@ -93,4 +93,4 @@ And you can start a collector instance with:
 Now you need to send some OTLP data from a service with `service.name` set (`foo` is currently used in tests) so we can
 create an Agent configuration (`/app/apm/settings/agent-configuration/create`) for the very same `Service`.
 
-Once you have the configuration you can write a tests using the proper `service.name` as configured in the backend.
+Once you have the configuration you can write tests using the proper `service.name` as configured in the backend.

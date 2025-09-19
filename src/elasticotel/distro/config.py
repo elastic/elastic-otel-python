@@ -132,10 +132,10 @@ def _get_config():
 
 
 def opamp_handler(agent: OpAMPAgent, client: OpAMPClient, message: opamp_pb2.ServerToAgent):
-    # server wants us to report full state because usually it cannot recognize us as agent because
+    # server wants us to report full state as it cannot recognize us as agent because
     # e.g it may have been restarted and lost state.
     if _report_full_state(message):
-        # here we're not returning explcitly but usually we don't get a remote config when we get the flag set
+        # here we're not returning explicitly but usually we don't get a remote config when we get the flag set
         payload = client._build_full_state_message()
         agent.send(payload=payload)
 
