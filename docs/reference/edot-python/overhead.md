@@ -13,7 +13,7 @@ products:
   - id: edot-sdk
 ---
 
-# Performance overhead of the EDOT SDK for Python
+# Performance overhead of the Elastic Distribution of OpenTelemetry Python
 
 This page explains the performance considerations when instrumenting Python applications with the Elastic Distribution of OpenTelemetry SDK, including impact analysis and mitigation techniques.
 
