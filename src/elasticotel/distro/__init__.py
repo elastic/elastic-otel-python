@@ -86,9 +86,6 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
             HTTPOTLPMetricExporter: otlp_http_exporter_options,
             HTTPOTLPSpanExporter: otlp_http_exporter_options,
         }
-        # TODO: Remove the following line after rebasing on top of upstream 1.37.0
-        _OTLP_HTTP_HEADERS["User-Agent"] = otlp_http_exporter_options["headers"]["User-Agent"]
-
         super()._configure(**kwargs)
 
         enable_opamp = False
@@ -138,7 +135,9 @@ class ElasticOpenTelemetryDistro(BaseDistro):
             system_metrics_enabled = system_metrics_configuration.lower() == "true"
             if not system_metrics_enabled:
                 instrumentor_kwargs["config"] = {
-                    k: v for k, v in SYSTEM_METRICS_DEFAULT_CONFIG.items() if k.startswith("process.runtime")
+                    k: v
+                    for k, v in SYSTEM_METRICS_DEFAULT_CONFIG.items()
+                    if k.startswith("process.runtime") or k.startswith("cpython")
                 }
         instrumentor_class(**instrumentor_kwargs).instrument(**kwargs)  # type: ignore[reportCallIssue]
 
