@@ -138,7 +138,9 @@ class ElasticOpenTelemetryDistro(BaseDistro):
             system_metrics_enabled = system_metrics_configuration.lower() == "true"
             if not system_metrics_enabled:
                 instrumentor_kwargs["config"] = {
-                    k: v for k, v in SYSTEM_METRICS_DEFAULT_CONFIG.items() if k.startswith("process.runtime")
+                    k: v
+                    for k, v in SYSTEM_METRICS_DEFAULT_CONFIG.items()
+                    if k.startswith("process.runtime") or k.startswith("cpython")
                 }
         instrumentor_class(**instrumentor_kwargs).instrument(**kwargs)  # type: ignore[reportCallIssue]
 
