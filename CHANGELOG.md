@@ -1,5 +1,15 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.8.0
+
+- Central configuration: make the OpAMP agent more robust against server restarts (#388)
+- Central configuration: suppress instrumentations for OpAMP client requests (#384)
+- Bump OpenTelemetry to 1.37.0/0.58b0 (#389)
+
+  Upstream changes:
+  * https://github.com/open-telemetry/opentelemetry-python/discussions/4747
+  * https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3750
+
 ## v1.7.0
 
 - distro: handle dynamic tracing sampling rate from central config (requires stack 9.2) (#367)
