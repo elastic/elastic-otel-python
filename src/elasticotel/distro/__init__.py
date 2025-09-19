@@ -86,9 +86,6 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
             HTTPOTLPMetricExporter: otlp_http_exporter_options,
             HTTPOTLPSpanExporter: otlp_http_exporter_options,
         }
-        # TODO: Remove the following line after rebasing on top of upstream 1.37.0
-        _OTLP_HTTP_HEADERS["User-Agent"] = otlp_http_exporter_options["headers"]["User-Agent"]
-
         super()._configure(**kwargs)
 
         enable_opamp = False
