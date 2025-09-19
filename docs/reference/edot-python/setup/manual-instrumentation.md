@@ -13,7 +13,7 @@ products:
   - id: edot-sdk
 ---
 
-# Manual instrumentation for Python with Elastic OpenTelemetry SDK
+# Manual instrumentation using the Elastic Distribution of OpenTelemetry Python
 
 Learn how to manually instrument Python applications using the {{edot}} Python SDK to add spans, metrics, and custom attributes. The following instructions require auto-instrumentation with OpenTelemetry to have been added to your application per [Setup](/reference/edot-python/setup/index.md).
 
