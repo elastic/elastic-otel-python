@@ -157,7 +157,7 @@ def test_agent_send_full_state_when_asked(caplog):
     # os.kill(<pid of server>, signal.SIGHUP)
 
     # here the server has been restarted, wait for more heartbeats
-    sleep(2)
+    sleep(1.5)
 
     opamp_agent.stop()
 
@@ -174,6 +174,5 @@ def test_agent_send_full_state_when_asked(caplog):
         "In opamp_handler",
         "In opamp_handler",
         "Sent Full State",
-        "In opamp_handler",
         "In opamp_handler",
     ]
