@@ -31,3 +31,12 @@ OpAMP Endpoint URL.
 
 **Default value:** ``not set``
 """
+
+ELASTIC_OTEL_LOG_LEVEL = "ELASTIC_OTEL_LOG_LEVEL"
+"""
+.. envvar:: ELASTIC_OTEL_LOG_LEVEL
+
+EDOT and OpenTelemetry SDK logging level.
+
+**Default value:** ``not set``
+"""

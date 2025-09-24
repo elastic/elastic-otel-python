@@ -247,8 +247,9 @@ class TestOpAMPHandler(TestCase):
         get_logger_mock.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
+    @mock.patch.object(Config, "_handle_logging")
     @mock.patch.object(logging, "getLogger")
-    def test_ignores_non_elastic_filename(self, get_logger_mock, get_config_mock):
+    def test_ignores_non_elastic_filename(self, get_logger_mock, handle_logging_mock, get_config_mock):
         get_config_mock.return_value = Config()
         agent = mock.Mock()
         client = mock.Mock()
