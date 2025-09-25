@@ -98,9 +98,8 @@ class Config:
             return
 
         # apply logging_level changes since these are not handled by the sdk
-        if self.logging_level.value != DEFAULT_LOGGING_LEVEL:
-            logging.getLogger("opentelemetry").setLevel(logging_level)
-            logging.getLogger("elasticotel").setLevel(logging_level)
+        logging.getLogger("opentelemetry").setLevel(logging_level)
+        logging.getLogger("elasticotel").setLevel(logging_level)
 
     def __post_init__(self):
         # we need to initialize each config item when we instantiate the Config and not at declaration time
