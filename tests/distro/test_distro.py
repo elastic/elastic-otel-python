@@ -235,6 +235,41 @@ class TestDistribution(TestCase):
         client_mock.assert_not_called()
         agent_mock.assert_not_called()
 
+    @mock.patch.dict("os.environ", {"ELASTIC_OTEL_LOG_LEVEL": "debug"}, clear=True)
+    @mock.patch("elasticotel.distro.config.logger")
+    def test_configurator_applies_elastic_otel_log_level(self, logger_mock):
+        ElasticOpenTelemetryConfigurator()._configure()
+
+        logger_mock.error.assert_not_called()
+
+        self.assertEqual(logging.getLogger("opentelemetry").getEffectiveLevel(), logging.DEBUG)
+        self.assertEqual(logging.getLogger("elasticotel").getEffectiveLevel(), logging.DEBUG)
+
+    @mock.patch.dict("os.environ", {}, clear=True)
+    @mock.patch("elasticotel.distro.config.logger")
+    def test_configurator_handles_elastic_otel_log_level_not_set(self, logger_mock):
+        ElasticOpenTelemetryConfigurator()._configure()
+
+        logger_mock.error.assert_not_called()
+
+        self.assertEqual(logging.getLogger("opentelemetry").getEffectiveLevel(), logging.WARNING)
+        self.assertEqual(logging.getLogger("elasticotel").getEffectiveLevel(), logging.WARNING)
+
+    @mock.patch.dict("os.environ", {"ELASTIC_OTEL_LOG_LEVEL": "invalid"}, clear=True)
+    def test_configurator_handles_invalid_elastic_otel_log_level(self):
+        with self.assertLogs("elasticotel", level="ERROR") as cm:
+            ElasticOpenTelemetryConfigurator()._configure()
+
+        self.assertEqual(
+            cm.output,
+            [
+                "ERROR:elasticotel.distro.config:Logging level not handled: invalid",
+            ],
+        )
+
+        self.assertEqual(logging.getLogger("opentelemetry").getEffectiveLevel(), logging.WARNING)
+        self.assertEqual(logging.getLogger("elasticotel").getEffectiveLevel(), logging.WARNING)
+
 
 class TestOpAMPHandler(TestCase):
     @mock.patch.object(logging, "getLogger")

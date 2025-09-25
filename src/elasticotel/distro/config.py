@@ -95,9 +95,10 @@ class Config:
         if logging_level is None:
             logger.error("Logging level not handled: %s", self.logging_level.value)
             self.logging_level.reset()
+            return
 
         # apply logging_level changes since these are not handled by the sdk
-        if self.logging_level != DEFAULT_LOGGING_LEVEL:
+        if self.logging_level.value != DEFAULT_LOGGING_LEVEL:
             logging.getLogger("opentelemetry").setLevel(logging_level)
             logging.getLogger("elasticotel").setLevel(logging_level)
 
