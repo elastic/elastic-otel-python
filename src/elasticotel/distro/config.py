@@ -123,7 +123,8 @@ def _handle_logging_level(remote_config) -> ConfigUpdate:
         # update upstream and distro logging levels
         logging.getLogger("opentelemetry").setLevel(logging_level)
         logging.getLogger("elasticotel").setLevel(logging_level)
-        _config.logging_level.update(value=config_logging_level)
+        if _config:
+            _config.logging_level.update(value=config_logging_level)
         error_message = ""
     return ConfigUpdate(error_message=error_message)
 
@@ -158,7 +159,8 @@ def _handle_sampling_rate(remote_config) -> ConfigUpdate:
         root_sampler._rate = sampling_rate  # type: ignore[reportAttributeAccessIssue]
         root_sampler._bound = root_sampler.get_bound_for_rate(root_sampler._rate)  # type: ignore[reportAttributeAccessIssue]
         logger.debug("Updated sampler rate to %s", sampling_rate)
-        _config.sampling_rate.update(value=config_sampling_rate)
+        if _config:
+            _config.sampling_rate.update(value=config_sampling_rate)
     return ConfigUpdate()
 
 
@@ -211,8 +213,9 @@ def opamp_handler(agent: OpAMPAgent, client: OpAMPClient, message: opamp_pb2.Ser
     )
 
     # update the cached effective config with what we updated
-    effective_config = {"elastic": _config.to_dict()}
-    client._update_effective_config(effective_config)
+    if _config:
+        effective_config = {"elastic": _config.to_dict()}
+        client._update_effective_config(effective_config)
 
     # if we changed the config send an ack to the server so we don't receive the same config at every heartbeat response
     if updated_remote_config is not None:
