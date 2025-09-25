@@ -43,7 +43,7 @@ _LOG_LEVELS_MAP: dict[str, int] = {
 }
 
 DEFAULT_SAMPLING_RATE = 1.0
-DEFAULT_LOGGING_LEVEL = "info"
+DEFAULT_LOGGING_LEVEL = "warn"
 
 LOGGING_LEVEL_CONFIG_KEY = "logging_level"
 SAMPLING_RATE_CONFIG_KEY = "sampling_rate"
