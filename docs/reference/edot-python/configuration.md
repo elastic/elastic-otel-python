@@ -106,7 +106,7 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 
 | Option(s) | Default | Description |
 |---|---|---|
-| `ELASTIC_OTEL_LOG_LEVEL` | `warn` | Configure EDOT SDK logging level to one of `trace`, `debug`, `info`, `warn`, `error`, `fatal, `off` |
+| `ELASTIC_OTEL_LOG_LEVEL` | `warn` | Configure EDOT SDK logging level to one of `trace`, `debug`, `info`, `warn`, `error`, `fatal`, `off` |
 | `ELASTIC_OTEL_SYSTEM_METRICS_ENABLED` | `false` | When set to `true`, sends *system namespace* metrics. |
 
 ## LLM settings
