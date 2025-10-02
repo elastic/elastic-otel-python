@@ -235,7 +235,7 @@ class TestDistribution(TestCase):
         client_mock.assert_not_called()
         agent_mock.assert_not_called()
 
-    @mock.patch.dict("os.environ", {"ELASTIC_OTEL_LOG_LEVEL": "debug"}, clear=True)
+    @mock.patch.dict("os.environ", {"OTEL_LOG_LEVEL": "debug"}, clear=True)
     @mock.patch("elasticotel.distro.config.logger")
     def test_configurator_applies_elastic_otel_log_level(self, logger_mock):
         ElasticOpenTelemetryConfigurator()._configure()
@@ -255,7 +255,7 @@ class TestDistribution(TestCase):
         self.assertEqual(logging.getLogger("opentelemetry").getEffectiveLevel(), logging.WARNING)
         self.assertEqual(logging.getLogger("elasticotel").getEffectiveLevel(), logging.WARNING)
 
-    @mock.patch.dict("os.environ", {"ELASTIC_OTEL_LOG_LEVEL": "invalid"}, clear=True)
+    @mock.patch.dict("os.environ", {"OTEL_LOG_LEVEL": "invalid"}, clear=True)
     def test_configurator_handles_invalid_elastic_otel_log_level(self):
         with self.assertLogs("elasticotel", level="ERROR") as cm:
             ElasticOpenTelemetryConfigurator()._configure()

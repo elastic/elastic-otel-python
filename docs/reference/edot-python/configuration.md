@@ -91,6 +91,7 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 |---|---|---|
 | `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` | `process_runtime,os,otel,telemetry_distro,service_instance,containerid,_gcp,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm` | `otel` |
 | `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | `DELTA` | `CUMULATIVE` |
+| `OTEL_LOG_LEVEL` | `warn` | Not handled |
 | `OTEL_METRICS_EXEMPLAR_FILTER` | `always_off` | `trace_based` |
 | `OTEL_TRACES_SAMPLER` | `parentbased_traceidratio` | `parentbased_always_on` |
 | `OTEL_TRACES_SAMPLER_ARG` | `1.0` | |
@@ -99,6 +100,9 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` cloud resource detectors are dynamically set. When running in a Kubernetes Pod it will be set to `process_runtime,os,otel,telemetry_distro,service_instance,_gcp,aws_eks`.
 :::
 
+:::{note}
+`OTEL_LOG_LEVEL` accepts the following levels: `trace`, `debug`, `info`, `warn`, `error`, `fatal`, `off`.
+:::
 
 ### Configuration options only available in EDOT Python
 
@@ -106,7 +110,6 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 
 | Option(s) | Default | Description |
 |---|---|---|
-| `ELASTIC_OTEL_LOG_LEVEL` | `warn` | Configure EDOT SDK logging level to one of `trace`, `debug`, `info`, `warn`, `error`, `fatal`, `off` |
 | `ELASTIC_OTEL_SYSTEM_METRICS_ENABLED` | `false` | When set to `true`, sends *system namespace* metrics. |
 
 ## LLM settings

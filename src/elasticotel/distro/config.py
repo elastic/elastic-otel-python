@@ -20,13 +20,12 @@ import logging
 import os
 from dataclasses import dataclass
 
-from elasticotel.distro.environment_variables import ELASTIC_OTEL_LOG_LEVEL
 from opentelemetry import trace
 from opentelemetry._opamp import messages
 from opentelemetry._opamp.agent import OpAMPAgent
 from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
-from opentelemetry.sdk.environment_variables import OTEL_TRACES_SAMPLER_ARG
+from opentelemetry.sdk.environment_variables import OTEL_LOG_LEVEL, OTEL_TRACES_SAMPLER_ARG
 from opentelemetry.sdk.trace.sampling import ParentBasedTraceIdRatio
 
 
@@ -82,9 +81,8 @@ class ConfigUpdate:
 @dataclass
 class Config:
     sampling_rate = ConfigItem(default=str(DEFAULT_SAMPLING_RATE), from_env_var=OTEL_TRACES_SAMPLER_ARG)
-    # currently the sdk does not handle OTEL_LOG_LEVEL, so we use ELASTIC_OTEL_LOG_LEVEL
-    # with the same values and behavior of the logging_level we get from Central Configuration.
-    logging_level = ConfigItem(default=DEFAULT_LOGGING_LEVEL, from_env_var=ELASTIC_OTEL_LOG_LEVEL)
+    # currently the sdk does not handle OTEL_LOG_LEVEL, so we use handle it on our own
+    logging_level = ConfigItem(default=DEFAULT_LOGGING_LEVEL, from_env_var=OTEL_LOG_LEVEL)
 
     def to_dict(self):
         return {LOGGING_LEVEL_CONFIG_KEY: self.logging_level.value, SAMPLING_RATE_CONFIG_KEY: self.sampling_rate.value}
