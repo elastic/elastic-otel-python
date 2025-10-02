@@ -235,6 +235,41 @@ class TestDistribution(TestCase):
         client_mock.assert_not_called()
         agent_mock.assert_not_called()
 
+    @mock.patch.dict("os.environ", {"OTEL_LOG_LEVEL": "debug"}, clear=True)
+    @mock.patch("elasticotel.distro.config.logger")
+    def test_configurator_applies_elastic_otel_log_level(self, logger_mock):
+        ElasticOpenTelemetryConfigurator()._configure()
+
+        logger_mock.error.assert_not_called()
+
+        self.assertEqual(logging.getLogger("opentelemetry").getEffectiveLevel(), logging.DEBUG)
+        self.assertEqual(logging.getLogger("elasticotel").getEffectiveLevel(), logging.DEBUG)
+
+    @mock.patch.dict("os.environ", {}, clear=True)
+    @mock.patch("elasticotel.distro.config.logger")
+    def test_configurator_handles_elastic_otel_log_level_not_set(self, logger_mock):
+        ElasticOpenTelemetryConfigurator()._configure()
+
+        logger_mock.error.assert_not_called()
+
+        self.assertEqual(logging.getLogger("opentelemetry").getEffectiveLevel(), logging.WARNING)
+        self.assertEqual(logging.getLogger("elasticotel").getEffectiveLevel(), logging.WARNING)
+
+    @mock.patch.dict("os.environ", {"OTEL_LOG_LEVEL": "invalid"}, clear=True)
+    def test_configurator_handles_invalid_elastic_otel_log_level(self):
+        with self.assertLogs("elasticotel", level="ERROR") as cm:
+            ElasticOpenTelemetryConfigurator()._configure()
+
+        self.assertEqual(
+            cm.output,
+            [
+                "ERROR:elasticotel.distro.config:Logging level not handled: invalid",
+            ],
+        )
+
+        self.assertEqual(logging.getLogger("opentelemetry").getEffectiveLevel(), logging.WARNING)
+        self.assertEqual(logging.getLogger("elasticotel").getEffectiveLevel(), logging.WARNING)
+
 
 class TestOpAMPHandler(TestCase):
     @mock.patch.object(logging, "getLogger")
@@ -247,8 +282,9 @@ class TestOpAMPHandler(TestCase):
         get_logger_mock.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
+    @mock.patch.object(Config, "_handle_logging")
     @mock.patch.object(logging, "getLogger")
-    def test_ignores_non_elastic_filename(self, get_logger_mock, get_config_mock):
+    def test_ignores_non_elastic_filename(self, get_logger_mock, handle_logging_mock, get_config_mock):
         get_config_mock.return_value = Config()
         agent = mock.Mock()
         client = mock.Mock()
@@ -265,7 +301,7 @@ class TestOpAMPHandler(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0"}}
         )
         client._build_remote_config_status_response_message.assert_called_once_with(
             client._update_remote_config_status()
@@ -318,9 +354,9 @@ class TestOpAMPHandler(TestCase):
         get_logger_mock.assert_has_calls(
             [
                 mock.call("opentelemetry"),
-                mock.call().setLevel(logging.INFO),
+                mock.call().setLevel(logging.WARNING),
                 mock.call("elasticotel"),
-                mock.call().setLevel(logging.INFO),
+                mock.call().setLevel(logging.WARNING),
             ]
         )
 
@@ -328,7 +364,7 @@ class TestOpAMPHandler(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0"}}
         )
         client._build_remote_config_status_response_message.assert_called_once_with(
             client._update_remote_config_status()
@@ -356,7 +392,7 @@ class TestOpAMPHandler(TestCase):
             client._update_remote_config_status()
         )
         client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0"}}
         )
         agent.send.assert_called_once_with(payload=mock.ANY)
         client._build_full_state_message.assert_not_called()
@@ -382,7 +418,7 @@ class TestOpAMPHandler(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "info", "sampling_rate": "0.5"}}
+            {"elastic": {"logging_level": "warn", "sampling_rate": "0.5"}}
         )
         client._build_remote_config_status_response_message.assert_called_once_with(
             client._update_remote_config_status()
@@ -413,7 +449,7 @@ class TestOpAMPHandler(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0"}}
         )
         client._build_remote_config_status_response_message.assert_called_once_with(
             client._update_remote_config_status()
@@ -447,7 +483,7 @@ class TestOpAMPHandler(TestCase):
             error_message="Invalid sampling_rate unexpected",
         )
         client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0"}}
         )
         client._build_remote_config_status_response_message.assert_called_once_with(
             client._update_remote_config_status()
@@ -479,7 +515,7 @@ class TestOpAMPHandler(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0"}}
         )
         client._build_remote_config_status_response_message.assert_called_once_with(
             client._update_remote_config_status()
@@ -508,7 +544,7 @@ class TestOpAMPHandler(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0"}}
         )
         client._build_remote_config_status_response_message.assert_called_once_with(
             client._update_remote_config_status()

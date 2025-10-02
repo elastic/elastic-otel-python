@@ -53,9 +53,12 @@ from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
 from elasticotel.distro import version
-from elasticotel.distro.environment_variables import ELASTIC_OTEL_OPAMP_ENDPOINT, ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
+from elasticotel.distro.environment_variables import (
+    ELASTIC_OTEL_OPAMP_ENDPOINT,
+    ELASTIC_OTEL_SYSTEM_METRICS_ENABLED,
+)
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
-from elasticotel.distro.config import opamp_handler, DEFAULT_SAMPLING_RATE
+from elasticotel.distro.config import opamp_handler, DEFAULT_SAMPLING_RATE, _initialize_config
 
 
 logger = logging.getLogger(__name__)
@@ -87,6 +90,9 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
             HTTPOTLPSpanExporter: otlp_http_exporter_options,
         }
         super()._configure(**kwargs)
+
+        # set our local config based on environment variables
+        _initialize_config()
 
         enable_opamp = False
         endpoint = os.environ.get(ELASTIC_OTEL_OPAMP_ENDPOINT)
