@@ -274,6 +274,62 @@ class TestOpAMPHandler(TestCase):
         client._build_full_state_message.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
+    @mock.patch("elasticotel.distro.config.logger")
+    def test_fails_if_cannot_decode_elastic_config_json(self, logger_mock, get_config_mock):
+        get_config_mock.return_value = Config()
+        agent = mock.Mock()
+        client = mock.Mock()
+        config = opamp_pb2.AgentConfigMap()
+        config.config_map["elastic"].body = b"{"
+        config.config_map["elastic"].content_type = "application/json"
+        remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
+        message = opamp_pb2.ServerToAgent(remote_config=remote_config)
+        opamp_handler(agent, client, message)
+
+        error_message = "Failed to decode elastic with content type application/json: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
+        logger_mock.error.assert_called_once_with(error_message)
+
+        client._update_remote_config_status.assert_called_once_with(
+            remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_FAILED, error_message=error_message
+        )
+        client._update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+        )
+        client._build_remote_config_status_response_message.assert_called_once_with(
+            client._update_remote_config_status()
+        )
+        agent.send.assert_called_once_with(payload=mock.ANY)
+        client._build_full_state_message.assert_not_called()
+
+    @mock.patch("elasticotel.distro.config._get_config")
+    @mock.patch("elasticotel.distro.config.logger")
+    def test_fails_if_elastic_config_is_not_json(self, logger_mock, get_config_mock):
+        get_config_mock.return_value = Config()
+        agent = mock.Mock()
+        client = mock.Mock()
+        config = opamp_pb2.AgentConfigMap()
+        config.config_map["elastic"].body = b"not-json"
+        config.config_map["elastic"].content_type = "not/json"
+        remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
+        message = opamp_pb2.ServerToAgent(remote_config=remote_config)
+        opamp_handler(agent, client, message)
+
+        error_message = "Cannot parse elastic with content type not/json"
+        logger_mock.error.assert_called_once_with(error_message)
+
+        client._update_remote_config_status.assert_called_once_with(
+            remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_FAILED, error_message=error_message
+        )
+        client._update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+        )
+        client._build_remote_config_status_response_message.assert_called_once_with(
+            client._update_remote_config_status()
+        )
+        agent.send.assert_called_once_with(payload=mock.ANY)
+        client._build_full_state_message.assert_not_called()
+
+    @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch.object(logging, "getLogger")
     def test_sets_matching_logging_level(self, get_logger_mock, get_config_mock):
         get_config_mock.return_value = Config()
