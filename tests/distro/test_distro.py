@@ -270,6 +270,37 @@ class TestDistribution(TestCase):
         self.assertEqual(logging.getLogger("opentelemetry").getEffectiveLevel(), logging.WARNING)
         self.assertEqual(logging.getLogger("elasticotel").getEffectiveLevel(), logging.WARNING)
 
+    @mock.patch.dict(
+        "os.environ",
+        {
+            "OTEL_LOG_LEVEL": "info",
+            "ELASTIC_OTEL_SOMETHING": "elastic",
+            "ELASTIC_OTEL_HEADERS": "api-key=secret",
+            "UNRELATED": "ignored",
+        },
+        clear=True,
+    )
+    def test_configurator_log_otel_env_vars_at_info_level(self):
+        with self.assertLogs("elasticotel", level="INFO") as cm:
+            ElasticOpenTelemetryConfigurator()._configure()
+
+        self.assertEqual(
+            cm.output,
+            [
+                "INFO:elasticotel.distro.config:EDOT Configuration",
+                "INFO:elasticotel.distro.config:ELASTIC_OTEL_HEADERS: api-key=[REDACTED]",
+                "INFO:elasticotel.distro.config:ELASTIC_OTEL_SOMETHING: elastic",
+                "INFO:elasticotel.distro.config:OTEL_LOG_LEVEL: info",
+            ],
+        )
+
+    @mock.patch.dict("os.environ", {"ELASTIC_OTEL_VAR": "elastic"}, clear=True)
+    @mock.patch("elasticotel.distro.config.logger")
+    def test_configurator_does_not_log_otel_env_vars_by_default(self, logger_mock):
+        ElasticOpenTelemetryConfigurator()._configure()
+
+        logger_mock.assert_not_called()
+
 
 class TestOpAMPHandler(TestCase):
     @mock.patch.object(logging, "getLogger")
@@ -329,7 +360,7 @@ class TestOpAMPHandler(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_FAILED, error_message=error_message
         )
         client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0"}}
         )
         client._build_remote_config_status_response_message.assert_called_once_with(
             client._update_remote_config_status()
@@ -357,7 +388,7 @@ class TestOpAMPHandler(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_FAILED, error_message=error_message
         )
         client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0"}}
         )
         client._build_remote_config_status_response_message.assert_called_once_with(
             client._update_remote_config_status()

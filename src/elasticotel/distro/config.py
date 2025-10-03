@@ -20,6 +20,7 @@ import logging
 import os
 from dataclasses import dataclass
 
+from elasticotel.distro.sanitization import _sanitize_headers_env_vars
 from opentelemetry import trace
 from opentelemetry._opamp import messages
 from opentelemetry._opamp.agent import OpAMPAgent
@@ -90,6 +91,17 @@ class Config:
 
     def to_dict(self):
         return {LOGGING_LEVEL_CONFIG_KEY: self.logging_level.value, SAMPLING_RATE_CONFIG_KEY: self.sampling_rate.value}
+
+    def log_env_vars(self):
+        # log all the environment variables that starts with OTEL_ or ELASTIC_OTEL_ to ease troubleshooting
+        env_vars = [
+            _sanitize_headers_env_vars(k, v)
+            for k, v in os.environ.items()
+            if k.startswith("OTEL_") or k.startswith("ELASTIC_OTEL_")
+        ]
+        logger.info("EDOT Configuration")
+        for k, v in sorted(env_vars):
+            logger.info("%s: %s", k, v)
 
     def _handle_logging(self):
         # do validation, we only validate logging_level because sampling_rate is handled by the sdk already

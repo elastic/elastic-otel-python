@@ -92,7 +92,10 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
         super()._configure(**kwargs)
 
         # set our local config based on environment variables
-        _initialize_config()
+        config = _initialize_config()
+
+        # collect and log all OTEL related env variables to ease troubleshooting
+        config.log_env_vars()
 
         enable_opamp = False
         endpoint = os.environ.get(ELASTIC_OTEL_OPAMP_ENDPOINT)
