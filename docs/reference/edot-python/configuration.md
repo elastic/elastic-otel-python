@@ -91,10 +91,10 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 |---|---|---|---|
 | `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` | `process_runtime,os,otel,telemetry_distro,service_instance,containerid,_gcp,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm` | `otel` | |
 | `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | `DELTA` | `CUMULATIVE` | |
-| `OTEL_LOG_LEVEL` | `warn` | | {applies_to}`edot_python: 1.9.0` |
+| `OTEL_LOG_LEVEL` | `warn` | | {applies_to}`edot_python: ga 1.9.0` |
 | `OTEL_METRICS_EXEMPLAR_FILTER` | `always_off` | `trace_based` | |
-| `OTEL_TRACES_SAMPLER` | `parentbased_traceidratio` | `parentbased_always_on` | {applies_to}`edot_python: 1.5.0` |
-| `OTEL_TRACES_SAMPLER_ARG` | `1.0` | | {applies_to}`edot_python: 1.6.0`|
+| `OTEL_TRACES_SAMPLER` | `parentbased_traceidratio` | `parentbased_always_on` | {applies_to}`edot_python: ga 1.5.0` |
+| `OTEL_TRACES_SAMPLER_ARG` | `1.0` | | {applies_to}`edot_python: ga 1.6.0`|
 
 :::{note}
 `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` cloud resource detectors are dynamically set. When running in a Kubernetes Pod it will be set to `process_runtime,os,otel,telemetry_distro,service_instance,_gcp,aws_eks`.
