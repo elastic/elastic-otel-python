@@ -56,3 +56,11 @@ class TestSanitizeHeadersEnvVars(TestCase):
     def test_drops_invalid_entries(self):
         sanitized = _sanitize_headers_env_vars("HEADERS", "content-type:no-secret")
         self.assertEqual(sanitized, ("HEADERS", ""))
+
+    def test_case_insensitive(self):
+        sanitized = _sanitize_headers_env_vars("HEADERS", "Authorization=ApiKey")
+        self.assertEqual(sanitized, ("HEADERS", "authorization=[REDACTED]"))
+
+    def test_handles_spaces(self):
+        sanitized = _sanitize_headers_env_vars("HEADERS", "authorization=api-key secret")
+        self.assertEqual(sanitized, ("HEADERS", "authorization=[REDACTED]"))

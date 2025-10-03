@@ -38,7 +38,8 @@ def _sanitize_headers_env_vars(env_var_name: str, env_var_value: str):
     if "HEADERS" not in env_var_name:
         return (env_var_name, env_var_value)
 
-    headers = parse_env_headers(env_var_value)
+    # liberal is required to handle values that are not url encoded
+    headers = parse_env_headers(env_var_value, liberal=True)
 
     sanitized = []
     for key, value in headers.items():
