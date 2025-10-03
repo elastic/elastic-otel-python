@@ -360,7 +360,7 @@ class TestOpAMPHandler(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_FAILED, error_message=error_message
         )
         client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0"}}
         )
         client._build_remote_config_status_response_message.assert_called_once_with(
             client._update_remote_config_status()
@@ -388,7 +388,7 @@ class TestOpAMPHandler(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_FAILED, error_message=error_message
         )
         client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "info", "sampling_rate": "1.0"}}
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0"}}
         )
         client._build_remote_config_status_response_message.assert_called_once_with(
             client._update_remote_config_status()
