@@ -24,6 +24,10 @@ from opentelemetry import trace
 from opentelemetry._opamp import messages
 from opentelemetry._opamp.agent import OpAMPAgent
 from opentelemetry._opamp.client import OpAMPClient
+from opentelemetry._opamp.exceptions import (
+    OpAMPRemoteConfigDecodeException,
+    OpAMPRemoteConfigParseException,
+)
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 from opentelemetry.sdk.environment_variables import OTEL_LOG_LEVEL, OTEL_TRACES_SAMPLER_ARG
 from opentelemetry.sdk.trace.sampling import ParentBasedTraceIdRatio
@@ -191,17 +195,21 @@ def opamp_handler(agent: OpAMPAgent, client: OpAMPClient, message: opamp_pb2.Ser
 
     _config = _get_config()
     error_messages = []
-    for config_filename, remote_config in messages._decode_remote_config(message.remote_config):
-        # we don't have standardized config values so limit to configs coming from our backend
-        if config_filename == "elastic":
-            logger.debug("Config %s: %s", config_filename, remote_config)
-            config_update = _handle_logging_level(remote_config)
-            if config_update.error_message:
-                error_messages.append(config_update.error_message)
+    try:
+        for config_filename, remote_config in messages._decode_remote_config(message.remote_config):
+            # we don't have standardized config values so limit to configs coming from our backend
+            if config_filename == "elastic":
+                logger.debug("Config %s: %s", config_filename, remote_config)
+                config_update = _handle_logging_level(remote_config)
+                if config_update.error_message:
+                    error_messages.append(config_update.error_message)
 
-            config_update = _handle_sampling_rate(remote_config)
-            if config_update.error_message:
-                error_messages.append(config_update.error_message)
+                config_update = _handle_sampling_rate(remote_config)
+                if config_update.error_message:
+                    error_messages.append(config_update.error_message)
+    except (OpAMPRemoteConfigParseException, OpAMPRemoteConfigDecodeException) as exc:
+        logger.error(str(exc))
+        error_messages.append(str(exc))
 
     error_message = "\n".join(error_messages)
     status = opamp_pb2.RemoteConfigStatuses_FAILED if error_message else opamp_pb2.RemoteConfigStatuses_APPLIED
