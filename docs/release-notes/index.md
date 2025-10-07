@@ -27,6 +27,18 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+
+## 1.9.0 [edot-python-1.9.0-release-notes]
+
+### Features and enhancements [edot-python-1.9.0-features-enhancements]
+
+- Handle OTEL_LOG_LEVEL to tune OpenTelemetry SDK and EDOT SDK logging ([#397](https://github.com/elastic/elastic-otel-python/pull/397))
+- Log OTel configuration variables at startup at info level ([#398](https://github.com/elastic/elastic-otel-python/pull/398))
+
+### Fixes [edot-python-1.9.0-fixes]
+
+- Make OpAMP client more robust ([#401](https://github.com/elastic/elastic-otel-python/pull/401))
+
 ## 1.8.0 [edot-python-1.8.0-release-notes]
 
 ### Features and enhancements [edot-python-1.8.0-features-enhancements]
