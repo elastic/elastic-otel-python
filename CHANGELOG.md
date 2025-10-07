@@ -1,5 +1,11 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.9.0
+
+- Handle OTEL_LOG_LEVEL to tune OpenTelemetry SDK and EDOT SDK logging (#397)
+- Log OTel configuration variables at startup at info level (#398)
+- Make OpAMP client more robust (#401)
+
 ## v1.8.0
 
 - Central configuration: make the OpAMP agent more robust against server restarts (#388)
