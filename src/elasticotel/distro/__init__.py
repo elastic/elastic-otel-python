@@ -57,7 +57,7 @@ from elasticotel.distro.environment_variables import (
 )
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
 from elasticotel.sdk.sampler import dynamic_composite_parent_threshold_traceid_ratio_based_sampler
-from elasticotel.distro.config import opamp_handler, DEFAULT_SAMPLING_RATE, _initialize_config
+from elasticotel.distro.config import opamp_handler, _initialize_config
 
 
 logger = logging.getLogger(__name__)
