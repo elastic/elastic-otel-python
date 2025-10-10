@@ -22,7 +22,7 @@ RUN mkdir workspace
 
 RUN pip install --no-cache-dir --target workspace /opt/distro/*.whl -r requirements.txt
 
-FROM python:3.12-alpine AS build-musl
+FROM python:3.12.12-alpine AS build-musl
 
 ARG DISTRO_DIR
 
