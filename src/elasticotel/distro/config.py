@@ -21,6 +21,7 @@ import os
 from dataclasses import dataclass
 
 from elasticotel.distro.sanitization import _sanitize_headers_env_vars
+from elasticotel.sdk.sampler import DynamicCompositeParentThresholdTraceIdRatioBasedSampler
 from opentelemetry import trace
 from opentelemetry._opamp import messages
 from opentelemetry._opamp.agent import OpAMPAgent
@@ -31,7 +32,6 @@ from opentelemetry._opamp.exceptions import (
 )
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 from opentelemetry.sdk.environment_variables import OTEL_LOG_LEVEL, OTEL_TRACES_SAMPLER_ARG
-from opentelemetry.sdk.trace.sampling import ParentBasedTraceIdRatio
 
 
 logger = logging.getLogger(__name__)
@@ -161,19 +161,14 @@ def _handle_sampling_rate(remote_config) -> ConfigUpdate:
         return ConfigUpdate()
 
     # FIXME: this needs to be updated for the consistent probability samplers
-    if not isinstance(sampler, ParentBasedTraceIdRatio):
+    if not isinstance(sampler, DynamicCompositeParentThresholdTraceIdRatioBasedSampler):
         logger.warning("Sampler %s is not supported, not applying sampling_rate.", type(sampler))
         return ConfigUpdate()
 
-    # since sampler is parent based we need to update its root sampler
-    root_sampler = sampler._root  # type: ignore[reportAttributeAccessIssue]
-    if root_sampler.rate != sampling_rate:  # type: ignore[reportAttributeAccessIssue]
-        # we don't have a proper way to update it :)
-        root_sampler._rate = sampling_rate  # type: ignore[reportAttributeAccessIssue]
-        root_sampler._bound = root_sampler.get_bound_for_rate(root_sampler._rate)  # type: ignore[reportAttributeAccessIssue]
-        logger.debug("Updated sampler rate to %s", sampling_rate)
-        if _config:
-            _config.sampling_rate.update(value=config_sampling_rate)
+    sampler.set_ratio(sampling_rate)
+    logger.debug("Updated sampler rate to %s", sampling_rate)
+    if _config:
+        _config.sampling_rate.update(value=config_sampling_rate)
     return ConfigUpdate()
 
 
