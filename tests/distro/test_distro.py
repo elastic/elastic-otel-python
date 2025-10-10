@@ -22,6 +22,7 @@ from unittest import TestCase, mock
 from elasticotel.distro import ElasticOpenTelemetryConfigurator, ElasticOpenTelemetryDistro, logger as distro_logger
 from elasticotel.distro.config import opamp_handler, logger as config_logger, Config
 from elasticotel.distro.environment_variables import ELASTIC_OTEL_OPAMP_ENDPOINT, ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
+from elasticotel.sdk.sampler import DynamicCompositeParentThresholdTraceIdRatioBasedSampler
 from opentelemetry.environment_variables import (
     OTEL_LOGS_EXPORTER,
     OTEL_METRICS_EXPORTER,
@@ -32,9 +33,8 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
     OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
     OTEL_EXPORTER_OTLP_PROTOCOL,
-    OTEL_TRACES_SAMPLER,
-    OTEL_TRACES_SAMPLER_ARG,
 )
+from opentelemetry import trace
 from opentelemetry.sdk.trace import sampling
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
@@ -54,21 +54,13 @@ class TestDistribution(TestCase):
         )
         self.assertEqual("always_off", os.environ.get(OTEL_METRICS_EXEMPLAR_FILTER))
         self.assertEqual("DELTA", os.environ.get(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE))
-        self.assertEqual("parentbased_traceidratio", os.environ.get(OTEL_TRACES_SAMPLER))
-        self.assertEqual("1.0", os.environ.get(OTEL_TRACES_SAMPLER_ARG))
 
     @mock.patch.dict("os.environ", {}, clear=True)
     def test_sampler_configuration(self):
-        distro = ElasticOpenTelemetryDistro()
-        distro._configure()
-        parent_sampler = sampling._get_from_env_or_default()
+        ElasticOpenTelemetryConfigurator()._configure()
 
-        assert isinstance(parent_sampler, sampling.ParentBasedTraceIdRatio)
-
-        sampler = parent_sampler._root
-
-        assert isinstance(sampler, sampling.TraceIdRatioBased)
-        assert sampler.rate == 1.0
+        sampler = getattr(trace.get_tracer_provider(), "sampler", None)
+        assert isinstance(sampler, DynamicCompositeParentThresholdTraceIdRatioBasedSampler)
 
     @mock.patch.dict("os.environ", {}, clear=True)
     def test_load_instrumentor_call_with_default_kwargs_for_SystemMetricsInstrumentor(self):
@@ -488,7 +480,7 @@ class TestOpAMPHandler(TestCase):
     @mock.patch("opentelemetry.trace.get_tracer_provider")
     def test_sets_matching_sampling_rate(self, get_tracer_provider_mock, get_config_mock):
         get_config_mock.return_value = Config()
-        sampler = sampling.ParentBasedTraceIdRatio(rate=1.0)
+        sampler = DynamicCompositeParentThresholdTraceIdRatioBasedSampler(1.0)
         get_tracer_provider_mock.return_value.sampler = sampler
         agent = mock.Mock()
         client = mock.Mock()
@@ -499,7 +491,10 @@ class TestOpAMPHandler(TestCase):
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
         opamp_handler(agent, client, message)
 
-        self.assertEqual(sampler._root.rate, 0.5)
+        self.assertIn(
+            "ComposableParentThreshold{root=ComposableTraceIDRatioBased{threshold=8, ratio=0.5}}",
+            sampler.get_description(),
+        )
 
         client._update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""

@@ -43,8 +43,6 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
     OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
     OTEL_EXPORTER_OTLP_PROTOCOL,
-    OTEL_TRACES_SAMPLER,
-    OTEL_TRACES_SAMPLER_ARG,
 )
 from opentelemetry.sdk.resources import OTELResourceDetector
 from opentelemetry.util._importlib_metadata import EntryPoint
@@ -58,6 +56,7 @@ from elasticotel.distro.environment_variables import (
     ELASTIC_OTEL_SYSTEM_METRICS_ENABLED,
 )
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
+from elasticotel.sdk.sampler import dynamic_composite_parent_threshold_traceid_ratio_based_sampler
 from elasticotel.distro.config import opamp_handler, DEFAULT_SAMPLING_RATE, _initialize_config
 
 
@@ -89,6 +88,9 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
             HTTPOTLPMetricExporter: otlp_http_exporter_options,
             HTTPOTLPSpanExporter: otlp_http_exporter_options,
         }
+
+        kwargs["sampler"] = dynamic_composite_parent_threshold_traceid_ratio_based_sampler()
+
         super()._configure(**kwargs)
 
         # set our local config based on environment variables
@@ -159,8 +161,6 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         os.environ.setdefault(OTEL_METRICS_EXEMPLAR_FILTER, "always_off")
         # preference to use DELTA temporality as we can handle only this kind of Histograms
         os.environ.setdefault(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE, "DELTA")
-        os.environ.setdefault(OTEL_TRACES_SAMPLER, "parentbased_traceidratio")
-        os.environ.setdefault(OTEL_TRACES_SAMPLER_ARG, str(DEFAULT_SAMPLING_RATE))
 
         base_resource_detectors = [
             "process_runtime",
