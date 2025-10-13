@@ -135,6 +135,7 @@ class TestDistribution(TestCase):
         client_mock.assert_called_once_with(
             endpoint="http://localhost:4320/v1/opamp",
             agent_identifying_attributes={"service.name": "service", "deployment.environment.name": "dev"},
+            headers=None,
         )
         agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
         agent_mock.start.assert_called_once_with()
@@ -158,6 +159,32 @@ class TestDistribution(TestCase):
         client_mock.assert_called_once_with(
             endpoint="https://localhost:4320/v1/opamp",
             agent_identifying_attributes={"service.name": "service", "deployment.environment.name": "dev"},
+            headers=None,
+        )
+        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.start.assert_called_once_with()
+
+    @mock.patch.dict(
+        "os.environ",
+        {
+            "ELASTIC_OTEL_OPAMP_ENDPOINT": "http://localhost:4320/v1/opamp",
+            "ELASTIC_OTEL_OPAMP_HEADERS": "Authorization=ApiKey foobar===",
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=service,deployment.environment.name=dev",
+        },
+        clear=True,
+    )
+    @mock.patch("elasticotel.distro.OpAMPAgent")
+    @mock.patch("elasticotel.distro.OpAMPClient")
+    def test_configurator_sets_up_opamp_with_headers_from_environment_variable(self, client_mock, agent_mock):
+        client_mock.return_value = client_mock
+        agent_mock.return_value = agent_mock
+
+        ElasticOpenTelemetryConfigurator()._configure()
+
+        client_mock.assert_called_once_with(
+            endpoint="http://localhost:4320/v1/opamp",
+            agent_identifying_attributes={"service.name": "service", "deployment.environment.name": "dev"},
+            headers={"authorization": "ApiKey foobar==="},
         )
         agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
         agent_mock.start.assert_called_once_with()
@@ -181,6 +208,7 @@ class TestDistribution(TestCase):
         client_mock.assert_called_once_with(
             endpoint="https://localhost:4320/v1/opamp",
             agent_identifying_attributes={"service.name": "service", "deployment.environment.name": "dev"},
+            headers=None,
         )
         agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
         agent_mock.start.assert_called_once_with()
@@ -204,6 +232,7 @@ class TestDistribution(TestCase):
         client_mock.assert_called_once_with(
             endpoint="https://localhost:4320/v1/opamp",
             agent_identifying_attributes={"service.name": "service"},
+            headers=None,
         )
         agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
         agent_mock.start.assert_called_once_with()

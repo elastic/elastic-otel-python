@@ -31,3 +31,12 @@ OpAMP Endpoint URL.
 
 **Default value:** ``not set``
 """
+
+ELASTIC_OTEL_OPAMP_HEADERS = "ELASTIC_OTEL_OPAMP_HEADERS"
+"""
+.. envvar:: ELASTIC_OTEL_OPAMP_HEADERS
+
+HTTP headers to be sento do the OpAMP endpoint.
+
+**Default value:** ``not set``
+"""
