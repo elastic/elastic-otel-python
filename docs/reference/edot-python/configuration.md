@@ -39,7 +39,7 @@ Because the {{edot}} Python is an extension of OpenTelemetry Python, it supports
 
 ```{applies_to}
 serverless: unavailable
-stack: preview 9.1 
+stack: preview 9.1
 product:
   edot_python: preview 1.4.0
 ```
@@ -55,6 +55,21 @@ export ELASTIC_OTEL_OPAMP_ENDPOINT=http://localhost:4320/v1/opamp
 ```
 
 To deactivate central configuration, remove the `ELASTIC_OTEL_OPAMP_ENDPOINT` environment variable and restart the instrumented application.
+
+### Central configuration authentication
+
+```{applies_to}
+serverless: unavailable
+stack: preview 9.1
+product:
+  edot_python: preview 1.10.0
+```
+
+If the OpAMP server is configured to require authentication set the `ELASTIC_OTEL_OPAMP_HEADERS" environment variable.
+
+```
+export ELASTIC_OTEL_OPAMP_HEADERS="Authorization=ApiKey an_api_key"
+```
 
 ### Central configuration settings
 
