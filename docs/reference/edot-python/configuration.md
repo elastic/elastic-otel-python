@@ -65,7 +65,7 @@ product:
   edot_python: preview 1.10.0
 ```
 
-If the OpAMP server is configured to require authentication set the `ELASTIC_OTEL_OPAMP_HEADERS" environment variable.
+If the OpAMP server is configured to require authentication set the `ELASTIC_OTEL_OPAMP_HEADERS` environment variable.
 
 ```
 export ELASTIC_OTEL_OPAMP_HEADERS="Authorization=ApiKey an_api_key"
