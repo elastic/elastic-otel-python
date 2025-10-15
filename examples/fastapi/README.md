@@ -19,5 +19,3 @@ docker run -e OTEL_EXPORTER_OTLP_ENDPOINT="$OTEL_EXPORTER_OTLP_ENDPOINT" \
 ```
 
 You can access the application from [http://127.0.0.1:5000](http://127.0.0.1:5000).
-
-```
