@@ -16,6 +16,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import Sequence
 
 from opentelemetry.context import Context
@@ -28,9 +29,19 @@ from opentelemetry.sdk.trace._sampling_experimental import (
 )
 from opentelemetry.util.types import Attributes
 
+logger = logging.getLogger(__name__)
 
-class DynamicCompositeParentThresholdTraceIdRatioBasedSampler(Sampler):
-    def __init__(self, ratio: float = 1.0):
+
+class DefaultSampler(Sampler):
+    """The default sampler for EDOT, which is a parent-based ratio sampler with the rate
+    updatable from central config."""
+
+    def __init__(self, ratio_str: str):
+        try:
+            ratio = float(ratio_str)
+        except ValueError:
+            logger.warning("Invalid sampling rate '%s', defaulting to 1.0", ratio_str)
+            ratio = 1.0
         self._delegate = _new_sampler(ratio)
 
     def should_sample(
@@ -62,18 +73,3 @@ class DynamicCompositeParentThresholdTraceIdRatioBasedSampler(Sampler):
 
 def _new_sampler(ratio: float):
     return composite_sampler(composable_parent_threshold(composable_traceid_ratio_based(ratio)))
-
-
-def dynamic_composite_parent_threshold_traceid_ratio_based_sampler(ratio: float = 1.0) -> Sampler:
-    """Returns a new DynamicCompositeParentThresholdTraceIdRatioBasedSampler.
-
-    This sampler behaves like ParentBasedTraceIdRatio, but the sampling rate can be changed
-    at runtime.
-
-    Args:
-        ratio: The sampling ratio to use for root spans. Must be between 0.0 and 1.0.
-
-    Returns:
-        A new DynamicCompositeParentThresholdTraceIdRatioBasedSampler.
-    """
-    return DynamicCompositeParentThresholdTraceIdRatioBasedSampler(ratio)

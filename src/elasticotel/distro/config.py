@@ -21,7 +21,7 @@ import os
 from dataclasses import dataclass
 
 from elasticotel.distro.sanitization import _sanitize_headers_env_vars
-from elasticotel.sdk.sampler import DynamicCompositeParentThresholdTraceIdRatioBasedSampler
+from elasticotel.sdk.sampler import DefaultSampler
 from opentelemetry import trace
 from opentelemetry._opamp import messages
 from opentelemetry._opamp.agent import OpAMPAgent
@@ -161,7 +161,7 @@ def _handle_sampling_rate(remote_config) -> ConfigUpdate:
         return ConfigUpdate()
 
     # FIXME: this needs to be updated for the consistent probability samplers
-    if not isinstance(sampler, DynamicCompositeParentThresholdTraceIdRatioBasedSampler):
+    if not isinstance(sampler, DefaultSampler):
         logger.warning("Sampler %s is not supported, not applying sampling_rate.", type(sampler))
         return ConfigUpdate()
 

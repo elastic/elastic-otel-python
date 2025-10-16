@@ -22,7 +22,7 @@ from unittest import TestCase, mock
 from elasticotel.distro import ElasticOpenTelemetryConfigurator, ElasticOpenTelemetryDistro, logger as distro_logger
 from elasticotel.distro.config import opamp_handler, logger as config_logger, Config
 from elasticotel.distro.environment_variables import ELASTIC_OTEL_OPAMP_ENDPOINT, ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
-from elasticotel.sdk.sampler import DynamicCompositeParentThresholdTraceIdRatioBasedSampler
+from elasticotel.sdk.sampler import DefaultSampler
 from opentelemetry.environment_variables import (
     OTEL_LOGS_EXPORTER,
     OTEL_METRICS_EXPORTER,
@@ -33,13 +33,21 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
     OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
     OTEL_EXPORTER_OTLP_PROTOCOL,
+    OTEL_TRACES_SAMPLER,
+    OTEL_TRACES_SAMPLER_ARG,
 )
 from opentelemetry import trace
 from opentelemetry.sdk.trace import sampling
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
+from opentelemetry.util._once import Once
 
 
 class TestDistribution(TestCase):
+    def setUp(self):
+        # Hackily reset global trace provider to allow tests to initialize it.
+        trace._TRACER_PROVIDER = None
+        trace._TRACER_PROVIDER_SET_ONCE = Once()
+
     @mock.patch.dict("os.environ", {}, clear=True)
     def test_default_configuration(self):
         distro = ElasticOpenTelemetryDistro()
@@ -54,13 +62,39 @@ class TestDistribution(TestCase):
         )
         self.assertEqual("always_off", os.environ.get(OTEL_METRICS_EXEMPLAR_FILTER))
         self.assertEqual("DELTA", os.environ.get(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE))
+        self.assertEqual("experimental_composite_parentbased_traceidratio", os.environ.get(OTEL_TRACES_SAMPLER))
+        self.assertEqual("1.0", os.environ.get(OTEL_TRACES_SAMPLER_ARG))
 
     @mock.patch.dict("os.environ", {}, clear=True)
     def test_sampler_configuration(self):
+        ElasticOpenTelemetryDistro()._configure()
         ElasticOpenTelemetryConfigurator()._configure()
-
         sampler = getattr(trace.get_tracer_provider(), "sampler", None)
-        assert isinstance(sampler, DynamicCompositeParentThresholdTraceIdRatioBasedSampler)
+        assert isinstance(sampler, DefaultSampler)
+        self.assertIn(
+            "ComposableParentThreshold{root=ComposableTraceIDRatioBased{threshold=0, ratio=1.0}}",
+            sampler.get_description(),
+        )
+
+    @mock.patch.dict("os.environ", {}, clear=True)
+    def test_sampler_configuration_sampler_arg(self):
+        os.environ[OTEL_TRACES_SAMPLER_ARG] = "0.0"
+        ElasticOpenTelemetryDistro()._configure()
+        ElasticOpenTelemetryConfigurator()._configure()
+        sampler = getattr(trace.get_tracer_provider(), "sampler", None)
+        assert isinstance(sampler, DefaultSampler)
+        self.assertIn(
+            "ComposableParentThreshold{root=ComposableTraceIDRatioBased{threshold=max, ratio=0.0}}",
+            sampler.get_description(),
+        )
+
+    @mock.patch.dict("os.environ", {}, clear=True)
+    def test_sampler_configuration_user_configured(self):
+        os.environ[OTEL_TRACES_SAMPLER] = "always_on"
+        ElasticOpenTelemetryDistro()._configure()
+        ElasticOpenTelemetryConfigurator()._configure()
+        sampler = getattr(trace.get_tracer_provider(), "sampler", None)
+        assert isinstance(sampler, sampling._AlwaysOn)
 
     @mock.patch.dict("os.environ", {}, clear=True)
     def test_load_instrumentor_call_with_default_kwargs_for_SystemMetricsInstrumentor(self):
@@ -480,7 +514,7 @@ class TestOpAMPHandler(TestCase):
     @mock.patch("opentelemetry.trace.get_tracer_provider")
     def test_sets_matching_sampling_rate(self, get_tracer_provider_mock, get_config_mock):
         get_config_mock.return_value = Config()
-        sampler = DynamicCompositeParentThresholdTraceIdRatioBasedSampler(1.0)
+        sampler = DefaultSampler(1.0)
         get_tracer_provider_mock.return_value.sampler = sampler
         agent = mock.Mock()
         client = mock.Mock()
