@@ -160,7 +160,6 @@ def _handle_sampling_rate(remote_config) -> ConfigUpdate:
         logger.debug("Cannot get sampler from tracer provider.")
         return ConfigUpdate()
 
-    # FIXME: this needs to be updated for the consistent probability samplers
     if not isinstance(sampler, DefaultSampler):
         logger.warning("Sampler %s is not supported, not applying sampling_rate.", type(sampler))
         return ConfigUpdate()
