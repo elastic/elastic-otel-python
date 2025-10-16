@@ -14,29 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ELASTIC_OTEL_SYSTEM_METRICS_ENABLED = "ELASTIC_OTEL_SYSTEM_METRICS_ENABLED"
-"""
-.. envvar:: ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
+from fastapi import FastAPI
 
-Enables sending system metrics.
+app = FastAPI()
 
-**Default value:** ``false``
-"""
 
-ELASTIC_OTEL_OPAMP_ENDPOINT = "ELASTIC_OTEL_OPAMP_ENDPOINT"
-"""
-.. envvar:: ELASTIC_OTEL_OPAMP_ENDPOINT
-
-OpAMP Endpoint URL.
-
-**Default value:** ``not set``
-"""
-
-ELASTIC_OTEL_OPAMP_HEADERS = "ELASTIC_OTEL_OPAMP_HEADERS"
-"""
-.. envvar:: ELASTIC_OTEL_OPAMP_HEADERS
-
-HTTP headers to be sento do the OpAMP endpoint.
-
-**Default value:** ``not set``
-"""
+@app.get("/")
+async def root():
+    return {"message": "Hello, world!"}
