@@ -82,7 +82,7 @@ jobs:
         python-version: ${{ env[matrix.python-version] }}
         architecture: "x64"
     - run: pip install nox
-    - run: nox -s with_integration_tests
+    - run: nox -- --with-integration-tests
 
   typecheck:
     runs-on: ubuntu-latest
