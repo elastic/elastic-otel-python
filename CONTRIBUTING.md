@@ -82,7 +82,7 @@ To run local unit tests, you can install nox and then run `nox` from the project
 
 To run also the slower integration tests you can run:
 
-    nox -s with_integration_tests
+    nox -- --with-integration-tests
 
 Pytest will automatically discover tests.
 

@@ -33,9 +33,4 @@ def run_tests(session: nox.Session, pytest_extra_args: list[str] = []):
 
 @nox.session
 def tests(session):
-    run_tests(session)
-
-
-@nox.session(default=False)
-def with_integration_tests(session):
-    run_tests(session, ["--with-integration-tests"])
+    run_tests(session, pytest_extra_args=session.posargs)
