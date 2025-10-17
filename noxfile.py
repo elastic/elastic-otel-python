@@ -28,7 +28,7 @@ def run_tests(session: nox.Session, pytest_extra_args: list[str] = []):
     # install the package for being able to use the entry points we define
     session.install("-e", ".")
 
-    session.run("pytest", *pytest_extra_args)
+    session.run("pytest", *pytest_extra_args, env={"EDOT_IN_NOX": "1"})
 
 
 @nox.session
