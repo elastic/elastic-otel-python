@@ -75,10 +75,14 @@ Once your changes are ready to submit for review:
 
 ### Testing
 
-To run local unit tests, you can install requirements and then run `pytest` from the project root:
+To run local unit tests, you can install nox and then run `nox` from the project root:
 
-    pip install -r dev-requirements.txt
-    pytest
+    pip install nox
+    nox
+
+To run also the slower integration tests you can run:
+
+    nox -s with_integration_tests
 
 Pytest will automatically discover tests.
 
@@ -90,9 +94,6 @@ dynamic discovery features. In particular,
 [fixtures](https://docs.pytest.org/en/stable/fixture.html) can be confusing
 and hard to discover, due to the fact that they do not need to be imported to
 be used.
-
-By default only unit tests are run because tests under `tests/integrations` are a bit slower.
-Use `pytest --with-integration-tests` to run them.
 
 ### Workflow
 

@@ -81,11 +81,8 @@ jobs:
       with:
         python-version: ${{ env[matrix.python-version] }}
         architecture: "x64"
-    - run: pip install -r dev-requirements.txt
-    - name: run recorded tests with python 3.10+ where urllib3 2.x is supported
-      run: pip install pytest-vcr
-      if: ${{ matrix.python-version != 'py39' }}
-    - run: pytest --with-integration-tests
+    - run: pip install nox
+    - run: nox -s with_integration_tests
 
   typecheck:
     runs-on: ubuntu-latest
