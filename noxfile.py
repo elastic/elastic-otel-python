@@ -14,29 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ELASTIC_OTEL_SYSTEM_METRICS_ENABLED = "ELASTIC_OTEL_SYSTEM_METRICS_ENABLED"
-"""
-.. envvar:: ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
+import nox
+import sys
 
-Enables sending system metrics.
 
-**Default value:** ``false``
-"""
+def run_tests(session: nox.Session, pytest_extra_args: list[str] = []):
+    python_version = (sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
+    vcrpy_is_supported = python_version >= (3, 10, 0)
 
-ELASTIC_OTEL_OPAMP_ENDPOINT = "ELASTIC_OTEL_OPAMP_ENDPOINT"
-"""
-.. envvar:: ELASTIC_OTEL_OPAMP_ENDPOINT
+    session.install("-r", "dev-requirements.txt")
+    if vcrpy_is_supported:
+        session.install("pytest-vcr")
+    # install the package for being able to use the entry points we define
+    session.install("-e", ".")
 
-OpAMP Endpoint URL.
+    session.run("pytest", *pytest_extra_args, env={"EDOT_IN_NOX": "1"})
 
-**Default value:** ``not set``
-"""
 
-ELASTIC_OTEL_OPAMP_HEADERS = "ELASTIC_OTEL_OPAMP_HEADERS"
-"""
-.. envvar:: ELASTIC_OTEL_OPAMP_HEADERS
-
-HTTP headers to be sento do the OpAMP endpoint.
-
-**Default value:** ``not set``
-"""
+@nox.session
+def tests(session):
+    run_tests(session, pytest_extra_args=session.posargs)

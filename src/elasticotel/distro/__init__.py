@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
 import logging
 import os
 from urllib.parse import urlparse, urlunparse
@@ -48,6 +50,7 @@ from opentelemetry.sdk.environment_variables import (
 )
 from opentelemetry.sdk.resources import OTELResourceDetector
 from opentelemetry.util._importlib_metadata import EntryPoint
+from opentelemetry.util.re import parse_env_headers
 from opentelemetry._opamp.agent import OpAMPAgent
 from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
@@ -55,6 +58,7 @@ from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 from elasticotel.distro import version
 from elasticotel.distro.environment_variables import (
     ELASTIC_OTEL_OPAMP_ENDPOINT,
+    ELASTIC_OTEL_OPAMP_HEADERS,
     ELASTIC_OTEL_SYSTEM_METRICS_ENABLED,
 )
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
@@ -118,9 +122,17 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                 ):
                     agent_identifying_attributes["deployment.environment.name"] = deployment_environment_name
 
+                # handle headers for the OpAMP client from the environment variable
+                headers_env: str | None = os.environ.get(ELASTIC_OTEL_OPAMP_HEADERS)
+                if headers_env:
+                    headers = parse_env_headers(headers_env, liberal=True)
+                else:
+                    headers = None
+
                 opamp_client = OpAMPClient(
                     endpoint=endpoint_url,
                     agent_identifying_attributes=agent_identifying_attributes,
+                    headers=headers,
                 )
                 opamp_agent = OpAMPAgent(
                     interval=30,
