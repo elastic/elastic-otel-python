@@ -55,6 +55,9 @@ telemetry_distro = "elasticotel.sdk.resources:TelemetryDistroResourceDetector"
 service_instance = "elasticotel.sdk.resources:ServiceInstanceResourceDetector"
 _gcp = "opentelemetry.resourcedetector.gcp_resource_detector._detector:GoogleCloudResourceDetector"
 
+[project.entry-points.opentelemetry_traces_sampler]
+experimental_composite_parentbased_traceidratio = "elasticotel.sdk.sampler:DefaultSampler"
+
 [project.scripts]
 edot-bootstrap = "elasticotel.instrumentation.bootstrap:run"
 
