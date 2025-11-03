@@ -70,7 +70,7 @@ class TestDistribution(TestCase):
         ElasticOpenTelemetryDistro()._configure()
         ElasticOpenTelemetryConfigurator()._configure()
         sampler = getattr(trace.get_tracer_provider(), "sampler", None)
-        assert isinstance(sampler, DefaultSampler)
+        self.assertTrue(isinstance(sampler, DefaultSampler))
         self.assertIn(
             "ComposableParentThreshold{root=ComposableTraceIDRatioBased{threshold=0, ratio=1.0}}",
             sampler.get_description(),
@@ -82,7 +82,7 @@ class TestDistribution(TestCase):
         ElasticOpenTelemetryDistro()._configure()
         ElasticOpenTelemetryConfigurator()._configure()
         sampler = getattr(trace.get_tracer_provider(), "sampler", None)
-        assert isinstance(sampler, DefaultSampler)
+        self.assertTrue(isinstance(sampler, DefaultSampler))
         self.assertIn(
             "ComposableParentThreshold{root=ComposableTraceIDRatioBased{threshold=max, ratio=0.0}}",
             sampler.get_description(),
@@ -94,7 +94,7 @@ class TestDistribution(TestCase):
         ElasticOpenTelemetryDistro()._configure()
         ElasticOpenTelemetryConfigurator()._configure()
         sampler = getattr(trace.get_tracer_provider(), "sampler", None)
-        assert isinstance(sampler, sampling._AlwaysOn)
+        self.assertTrue(isinstance(sampler, sampling._AlwaysOn))
 
     @mock.patch.dict("os.environ", {}, clear=True)
     def test_load_instrumentor_call_with_default_kwargs_for_SystemMetricsInstrumentor(self):
