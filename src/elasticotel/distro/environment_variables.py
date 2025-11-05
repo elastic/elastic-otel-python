@@ -40,3 +40,30 @@ HTTP headers to be sento do the OpAMP endpoint.
 
 **Default value:** ``not set``
 """
+
+ELASTIC_OTEL_OPAMP_CERTIFICATE = "ELASTIC_OTEL_OPAMP_CERTIFICATE"
+"""
+.. envvar:: ELASTIC_OTEL_OPAMP_CERTIFICATE
+
+The path of the trusted certificate to use when verifying a server’s TLS credentials, this is needed for mTLS or when the server is using a self-signed certificate.
+
+**Default value:** ``not set``
+"""
+
+ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE = "ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE"
+"""
+.. envvar:: ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE
+
+Client certificate/chain trust for clients private key path to use in mTLS communication in PEM format.
+
+**Default value:** ``not set``
+"""
+
+ELASTIC_OTEL_OPAMP_CLIENT_KEY = "ELASTIC_OTEL_OPAMP_CLIENT_KEY"
+"""
+.. envvar:: ELASTIC_OTEL_OPAMP_CLIENT_KEY
+
+Client private key path to use in mTLS communication in PEM format.
+
+**Default value:** ``not set``
+"""

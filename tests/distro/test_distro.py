@@ -21,7 +21,13 @@ from unittest import TestCase, mock
 
 from elasticotel.distro import ElasticOpenTelemetryConfigurator, ElasticOpenTelemetryDistro, logger as distro_logger
 from elasticotel.distro.config import opamp_handler, logger as config_logger, Config
-from elasticotel.distro.environment_variables import ELASTIC_OTEL_OPAMP_ENDPOINT, ELASTIC_OTEL_SYSTEM_METRICS_ENABLED
+from elasticotel.distro.environment_variables import (
+    ELASTIC_OTEL_OPAMP_ENDPOINT,
+    ELASTIC_OTEL_OPAMP_CERTIFICATE,
+    ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE,
+    ELASTIC_OTEL_OPAMP_CLIENT_KEY,
+    ELASTIC_OTEL_SYSTEM_METRICS_ENABLED,
+)
 from elasticotel.sdk.sampler import DefaultSampler
 from opentelemetry.environment_variables import (
     OTEL_LOGS_EXPORTER,
@@ -162,6 +168,9 @@ class TestDistribution(TestCase):
             endpoint="http://localhost:4320/v1/opamp",
             agent_identifying_attributes={"service.name": "service", "deployment.environment.name": "dev"},
             headers=None,
+            tls_certificate=True,
+            tls_client_certificate=None,
+            tls_client_key=None,
         )
         agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
         agent_mock.start.assert_called_once_with()
@@ -186,6 +195,9 @@ class TestDistribution(TestCase):
             endpoint="https://localhost:4320/v1/opamp",
             agent_identifying_attributes={"service.name": "service", "deployment.environment.name": "dev"},
             headers=None,
+            tls_certificate=True,
+            tls_client_certificate=None,
+            tls_client_key=None,
         )
         agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
         agent_mock.start.assert_called_once_with()
@@ -211,6 +223,9 @@ class TestDistribution(TestCase):
             endpoint="http://localhost:4320/v1/opamp",
             agent_identifying_attributes={"service.name": "service", "deployment.environment.name": "dev"},
             headers={"authorization": "ApiKey foobar==="},
+            tls_certificate=True,
+            tls_client_certificate=None,
+            tls_client_key=None,
         )
         agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
         agent_mock.start.assert_called_once_with()
@@ -235,6 +250,9 @@ class TestDistribution(TestCase):
             endpoint="https://localhost:4320/v1/opamp",
             agent_identifying_attributes={"service.name": "service", "deployment.environment.name": "dev"},
             headers=None,
+            tls_certificate=True,
+            tls_client_certificate=None,
+            tls_client_key=None,
         )
         agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
         agent_mock.start.assert_called_once_with()
@@ -259,6 +277,39 @@ class TestDistribution(TestCase):
             endpoint="https://localhost:4320/v1/opamp",
             agent_identifying_attributes={"service.name": "service"},
             headers=None,
+            tls_certificate=True,
+            tls_client_certificate=None,
+            tls_client_key=None,
+        )
+        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.start.assert_called_once_with()
+
+    @mock.patch.dict(
+        "os.environ",
+        {
+            ELASTIC_OTEL_OPAMP_ENDPOINT: "https://localhost:4320/v1/opamp",
+            ELASTIC_OTEL_OPAMP_CERTIFICATE: "server.pem",
+            ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE: "client.pem",
+            ELASTIC_OTEL_OPAMP_CLIENT_KEY: "client.key",
+            "OTEL_RESOURCE_ATTRIBUTES": "service.name=service",
+        },
+        clear=True,
+    )
+    @mock.patch("elasticotel.distro.OpAMPAgent")
+    @mock.patch("elasticotel.distro.OpAMPClient")
+    def test_configurator_sets_up_opamp_with_mTLS_variables(self, client_mock, agent_mock):
+        client_mock.return_value = client_mock
+        agent_mock.return_value = agent_mock
+
+        ElasticOpenTelemetryConfigurator()._configure()
+
+        client_mock.assert_called_once_with(
+            endpoint="https://localhost:4320/v1/opamp",
+            agent_identifying_attributes={"service.name": "service"},
+            headers=None,
+            tls_certificate="server.pem",
+            tls_client_certificate="client.pem",
+            tls_client_key="client.key",
         )
         agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
         agent_mock.start.assert_called_once_with()
