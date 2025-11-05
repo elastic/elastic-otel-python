@@ -88,6 +88,9 @@ def test_client_headers_override_defaults():
         headers={"Content-Type": "application/x-protobuf", "User-Agent": "Custom"},
         data=b"",
         timeout_millis=1000,
+        tls_certificate=True,
+        tls_client_certificate=None,
+        tls_client_key=None,
     )
 
 
@@ -347,6 +350,9 @@ def test_send(client):
         headers={"Content-Type": "application/x-protobuf", "User-Agent": "OTel-OpAMP-Python/" + __version__},
         data=b"foo",
         timeout_millis=1000,
+        tls_certificate=True,
+        tls_client_certificate=None,
+        tls_client_key=None,
     )
 
 
