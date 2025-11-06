@@ -67,8 +67,29 @@ product:
 
 If the OpAMP server is configured to require authentication set the `ELASTIC_OTEL_OPAMP_HEADERS` environment variable.
 
-```
+```sh
 export ELASTIC_OTEL_OPAMP_HEADERS="Authorization=ApiKey an_api_key"
+```
+
+### Configure mTLS for Central configuration
+
+```{applies_to}
+serverless: unavailable
+stack: preview 9.1
+product:
+  edot_python: preview 1.10.0
+```
+
+If the OpAMP Central configuration server requires mutual TLS to encrypt data in transit you need to set the following environment variables:
+
+- `ELASTIC_OTEL_OPAMP_CERTIFICATE`: The path of the trusted certificate to use when verifying a server’s TLS credentials, this may also be used if the server is using a self-signed certificate.
+- `ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE`: Client certificate/chain trust for clients private key path to use in mTLS communication in PEM format.
+- `ELASTIC_OTEL_OPAMP_CLIENT_KEY`: Client private key path to use in mTLS communication in PEM format.
+
+```sh
+export ELASTIC_OTEL_OPAMP_CERTIFICATE=/path/to/rootCA.pem
+export ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE=/path/to/client.pem
+export ELASTIC_OTEL_OPAMP_CLIENT_KEY=/path/to/client-key.pem
 ```
 
 ### Central configuration settings
