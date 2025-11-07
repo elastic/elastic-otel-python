@@ -60,6 +60,9 @@ from elasticotel.distro.environment_variables import (
     ELASTIC_OTEL_OPAMP_ENDPOINT,
     ELASTIC_OTEL_OPAMP_HEADERS,
     ELASTIC_OTEL_SYSTEM_METRICS_ENABLED,
+    ELASTIC_OTEL_OPAMP_CERTIFICATE,
+    ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE,
+    ELASTIC_OTEL_OPAMP_CLIENT_KEY,
 )
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
 from elasticotel.distro.config import opamp_handler, _initialize_config, DEFAULT_SAMPLING_RATE
@@ -129,10 +132,17 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                 else:
                     headers = None
 
+                # If string is a path to the certificate, if bool means to check the server certificate. Behaviour inherited from requests
+                tls_certificate: str | bool = os.environ.get(ELASTIC_OTEL_OPAMP_CERTIFICATE, True)
+                tls_client_certificate: str | None = os.environ.get(ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE)
+                tls_client_key: str | None = os.environ.get(ELASTIC_OTEL_OPAMP_CLIENT_KEY)
                 opamp_client = OpAMPClient(
                     endpoint=endpoint_url,
                     agent_identifying_attributes=agent_identifying_attributes,
                     headers=headers,
+                    tls_certificate=tls_certificate,
+                    tls_client_certificate=tls_client_certificate,
+                    tls_client_key=tls_client_key,
                 )
                 opamp_agent = OpAMPAgent(
                     interval=30,
