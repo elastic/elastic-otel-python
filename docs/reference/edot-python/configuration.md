@@ -129,7 +129,7 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 | `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | `DELTA` | `CUMULATIVE` | |
 | `OTEL_LOG_LEVEL` | `warn` | | {applies_to}`edot_python: ga 1.9.0` |
 | `OTEL_METRICS_EXEMPLAR_FILTER` | `always_off` | `trace_based` | |
-| `OTEL_TRACES_SAMPLER` | `parentbased_traceidratio` | `parentbased_always_on` | {applies_to}`edot_python: ga 1.5.0` |
+| `OTEL_TRACES_SAMPLER` | `experimental_composite_parentbased_traceidratio` | `parentbased_always_on` | {applies_to}`edot_python: ga 1.10.0` , was `parentbased_traceidratio` since {applies_to}`edot_python: ga 1.5.0` |
 | `OTEL_TRACES_SAMPLER_ARG` | `1.0` | | {applies_to}`edot_python: ga 1.6.0`|
 
 :::{note}
