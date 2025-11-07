@@ -50,7 +50,7 @@ def test_can_send():
     assert isinstance(response, opamp_pb2.ServerToAgent)
 
 
-def test_send_tls_certiticate_mapped_to_verify():
+def test_send_tls_certificate_mapped_to_verify():
     transport = RequestsTransport()
     serialized_message = opamp_pb2.ServerToAgent().SerializeToString()
     response_mock = mock.Mock(content=serialized_message)
@@ -58,11 +58,11 @@ def test_send_tls_certiticate_mapped_to_verify():
     with mock.patch.object(transport, "session") as session_mock:
         session_mock.post.return_value = response_mock
         response = transport.send(
-            url="http://127.0.0.1/v1/opamp", headers={}, data=data, timeout_millis=1_000, tls_certificate=False
+            url="https://127.0.0.1/v1/opamp", headers={}, data=data, timeout_millis=1_000, tls_certificate=False
         )
 
         session_mock.post.assert_called_once_with(
-            "http://127.0.0.1/v1/opamp", headers=base_headers, data=data, timeout=1, verify=False, cert=None
+            "https://127.0.0.1/v1/opamp", headers=base_headers, data=data, timeout=1, verify=False, cert=None
         )
 
     assert isinstance(response, opamp_pb2.ServerToAgent)
@@ -76,7 +76,7 @@ def test_send_mtls():
     with mock.patch.object(transport, "session") as session_mock:
         session_mock.post.return_value = response_mock
         response = transport.send(
-            url="http://127.0.0.1/v1/opamp",
+            url="https://127.0.0.1/v1/opamp",
             headers={},
             data=data,
             timeout_millis=1_000,
@@ -86,7 +86,7 @@ def test_send_mtls():
         )
 
         session_mock.post.assert_called_once_with(
-            "http://127.0.0.1/v1/opamp",
+            "https://127.0.0.1/v1/opamp",
             headers=base_headers,
             data=data,
             timeout=1,
@@ -105,7 +105,7 @@ def test_send_mtls_no_client_key():
     with mock.patch.object(transport, "session") as session_mock:
         session_mock.post.return_value = response_mock
         response = transport.send(
-            url="http://127.0.0.1/v1/opamp",
+            url="https://127.0.0.1/v1/opamp",
             headers={},
             data=data,
             timeout_millis=1_000,
@@ -114,7 +114,7 @@ def test_send_mtls_no_client_key():
         )
 
         session_mock.post.assert_called_once_with(
-            "http://127.0.0.1/v1/opamp",
+            "https://127.0.0.1/v1/opamp",
             headers=base_headers,
             data=data,
             timeout=1,
