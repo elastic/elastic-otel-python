@@ -47,7 +47,7 @@ For example `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS=".*sessio
 
 ### `cloud_provider`
 
-The Elastic [`cloud_provider`](apm-agent-python://reference/configuration.md#config-cloud-provider) option corresponds to listing individual resource detectors using the OpenTelemetry Python `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` environment variable, see [default value of OTEL_EXPERIMENTAL_RESOURCE_DETECTORS](/reference/edot-python/setup/configuration.md##differences-from-opentelemetry-python). The default value is dynamic based on the platform and is analogous to `auto`.
+The Elastic [`cloud_provider`](apm-agent-python://reference/configuration.md#config-cloud-provider) option corresponds to listing individual resource detectors using the OpenTelemetry Python `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` environment variable, see [default value of OTEL_EXPERIMENTAL_RESOURCE_DETECTORS](configuration.md#differences-from-opentelemetry-python). The default value is dynamic based on the platform and is analogous to `auto`.
 
 ### `django_autoinsert_middleware`
 
@@ -75,7 +75,7 @@ For example: `OTEL_RESOURCE_ATTRIBUTES=alice=first,bob=second`. Such labels will
 
 ### `include_process_args`
 
-The Elastic [`include_process_args`](apm-agent-python://reference/configuration.md#config-include-process-args) option corresponds to include the `ProcessResourceDetector` to `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` environment variable, see [default value of OTEL_EXPERIMENTAL_RESOURCE_DETECTORS](/reference/edot-python/setup/configuration.md##differences-from-opentelemetry-python).
+The Elastic [`include_process_args`](apm-agent-python://reference/configuration.md#config-include-process-args) option corresponds to include the `ProcessResourceDetector` to `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` environment variable, see [default value of OTEL_EXPERIMENTAL_RESOURCE_DETECTORS](configuration.md#differences-from-opentelemetry-python).
 
 ### `metrics_interval`
 
@@ -85,7 +85,7 @@ For example: `OTEL_METRIC_EXPORT_INTERVAL=30000`.
 
 ### `sanitize_field_names`
 
-The Elastic [`sanitize_field_names`](apm-agent-python://reference/configuration.md#config-sanitize-fieldnames) option used not have a complete counterpart, for captured headers sanitization see [capture_headers](#capture-headers).
+The Elastic [`sanitize_field_names`](apm-agent-python://reference/configuration.md#config-sanitize-field-names) option used not have a complete counterpart, for captured headers sanitization see [capture_headers](#capture_headers).
 
 ### `secret_token`
 
@@ -115,9 +115,9 @@ The Elastic [`service_version`](apm-agent-python://reference/configuration.md#co
 
 For example: `OTEL_RESOURCE_ATTRIBUTES=service.version=1.2.3`.
 
-### `transaction_ignore_patterns` and `transaction_ignore_urls`
+### `transaction_ignore_urls` and `transactions_ignore_patterns`
 
-The Elastic [`transaction_ignore_patterns`](apm-agent-python://reference/configuration.md#config-transaction-ignore-patterns) and [`transaction_ignore_urls`](apm-agent-python://reference/configuration.md#config-transaction-ignore-urls) options correspond to setting the [OTEL_PYTHON_EXCLUDED_URLS](https://opentelemetry.io/docs/zero-code/python/configuration/#excluded-urls) environment variable.
+The Elastic [`transaction_ignore_urls`](apm-agent-python://reference/configuration.md#config-transaction-ignore-urls) and [`transactions_ignore_patterns`](apm-agent-python://reference/configuration.md#config-transactions-ignore-patterns) options correspond to setting the [OTEL_PYTHON_EXCLUDED_URLS](https://opentelemetry.io/docs/zero-code/python/configuration/#excluded-urls) environment variable.
 
 ## Performance overhead
 
