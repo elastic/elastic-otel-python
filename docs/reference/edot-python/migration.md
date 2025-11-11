@@ -47,7 +47,7 @@ For example `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS=".*sessio
 
 ### `cloud_provider`
 
-The Elastic [`cloud_provider`](apm-agent-python://reference/configuration.md#config-cloud-provider) option corresponds to listing individual resource detectors using the OpenTelemetry Python `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` environment variable, see [default value of `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS`](configuration.md#differences-from-opentelemetry-python). The default value is dynamic based on the platform and is analogous to `auto`.
+The Elastic [`cloud_provider`](apm-agent-python://reference/configuration.md#config-cloud-provider) option corresponds to listing individual resource detectors using the OpenTelemetry Python `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` environment variable, refer to [default value of `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS`](configuration.md#differences-from-opentelemetry-python). The default value is dynamic based on the platform and is analogous to `auto`.
 
 ### `django_autoinsert_middleware`
 
@@ -59,7 +59,7 @@ The Elastic [`django_transaction_name_from_route`](apm-agent-python://reference/
 
 ### `enabled`
 
-The Elastic [`enabled`](apm-agent-python://reference/configuration.md#config-enabled) option corresponds to the OpenTelemetry [`OTEL_SDK_DISABLED`](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration) environment_variable.
+The Elastic [`enabled`](apm-agent-python://reference/configuration.md#config-enabled) option corresponds to the OpenTelemetry [`OTEL_SDK_DISABLED`](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration) environment variable.
 
 ### `environment`
 
@@ -75,7 +75,7 @@ For example: `OTEL_RESOURCE_ATTRIBUTES=alice=first,bob=second`. Such labels will
 
 ### `include_process_args`
 
-The Elastic [`include_process_args`](apm-agent-python://reference/configuration.md#config-include-process-args) option corresponds to include the `ProcessResourceDetector` to `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` environment variable, see [default value of `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS`](configuration.md#differences-from-opentelemetry-python).
+The Elastic [`include_process_args`](apm-agent-python://reference/configuration.md#config-include-process-args) option corresponds to include the `ProcessResourceDetector` to `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` environment variable, refer to the [default value of `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS`](configuration.md#differences-from-opentelemetry-python).
 
 ### `metrics_interval`
 
