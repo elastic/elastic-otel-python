@@ -40,10 +40,10 @@ For example: `OTEL_EXPORTER_OTLP_HEADERS="Authorization=ApiKey an_api_key"`.
 
 ### `capture_headers`
 
-The Elastic [`capture_headers`](apm-agent-python://reference/configuration.md#config-capture-headers) option corresponds to the OpenTelemetry Python `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_REQUEST` and `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_RESPONSE` environment variables, see [OpenTelemetry documentation](https://github.com/open-telemetry/opentelemetry.io/edit/main/content/en/docs/zero-code/python/example.md/#capture-http-request-and-response-headers).
+The Elastic [`capture_headers`](apm-agent-python://reference/configuration.md#config-capture-headers) option corresponds to the OpenTelemetry Python `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_REQUEST` and `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_RESPONSE` environment variables, refer to [OpenTelemetry documentation](https://github.com/open-telemetry/opentelemetry.io/edit/main/content/en/docs/zero-code/python/example.md/#capture-http-request-and-response-headers).
 
 For sanitization of these captured headers you can use the `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS` environment variable.
-For example `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS=".*session.*,set-cookie"` will replace the value of headers such as `session-id` and `set-cookie` with `[REDACTED]` in the span.
+For example `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS=".*session.*,set-cookie"` replaces the value of headers such as `session-id` and `set-cookie` with `[REDACTED]` in the span.
 
 ### `cloud_provider`
 
@@ -51,11 +51,11 @@ The Elastic [`cloud_provider`](apm-agent-python://reference/configuration.md#con
 
 ### `django_autoinsert_middleware`
 
-The Elastic [`django_transaction_name_from_route`](apm-agent-python://reference/configuration.md#config-django-autoinsert-middleware) option does not have a correspondant option but is enabled by default in OpenTelemetry Python.
+The Elastic [`django_transaction_name_from_route`](apm-agent-python://reference/configuration.md#config-django-autoinsert-middleware) option does not have a correspondent option, but is activated by default in OpenTelemetry Python.
 
 ### `django_transaction_name_from_route`
 
-The Elastic [`django_transaction_name_from_route`](apm-agent-python://reference/configuration.md#config-django-transaction-name-from-route) option does not have a correspondant option but is enabled by default in OpenTelemetry Python.
+The Elastic [`django_transaction_name_from_route`](apm-agent-python://reference/configuration.md#config-django-transaction-name-from-route) option does not have a correspondent option, but is activated by default in OpenTelemetry Python.
 
 ### `enabled`
 
@@ -85,7 +85,7 @@ For example: `OTEL_METRIC_EXPORT_INTERVAL=30000`.
 
 ### `sanitize_field_names`
 
-The Elastic [`sanitize_field_names`](apm-agent-python://reference/configuration.md#config-sanitize-field-names) option used not have a complete counterpart, for captured headers sanitization see [capture_headers](#capture_headers).
+The Elastic [`sanitize_field_names`](apm-agent-python://reference/configuration.md#config-sanitize-field-names) option does not have a complete equivalent. For captured headers sanitization, refer to [capture_headers](#capture_headers).
 
 ### `secret_token`
 
