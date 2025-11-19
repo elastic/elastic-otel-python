@@ -27,6 +27,13 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.10.0 [edot-python-1.10.0-release-notes]
+
+### Features and enhancements [edot-python-1.10.0-features-enhancements]
+
+- Use by default a composite sampler, refer to [OpenTelemetry Probability Sampling specs](https://opentelemetry.io/docs/specs/otel/trace/tracestate-probability-sampling/) ([#410](https://github.com/elastic/elastic-otel-python/pull/410))
+- Handle `ELASTIC_OTEL_OPAMP_HEADERS` env var for OpAMP authentication ([#411](https://github.com/elastic/elastic-otel-python/pull/411))
+- Add support for mTLS authentication with OpAMP ([#419](https://github.com/elastic/elastic-otel-python/pull/419))
 
 ## 1.9.0 [edot-python-1.9.0-release-notes]
 
