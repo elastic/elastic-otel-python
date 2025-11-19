@@ -50,7 +50,7 @@ Refer to [Observability quickstart](docs-content://solutions/observability/get-s
 
 To configure EDOT Python you need to set a few `OTLP_*` environment variables that are available when running EDOT Python:
 
-* `OTEL_RESOURCE_ATTRIBUTES`: Use this to add a `service.name` and `deployment.environment`. This makes it easier to recognize your application when reviewing data sent to Elastic.
+* `OTEL_RESOURCE_ATTRIBUTES`: Use this to add a `service.name` and `deployment.environment.name`. This makes it easier to recognize your application when reviewing data sent to Elastic.
 
 The following environment variables are not required if you are sending data through a local EDOT Collector but are provided in the Elastic Observability platform onboarding:
 
