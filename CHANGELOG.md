@@ -1,8 +1,14 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.10.0
+
+- Wire up composite sampler (#410)
+- Handle `ELASTIC_OTEL_OPAMP_HEADERS` env var for OpAMP authentication (#411)
+- Add support for mTLS authentication with OpAMP (#419)
+
 ## v1.9.0
 
-- Handle OTEL_LOG_LEVEL to tune OpenTelemetry SDK and EDOT SDK logging (#397)
+- Handle `OTEL_LOG_LEVEL` to tune OpenTelemetry SDK and EDOT SDK logging (#397)
 - Log OTel configuration variables at startup at info level (#398)
 - Make OpAMP client more robust (#401)
 
@@ -104,7 +110,7 @@
 - Enable by default cloud resource detectors for AWS, Azure and GCP (#198)
 - Introduce edot-bootstrap, like opentelemetry-bootstrap but with EDOT Openai instrumentation (#196)
 - Add docs for tracing with manual spans and metrics (#189)
-- Set OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE to DELTA (#197)
+- Set `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` to `DELTA` (#197)
 - Bump elastic-opentelemetry-instrumentation-openai dependency to 0.5.0 (#204)
 
 ## v0.4.1
