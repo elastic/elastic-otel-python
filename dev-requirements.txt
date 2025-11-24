@@ -135,7 +135,7 @@ typing-extensions==4.15.0
     #   opentelemetry-semantic-conventions
 urllib3==2.5.0
     # via requests
-uuid-utils==0.11.0
+uuid-utils==0.11.1
     # via elastic-opentelemetry (pyproject.toml)
 wheel==0.45.1
     # via pip-tools
