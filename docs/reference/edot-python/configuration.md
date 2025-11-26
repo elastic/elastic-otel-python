@@ -115,10 +115,6 @@ Instrument Python `logging` module to format and forward logs in OTLP format is 
 export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
 ```
 
-:::{note}
-Turning this on will make any call to [logging.basicConfig](https://docs.python.org/3/library/logging.html#logging.basicConfig) from your application a no-op.
-:::
-
 #### Differences from OpenTelemetry Python
 
 EDOT Python uses different defaults than OpenTelemetry Python for the following configuration options:
