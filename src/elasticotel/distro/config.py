@@ -100,9 +100,17 @@ class Config:
             for k, v in os.environ.items()
             if k.startswith("OTEL_") or k.startswith("ELASTIC_OTEL_")
         ]
+        # we rely on the application setting up logging and we don't want to interfere with that BUT:
+        # - by default the python root logger should be at WARNING level
+        # - the EDOT Configuration dump is at INFO level
+        # - at startup we don't have application logging already setup
+        # So we add a temporary handler just for printing our config
+        handler = logging.StreamHandler()
+        logger.addHandler(handler)
         logger.info("EDOT Configuration")
         for k, v in sorted(env_vars):
             logger.info("%s: %s", k, v)
+        logger.handlers.remove(handler)
 
     def _handle_logging(self):
         # do validation, we only validate logging_level because sampling_rate is handled by the sdk already
