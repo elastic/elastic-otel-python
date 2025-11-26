@@ -41,6 +41,7 @@ _LOG_LEVELS_MAP: dict[str, int] = {
     "debug": logging.DEBUG,
     "info": logging.INFO,
     "warn": logging.WARNING,
+    "warning": logging.WARNING,
     "error": logging.ERROR,
     "fatal": logging.CRITICAL,
     "off": 1000,
