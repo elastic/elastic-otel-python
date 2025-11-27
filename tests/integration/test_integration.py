@@ -213,6 +213,19 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
         self.assertFalse(telemetry["traces"])
         self.assertTrue(telemetry["logs"])
 
+    def test_configuration_dump_at_startup_with_info_level(self):
+        def test_script():
+            pass
+
+        env = {"OTEL_LOG_LEVEL": "info", "OTEL_ENV_VAR": "value"}
+        stdout, stderr, returncode = self.run_script(
+            test_script, environment_variables=env, wrapper_script="opentelemetry-instrument"
+        )
+
+        assert "EDOT Configuration" in stderr
+        assert "OTEL_LOG_LEVEL: info" in stderr
+        assert "OTEL_ENV_VAR: value" in stderr
+
 
 @pytest.mark.integration
 class HTTPIntegrationTestCase(ElasticIntegrationHTTPTestCase):
