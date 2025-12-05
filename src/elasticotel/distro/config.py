@@ -31,6 +31,7 @@ from opentelemetry._opamp.exceptions import (
     OpAMPRemoteConfigParseException,
 )
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
+from opentelemetry.sdk._logs import LoggingHandler
 from opentelemetry.sdk.environment_variables import OTEL_LOG_LEVEL, OTEL_TRACES_SAMPLER_ARG
 
 
@@ -100,19 +101,24 @@ class Config:
             for k, v in os.environ.items()
             if k.startswith("OTEL_") or k.startswith("ELASTIC_OTEL_")
         ]
-        # we rely on the application setting up logging and we don't want to interfere with that BUT:
-        # - by default the python root logger should be at WARNING level
-        # - the EDOT Configuration dump is at INFO level
-        # - at startup we don't have application logging already setup
-        # So we add a temporary handler just for printing our config
-        handler = logging.StreamHandler()
-        logger.addHandler(handler)
+
         logger.info("EDOT Configuration")
         for k, v in sorted(env_vars):
             logger.info("%s: %s", k, v)
-        logger.handlers.remove(handler)
 
-    def _handle_logging(self):
+    def _setup_logging(self):
+        # Ensure these loggers have a handler so logs are actually output
+        # Without a handler, logs won't be displayed when running without a TTY (e.g., docker run without -it)
+        # We only add a handler if neither the logger nor root has any handlers configured
+        for _logger in self._get_loggers():
+            if not _logger.handlers:
+                handler = logging.StreamHandler()
+                handler.setFormatter(logging.Formatter("%(levelname)s:%(name)s:%(message)s"))
+                _logger.addHandler(handler)
+                # We need to propagate if we have the OTel handler otherwise we don't see logs shipped, in the other
+                # cases we shouldn't
+                _logger.propagate = any(isinstance(_handler, LoggingHandler) for _handler in logging.root.handlers)
+
         # do validation, we only validate logging_level because sampling_rate is handled by the sdk already
         logging_level = _LOG_LEVELS_MAP.get(self.logging_level.value)
         if logging_level is None:
@@ -121,15 +127,23 @@ class Config:
             return
 
         # apply logging_level changes since these are not handled by the sdk
-        logging.getLogger("opentelemetry").setLevel(logging_level)
-        logging.getLogger("elasticotel").setLevel(logging_level)
+        self.update_loggers(logging_level)
+
+    @staticmethod
+    def _get_loggers() -> list[logging.Logger]:
+        return [logging.getLogger("opentelemetry"), logging.getLogger("elasticotel")]
+
+    def update_loggers(self, logging_level: int):
+        """Update upstream and distro logging levels"""
+        for logger in self._get_loggers():
+            logger.setLevel(logging_level)
 
     def __post_init__(self):
         # we need to initialize each config item when we instantiate the Config and not at declaration time
         self.sampling_rate.init()
         self.logging_level.init()
 
-        self._handle_logging()
+        self._setup_logging()
 
 
 def _handle_logging_level(remote_config) -> ConfigUpdate:
@@ -142,10 +156,8 @@ def _handle_logging_level(remote_config) -> ConfigUpdate:
         logger.error("Logging level not handled: %s", config_logging_level)
         error_message = f"Logging level not handled: {config_logging_level}"
     else:
-        # update upstream and distro logging levels
-        logging.getLogger("opentelemetry").setLevel(logging_level)
-        logging.getLogger("elasticotel").setLevel(logging_level)
         if _config:
+            _config.update_loggers(logging_level)
             _config.logging_level.update(value=config_logging_level)
         error_message = ""
     return ConfigUpdate(error_message=error_message)
