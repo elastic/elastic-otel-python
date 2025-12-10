@@ -133,7 +133,7 @@ typing-extensions==4.15.0
     #   opentelemetry-resourcedetector-gcp
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
-urllib3==2.5.0
+urllib3==2.6.0
     # via requests
 uuid-utils==0.11.1
     # via elastic-opentelemetry (pyproject.toml)
