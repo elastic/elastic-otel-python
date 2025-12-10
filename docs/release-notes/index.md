@@ -27,6 +27,11 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.10.2 [edot-python-1.10.2-release-notes]
+
+### Fixes [edot-python-1.10.2-fixes]
+
+- Fix distro logging without a tty ([#436](https://github.com/elastic/elastic-otel-python/pull/436))
 
 ## 1.10.1 [edot-python-1.10.1-release-notes]
 
