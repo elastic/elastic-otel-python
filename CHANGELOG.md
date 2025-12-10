@@ -1,5 +1,9 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.10.2
+
+- Fix distro logging without a tty (#436)
+
 ## v1.10.1
 
 - Fix print of EDOT configuration at startup (#431)
