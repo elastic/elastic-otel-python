@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+  schedule:
+    - cron: '0 6 * * 1'  # At 06:00 on Monday
 
 permissions:
   contents: read
@@ -92,3 +94,20 @@ jobs:
       - run: pip install -r dev-requirements.txt
       - run: pip install pyright
       - run: pyright
+
+  notify:
+    runs-on: ubuntu-slim
+    if: ${{ always() && github.ref_name == 'main' }}
+    needs: [pre-commit, license-header-check, pip-installable, pip-licenses, operator-image-buildable, test, typecheck]
+    steps:
+      - id: check
+        uses: elastic/oblt-actions/check-dependent-jobs@v1
+        with:
+          jobs: ${{ toJSON(needs) }}
+      - if: ${{ steps.check.outputs.isSuccess == 'false' }}
+        uses: elastic/oblt-actions/slack/send@v1
+        with:
+          bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          channel-id: "#apm-agent-python"
+          message: |-
+            :fire: Something went wrong with `${{ github.repository }}@${{ github.ref_name }}`. Please look what's going on <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|here>
