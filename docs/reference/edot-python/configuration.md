@@ -107,6 +107,20 @@ Dynamic settings can be changed without having to restart the application.
 
 EDOT Python supports all configuration options listed in the [OpenTelemetry General SDK Configuration documentation](https://opentelemetry.io/docs/languages/sdk-configuration/general/) and [OpenTelemetry Python](https://opentelemetry.io/docs/languages/python).
 
+#### TLS configuration for OTLP endpoint
+
+To secure the connection to the OTLP endpoint using TLS, you can configure the following environment variables:
+
+| Option | Description |
+|---|---|
+| `OTEL_EXPORTER_OTLP_CERTIFICATE` | Path to a PEM-encoded file containing the trusted certificate(s) to verify the server's TLS credentials. |
+| `OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE` | Path to a PEM-encoded file containing the client certificate for mTLS. |
+| `OTEL_EXPORTER_OTLP_CLIENT_KEY` | Path to a PEM-encoded file containing the client's private key for mTLS. |
+
+Signal-specific variants are also supported: `OTEL_EXPORTER_OTLP_{TRACES,METRICS,LOGS}_CERTIFICATE`, `OTEL_EXPORTER_OTLP_{TRACES,METRICS,LOGS}_CLIENT_CERTIFICATE`, and `OTEL_EXPORTER_OTLP_{TRACES,METRICS,LOGS}_CLIENT_KEY`.
+
+For more details, refer to the [OpenTelemetry OTLP Exporter documentation](https://opentelemetry.io/docs/specs/otel/protocol/exporter/).
+
 #### Logs
 
 Instrument Python `logging` module to format and forward logs in OTLP format is turned off by default and gated under a configuration environment variable:
