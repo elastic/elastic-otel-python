@@ -1,5 +1,20 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.11.0
+
+- Bump OpenTelemetry to 1.38.0/0.59b0 (#454)
+
+  Upstream changes:
+  * https://github.com/open-telemetry/opentelemetry-python/discussions/4779
+  * https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3865
+- Bump OpenTelemetry to 1.39.1/0.60b1 (#455)
+
+  Upstream changes:
+  * 1.39.0/0.60b0: https://github.com/open-telemetry/opentelemetry-python/discussions/4834
+  * 1.39.1/0.60b1: https://github.com/open-telemetry/opentelemetry-python/discussions/4852
+  * 1.39.0/0.60b0: https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3997
+  * 1.39.1/0.60b1: https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4022
+
 ## v1.10.2
 
 - Fix distro logging without a tty (#436)

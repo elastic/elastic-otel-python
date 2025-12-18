@@ -27,6 +27,23 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.11.0 [edot-python-1.11.0-release-notes]
+
+### Features and enhancements [edot-python-1.11.0-features-enhancements]
+
+- Bump OpenTelemetry to 1.38.0/0.59b0 ([#454](https://github.com/elastic/elastic-otel-python/pull/454))
+
+  Upstream changes:
+  * [opentelemetry-python](https://github.com/open-telemetry/opentelemetry-python/discussions/4779)
+  * [opentelemetry-python-contrib](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3865)
+- Bump OpenTelemetry to 1.39.1/0.60b1 ([#455](https://github.com/elastic/elastic-otel-python/pull/455))
+
+  Upstream changes:
+  * [opentelemetry-python 1.39.0/0.60b0](https://github.com/open-telemetry/opentelemetry-python/discussions/4834)
+  * [opentelemetry-python 1.39.1/0.60b1](https://github.com/open-telemetry/opentelemetry-python/discussions/4852)
+  * [opentelemetry-python-contrib 1.39.0/0.60b0](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/3997)
+  * [opentelemetry-python-contrib 1.39.1/0.60b1](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4022)
+
 ## 1.10.2 [edot-python-1.10.2-release-notes]
 
 ### Fixes [edot-python-1.10.2-fixes]
