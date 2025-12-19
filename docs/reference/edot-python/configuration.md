@@ -82,7 +82,7 @@ product:
 
 If the OpAMP Central configuration server requires mutual TLS to encrypt data in transit you need to set the following environment variables:
 
-- `ELASTIC_OTEL_OPAMP_CERTIFICATE`: The path of the trusted certificate to use when verifying a server’s TLS credentials, this may also be used if the server is using a self-signed certificate.
+- `ELASTIC_OTEL_OPAMP_CERTIFICATE`: The path of the trusted certificate, in PEM format, to use when verifying a server’s TLS credentials, this may also be used if the server is using a self-signed certificate.
 - `ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE`: Client certificate/chain trust for clients private key path to use in mTLS communication in PEM format.
 - `ELASTIC_OTEL_OPAMP_CLIENT_KEY`: Client private key path to use in mTLS communication in PEM format.
 
@@ -113,9 +113,9 @@ To secure the connection to the OTLP endpoint using TLS, you can configure the f
 
 | Option | Description |
 |---|---|
-| `OTEL_EXPORTER_OTLP_CERTIFICATE` | Path to a PEM-encoded file containing the trusted certificate(s) to verify the server's TLS credentials. |
-| `OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE` | Path to a PEM-encoded file containing the client certificate for mTLS. |
-| `OTEL_EXPORTER_OTLP_CLIENT_KEY` | Path to a PEM-encoded file containing the client's private key for mTLS. |
+| `OTEL_EXPORTER_OTLP_CERTIFICATE` | The path of the trusted certificate, in PEM format, to use when verifying a server’s TLS credentials, this may also be used if the server is using a self-signed certificate. |
+| `OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE` | Client certificate/chain trust for clients private key path to use in mTLS communication in PEM format. |
+| `OTEL_EXPORTER_OTLP_CLIENT_KEY` | Client private key path to use in mTLS communication in PEM format. |
 
 Signal-specific variants are also supported: `OTEL_EXPORTER_OTLP_{TRACES,METRICS,LOGS}_CERTIFICATE`, `OTEL_EXPORTER_OTLP_{TRACES,METRICS,LOGS}_CLIENT_CERTIFICATE`, and `OTEL_EXPORTER_OTLP_{TRACES,METRICS,LOGS}_CLIENT_KEY`.
 
