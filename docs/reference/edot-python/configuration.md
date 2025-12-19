@@ -82,7 +82,7 @@ product:
 
 If the OpAMP Central configuration server requires mutual TLS to encrypt data in transit you need to set the following environment variables:
 
-- `ELASTIC_OTEL_OPAMP_CERTIFICATE`: The path of the trusted certificate to use when verifying a server’s TLS credentials, this may also be used if the server is using a self-signed certificate.
+- `ELASTIC_OTEL_OPAMP_CERTIFICATE`: The path of the trusted certificate, in PEM format, to use when verifying a server’s TLS credentials, this may also be used if the server is using a self-signed certificate.
 - `ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE`: Client certificate/chain trust for clients private key path to use in mTLS communication in PEM format.
 - `ELASTIC_OTEL_OPAMP_CLIENT_KEY`: Client private key path to use in mTLS communication in PEM format.
 
@@ -106,6 +106,20 @@ Dynamic settings can be changed without having to restart the application.
 ### OpenTelemetry configuration options
 
 EDOT Python supports all configuration options listed in the [OpenTelemetry General SDK Configuration documentation](https://opentelemetry.io/docs/languages/sdk-configuration/general/) and [OpenTelemetry Python](https://opentelemetry.io/docs/languages/python).
+
+#### TLS configuration for OTLP endpoint
+
+To secure the connection to the OTLP endpoint using TLS, you can configure the following environment variables:
+
+| Option | Description |
+|---|---|
+| `OTEL_EXPORTER_OTLP_CERTIFICATE` | The path of the trusted certificate, in PEM format, to use when verifying a server’s TLS credentials, this may also be used if the server is using a self-signed certificate. |
+| `OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE` | Client certificate/chain trust for clients private key path to use in mTLS communication in PEM format. |
+| `OTEL_EXPORTER_OTLP_CLIENT_KEY` | Client private key path to use in mTLS communication in PEM format. |
+
+Signal-specific variants are also supported: `OTEL_EXPORTER_OTLP_{TRACES,METRICS,LOGS}_CERTIFICATE`, `OTEL_EXPORTER_OTLP_{TRACES,METRICS,LOGS}_CLIENT_CERTIFICATE`, and `OTEL_EXPORTER_OTLP_{TRACES,METRICS,LOGS}_CLIENT_KEY`.
+
+For more details, refer to the [OpenTelemetry OTLP Exporter documentation](https://opentelemetry.io/docs/specs/otel/protocol/exporter/).
 
 #### Logs
 
