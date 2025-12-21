@@ -24,7 +24,7 @@ grpcio==1.76.0
     #   oteltest
 idna==3.11
     # via requests
-importlib-metadata==8.7.0
+importlib-metadata==8.7.1
     # via
     #   build
     #   opentelemetry-api
