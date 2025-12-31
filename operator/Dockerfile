@@ -34,8 +34,6 @@ ADD operator/requirements.txt .
 
 RUN mkdir workspace
 
-RUN apk add gcc g++ python3-dev musl-dev linux-headers
-
 RUN pip install --no-cache-dir --target workspace /opt/distro/*.whl -r requirements.txt
 
 FROM ${IMAGE}:${IMAGE_VERSION}
