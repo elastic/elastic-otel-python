@@ -131,7 +131,7 @@ export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
 
 #### HTTP headers capture
 
-You can capture HTTP headers as span attributes on both client and server HTTP instrumentations according to [HTTP semantic conventions](https://opentelemetry.io/docs/specs/semconv/http-spans/), refer to [`http.request.header.<key>`](https://opentelemetry.io/docs/specs/semconv/registry/attributes/http/#http-request-header) and [`http.response.header.<key>`](https://opentelemetry.io/docs/specs/semconv/registry/attributes/http/#http-response-header) attributes.
+You can capture HTTP headers as span attributes on both client and server HTTP instrumentations according to [HTTP semantic conventions](https://opentelemetry.io/docs/specs/semconv/http-spans/). Refer to [`http.request.header.<key>`](https://opentelemetry.io/docs/specs/semconv/registry/attributes/http/#http-request-header) and [`http.response.header.<key>`](https://opentelemetry.io/docs/specs/semconv/registry/attributes/http/#http-response-header) attributes.
 
 ##### server
 
@@ -141,9 +141,9 @@ product:
 ```
 
 To define which HTTP headers you want to capture, provide a comma-separated list
-of HTTP header names via the environment variables
+of HTTP header names through the environment variables
 `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_REQUEST` and
-`OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_RESPONSE`, e.g.:
+`OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_RESPONSE`, for example:
 
 ```sh
 export OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_REQUEST="Accept-Encoding,User-Agent,Referer"
@@ -171,9 +171,9 @@ product:
 ```
 
 To define which HTTP headers you want to capture, provide a comma-separated list
-of HTTP header names via the environment variables
+of HTTP header names through the environment variables
 `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_CLIENT_REQUEST` and
-`OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_CLIENT_RESPONSE`, e.g.:
+`OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_CLIENT_RESPONSE`, for example:
 
 ```sh
 export OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_CLIENT_REQUEST="Accept-Encoding,User-Agent,Referer"
