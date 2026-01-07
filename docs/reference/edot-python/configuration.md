@@ -195,24 +195,16 @@ product:
   edot_python: preview 1.11.0
 ```
 
-Some headers may contain sensitive data such as PII (Personally Identifiable information),
-session keys, passwords, etc. To avoid storing this data OpenTelemetry Python
-provides a sanitization system via the `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS`
+Some headers might contain sensitive data such as personally identifiable information (PII), session keys, passwords, and so on. To avoid storing this data, OpenTelemetry Python provides a sanitization system through the `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS`
 environment variable.
-Set the environment variable
-`OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS` to a comma delimited
-list of HTTP header names to be sanitized. Regexes may be used, and all header
-names will be matched in a case-insensitive manner.
+Set the environment variable to a comma delimited list of HTTP header names to be sanitized. You can use use regular expressions. 
+All header names are matched in a case-insensitive manner.
 
-For example,
+This example replaces the values of the `set-cookie` header and headers such as `session-id` that matches the provided regular expression with `[REDACTED]` in the span:
 
 ```sh
 export OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS=".*session.*,set-cookie"
 ```
-
-will replace the value of headers such as `session-id` and `set-cookie` with
-`[REDACTED]` in the span.
-
 #### Differences from OpenTelemetry Python
 
 EDOT Python uses different defaults than OpenTelemetry Python for the following configuration options:
