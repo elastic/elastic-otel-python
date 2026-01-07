@@ -129,6 +129,82 @@ Instrument Python `logging` module to format and forward logs in OTLP format is 
 export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
 ```
 
+#### HTTP headers capture
+
+You can capture HTTP headers as span attributes on both client and server HTTP instrumentations according to [HTTP semantic conventions](https://opentelemetry.io/docs/specs/semconv/http-spans/). Refer to [`http.request.header.<key>`](https://opentelemetry.io/docs/specs/semconv/registry/attributes/http/#http-request-header) and [`http.response.header.<key>`](https://opentelemetry.io/docs/specs/semconv/registry/attributes/http/#http-response-header) attributes.
+
+##### server
+
+```{applies_to}
+product:
+  edot_python: preview 1.11.0
+```
+
+To define which HTTP headers you want to capture, provide a comma-separated list
+of HTTP header names through the environment variables
+`OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_REQUEST` and
+`OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_RESPONSE`, for example:
+
+```sh
+export OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_REQUEST="Accept-Encoding,User-Agent,Referer"
+export OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SERVER_RESPONSE="Last-Modified,Content-Type"
+```
+
+These configuration options are supported by the following HTTP server instrumentations:
+
+- Aiohttp-server
+- ASGI
+- Django
+- Falcon
+- FastAPI
+- Flask
+- Pyramid
+- Starlette
+- Tornado
+- WSGI
+
+##### client
+
+```{applies_to}
+product:
+  edot_python: preview 1.12.0
+```
+
+To define which HTTP headers you want to capture, provide a comma-separated list
+of HTTP header names through the environment variables
+`OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_CLIENT_REQUEST` and
+`OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_CLIENT_RESPONSE`, for example:
+
+```sh
+export OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_CLIENT_REQUEST="Accept-Encoding,User-Agent,Referer"
+export OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_CLIENT_RESPONSE="Last-Modified,Content-Type"
+```
+
+These configuration options are supported by the following HTTP client instrumentations:
+
+- Aiohttp-client
+- httpx
+- requests
+- urllib
+- urllib3
+
+##### Sanitization of captured headers
+
+```{applies_to}
+product:
+  edot_python: preview 1.11.0
+```
+
+Some headers might contain sensitive data such as personally identifiable information (PII), session keys, passwords, and so on. To avoid storing this data, OpenTelemetry Python provides a sanitization system through the `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS`
+environment variable.
+Set the environment variable to a comma delimited list of HTTP header names to be sanitized. You can use use regular expressions. 
+All header names are matched in a case-insensitive manner.
+
+This example replaces the values of the `set-cookie` header and headers such as `session-id` that matches the provided regular expression with `[REDACTED]` in the span:
+
+```sh
+export OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS=".*session.*,set-cookie"
+```
 #### Differences from OpenTelemetry Python
 
 EDOT Python uses different defaults than OpenTelemetry Python for the following configuration options:
