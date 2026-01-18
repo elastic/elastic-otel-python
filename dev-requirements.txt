@@ -139,7 +139,7 @@ uuid-utils==0.12.0
     # via elastic-opentelemetry (pyproject.toml)
 wheel==0.45.1
     # via pip-tools
-wrapt==1.17.3
+wrapt==2.0.1
     # via opentelemetry-instrumentation
 zipp==3.23.0
     # via importlib-metadata
