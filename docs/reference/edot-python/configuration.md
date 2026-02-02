@@ -15,7 +15,7 @@ products:
 
 # Configure the EDOT Python agent
 
-Configure the {{edot}} Python (EDOT Python) to send data to Elastic.
+Configure the {{edot}} Python (EDOT Python) to send data to Elastic!
 
 ## Configuration method
 
