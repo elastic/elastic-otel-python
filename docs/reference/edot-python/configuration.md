@@ -17,6 +17,8 @@ products:
 
 Configure the {{edot}} Python (EDOT Python) to send data to Elastic!
 
+Use the above version or higher. See the docs.
+
 ## Configuration method
 
 Configure the OpenTelemetry SDK through the mechanisms [documented on the OpenTelemetry website](https://opentelemetry.io/docs/zero-code/python/configuration/). EDOT Python is typically configured with `OTEL_*` environment variables defined by the OpenTelemetry spec. For example:
