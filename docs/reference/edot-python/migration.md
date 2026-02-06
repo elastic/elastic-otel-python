@@ -14,9 +14,9 @@ products:
   - id: apm-agent
 ---
 
-# Migrate to EDOT Python from the Elastic APM Python agent
+# Migrate to EDOT Python from the Elastic {{product.apm}} Python agent
 
-Learn the differences between the [Elastic APM Python agent](apm-agent-python://reference/index.md) and the {{edot}} Python (EDOT Python).
+Learn the differences between the [Elastic {{product.apm}} Python agent](apm-agent-python://reference/index.md) and the {{edot}} Python (EDOT Python).
 
 Follow the steps to migrate your instrumentation and settings. For step-by-step instructions on setting up EDOT Python refer to [Setup](/reference/edot-python/setup/index.md).
 
@@ -24,13 +24,19 @@ Follow the steps to migrate your instrumentation and settings. For step-by-step 
 
 Follow these steps to migrate:
 
-1. Remove any configuration and setup code needed by Elastic APM Python Agent from your application source code.
-2. Migrate any usage of Elastic APM Python Agent API to manual instrumentation with OpenTelemetry API in the application source code.
+1. Remove any configuration and setup code needed by Elastic {{product.apm-agent-python}} from your application source code.
+2. Migrate any usage of Elastic {{product.apm-agent-python}} API to manual instrumentation with OpenTelemetry API in the application source code.
 3. Follow the [setup documentation](setup/index.md) on to install and configure EDOT Python.
 
 ## Configuration mapping
 
-The following are Elastic APM Python agent settings that you can migrate to EDOT Python.
+The following are Elastic {{product.apm}} Python agent settings that you can migrate to EDOT Python.
+
+### Resource attributes when using the EDOT Collector
+
+Ingesting OpenTelemetry data directly through {{product.apm-server}} is [no longer supported](opentelemetry://reference/architecture/index.md#limitations). Historically, when ingesting OpenTelemetry data through the Elastic {{product.apm-server}}, unmapped resource attributes were added under `labels.*`. This behavior does not apply when using the EDOT Collector and is not recommended for new deployments. Use the EDOT Collector or Managed OTLP for supported ingestion.
+
+If you rely on specific attribute mappings for querying or filtering in {{product.observability}}, configure explicit attribute processors in the EDOT Collector pipeline.
 
 ### `api_key`
 
@@ -121,7 +127,7 @@ The Elastic [`transaction_ignore_urls`](apm-agent-python://reference/configurati
 
 ## Performance overhead
 
-Evaluate the [differences in performance overhead](/reference/edot-python/overhead.md) between EDOT Python and Elastic APM Python agent.
+Evaluate the [differences in performance overhead](/reference/edot-python/overhead.md) between EDOT Python and Elastic {{product.apm}} Python agent.
 
 ## Limitations
 
