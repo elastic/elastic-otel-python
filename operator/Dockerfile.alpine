@@ -1,5 +1,5 @@
 # This is a dockerfile for local testing
-FROM python:3.12-alpine3.22@sha256:5f458c81b4459cce8c3061274460d4525ff72eed4dcea9ff0c4eee070d42cf12 AS build
+FROM python:3.12-alpine3.22@sha256:848ba4413eb897e225159b8fc1b02094576cbae4aa73fc13142608ae2c8c0e32 AS build
 
 ARG DISTRO_DIR
 
@@ -15,7 +15,7 @@ RUN apk add gcc python3-dev musl-dev linux-headers
 
 RUN pip install --target workspace /opt/distro/*.whl -r requirements.txt
 
-FROM python:3.12-alpine3.22@sha256:5f458c81b4459cce8c3061274460d4525ff72eed4dcea9ff0c4eee070d42cf12
+FROM python:3.12-alpine3.22@sha256:848ba4413eb897e225159b8fc1b02094576cbae4aa73fc13142608ae2c8c0e32
 
 COPY --from=build /operator-build/workspace /autoinstrumentation
 
