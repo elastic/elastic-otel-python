@@ -123,11 +123,28 @@ For more details, refer to the [OpenTelemetry OTLP Exporter documentation](https
 
 #### Logs
 
-Instrument Python `logging` module to format and forward logs in OTLP format is turned off by default and gated under a configuration environment variable:
+```{applies_to}
+product:
+  edot_python: preview 1.12.0
+```
+
+Instrument Python `logging` module to format and forward logs in OTLP format is handled by the `opentelemetry-instrumentation-logging` package and enabled by default. You can disable that using an environment variable:
+
+```sh
+export OTEL_PYTHON_LOG_AUTO_INSTRUMENTATION=false
+```
+
+Refer to [opentelemetry-instrumentation-logging documentation](https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/logging/logging.html) for more configuration options.
+
+:::{note}
+{applies_to}`edot_python: ga -1.11.0`
+
+On older versions the `logging` module instrumentation was available in the `opentelemetry-sdk` package, turned off by default and gated under a configuration environment variable:
 
 ```sh
 export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
 ```
+:::
 
 #### HTTP headers capture
 
