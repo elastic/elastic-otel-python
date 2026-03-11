@@ -83,11 +83,14 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
         telemetry = self.get_telemetry()
         (metrics,) = telemetry["metrics"]
         (metrics_item,) = metrics["resourceMetrics"]
-        scope_metrics_item = metrics_item["scopeMetrics"][0]["metrics"]
-        process_runtime_metrics_names = [m["name"] for m in scope_metrics_item]
+        metrics_names = [
+            metric["name"] for scope_metrics in metrics_item["scopeMetrics"] for metric in scope_metrics["metrics"]
+        ]
         self.assertEqual(
-            process_runtime_metrics_names,
+            metrics_names,
             [
+                "otel.sdk.span.started",
+                "otel.sdk.span.live",
                 "process.runtime.cpython.memory",
                 "process.runtime.cpython.cpu_time",
                 "process.runtime.cpython.gc_count",
@@ -109,12 +112,15 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
         telemetry = self.get_telemetry()
         (metrics,) = telemetry["metrics"]
         (metrics_item,) = metrics["resourceMetrics"]
-        scope_metrics_item = metrics_item["scopeMetrics"][0]["metrics"]
-        process_runtime_metrics_names = [m["name"] for m in scope_metrics_item]
+        metrics_names = [
+            metric["name"] for scope_metrics in metrics_item["scopeMetrics"] for metric in scope_metrics["metrics"]
+        ]
         self.maxDiff = None
         self.assertEqual(
-            process_runtime_metrics_names,
+            metrics_names,
             [
+                "otel.sdk.span.started",
+                "otel.sdk.span.live",
                 "system.cpu.time",
                 "system.cpu.utilization",
                 "system.memory.usage",
