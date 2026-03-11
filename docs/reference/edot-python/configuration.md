@@ -128,7 +128,7 @@ product:
   edot_python: preview 1.12.0
 ```
 
-Instrument Python `logging` module to format and forward logs in OTLP format is handled by the `opentelemetry-instrumentation-logging` package and enabled by default. You can disable that using an environment variable:
+Instrument Python `logging` module to format and forward logs in OTLP format is handled by the `opentelemetry-instrumentation-logging` package and enabled by default. You can deactivate it using an environment variable:
 
 ```sh
 export OTEL_PYTHON_LOG_AUTO_INSTRUMENTATION=false
@@ -137,9 +137,9 @@ export OTEL_PYTHON_LOG_AUTO_INSTRUMENTATION=false
 Refer to [opentelemetry-instrumentation-logging documentation](https://opentelemetry-python-contrib.readthedocs.io/en/latest/instrumentation/logging/logging.html) for more configuration options.
 
 :::{note}
-{applies_to}`edot_python: ga -1.11.0`
+{applies_to}`edot_python: ga 1.0.0-1.11.0`
 
-On older versions the `logging` module instrumentation was available in the `opentelemetry-sdk` package, turned off by default and gated under a configuration environment variable:
+On earlier versions the `logging` module instrumentation was available in the `opentelemetry-sdk` package, turned off by default and gated under a configuration environment variable:
 
 ```sh
 export OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED=true
