@@ -17,7 +17,7 @@ products:
 
 This page explains the performance considerations when instrumenting Python applications with the Elastic Distribution of OpenTelemetry SDK, including impact analysis and mitigation techniques.
 
-While designed to have minimal performance overhead, the EDOT Java agent, like any instrumentation agent, executes within the application process and thus has a small influence on the application performance. 
+While designed to have minimal performance overhead, the EDOT Python agent, like any instrumentation agent, executes within the application process and thus has a small influence on the application performance. 
 
 This performance overhead depends on the application's technical architecture, its configuration and environment, and the load. These factors are not easy to reproduce on their own, and all applications are different, so it is not possible to provide a simple answer.
 
