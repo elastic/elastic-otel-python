@@ -17,6 +17,10 @@ products:
 
 Learn how to set up the {{edot}} (EDOT) Python in various environments, including Kubernetes and others.
 
+:::{agent-skill}
+:url: https://github.com/elastic/agent-skills/tree/main/skills/observability/edot-python-instrument
+:::
+
 Follow these steps to get started.
 
 :::{warning}

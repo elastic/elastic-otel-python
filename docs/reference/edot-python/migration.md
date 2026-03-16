@@ -18,6 +18,10 @@ products:
 
 Learn the differences between the [Elastic {{product.apm}} Python agent](apm-agent-python://reference/index.md) and the {{edot}} Python (EDOT Python).
 
+:::{agent-skill}
+:url: https://github.com/elastic/agent-skills/tree/main/skills/observability/edot-python-migrate
+:::
+
 Follow the steps to migrate your instrumentation and settings. For step-by-step instructions on setting up EDOT Python refer to [Setup](/reference/edot-python/setup/index.md).
 
 ## Migration steps
