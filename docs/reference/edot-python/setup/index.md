@@ -17,11 +17,11 @@ products:
 
 Learn how to set up the {{edot}} (EDOT) Python in various environments, including Kubernetes and others.
 
+Follow these steps to get started.
+
 :::{agent-skill}
 :url: https://github.com/elastic/agent-skills/tree/main/skills/observability/edot-python-instrument
 :::
-
-Follow these steps to get started.
 
 :::{warning}
 Avoid using the Python SDK alongside any other APM agent, including Elastic APM agents. Running multiple agents in the same application process may lead to conflicting instrumentation, duplicate telemetry, or other unexpected behavior.
