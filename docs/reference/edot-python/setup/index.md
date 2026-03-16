@@ -21,6 +21,8 @@ Follow these steps to get started.
 
 :::{agent-skill}
 :url: https://github.com/elastic/agent-skills/tree/main/skills/observability/edot-python-instrument
+
+Use this skill to instrument Python services with EDOT for tracing, metrics, and logs.
 :::
 
 :::{warning}

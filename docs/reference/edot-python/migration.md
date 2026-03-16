@@ -30,6 +30,8 @@ Follow these steps to migrate:
 
 :::{agent-skill}
 :url: https://github.com/elastic/agent-skills/tree/main/skills/observability/edot-python-migrate
+
+Use this skill to migrate from the Elastic APM Python agent to EDOT Python.
 :::
 
 ## Configuration mapping
