@@ -100,6 +100,7 @@ You can modify the following settings for EDOT Python through APM Agent Central 
 |---------------|----------------------------------------------|---------|---------|
 | Logging level | Configure EDOT Python agent logging level.   | Dynamic | {applies_to}`stack: preview 9.1` <br> {applies_to}`edot_python: preview 1.4.0` |
 | Sampling rate | Configure EDOT Python tracing sampling rate. | Dynamic | {applies_to}`stack: preview 9.2` <br> {applies_to}`edot_python: preview 1.7.0` |
+| Deactivate instrumentations | Configure EDOT Python tracing to deactivate tracers for instrumentations. | Dynamic | {applies_to}`stack: preview 9.4` <br> {applies_to}`edot_python: preview 1.12.0` |
 
 Dynamic settings can be changed without having to restart the application.
 

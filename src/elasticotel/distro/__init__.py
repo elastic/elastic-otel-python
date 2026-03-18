@@ -41,10 +41,11 @@ from opentelemetry.instrumentation.system_metrics import (
 )
 from opentelemetry.sdk._configuration import _OTelSDKConfigurator
 from opentelemetry.sdk.environment_variables import (
-    OTEL_METRICS_EXEMPLAR_FILTER,
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
     OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
     OTEL_EXPORTER_OTLP_PROTOCOL,
+    OTEL_METRICS_EXEMPLAR_FILTER,
+    OTEL_PYTHON_TRACER_CONFIGURATOR,
     OTEL_TRACES_SAMPLER,
     OTEL_TRACES_SAMPLER_ARG,
 )
@@ -76,7 +77,7 @@ EDOT_HTTP_USER_AGENT_HEADER_VALUE = "elastic-otlp-http-python/" + version.__vers
 
 class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
     def _configure(self, **kwargs):
-        # override GRPC and HTTP user agent headers, GRPC works since OTel SDK 1.35.0, HTTP currently requires an hack
+        # override GRPC and HTTP user agent headers
         otlp_grpc_exporter_options = {
             "channel_options": (
                 ("grpc.primary_user_agent", f"{EDOT_GRPC_USER_AGENT_HEADER_VALUE} {_USER_AGENT_HEADER_VALUE}"),
@@ -184,6 +185,7 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         os.environ.setdefault(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE, "DELTA")
         os.environ.setdefault(OTEL_TRACES_SAMPLER, "experimental_composite_parentbased_traceidratio")
         os.environ.setdefault(OTEL_TRACES_SAMPLER_ARG, str(DEFAULT_SAMPLING_RATE))
+        os.environ.setdefault(OTEL_PYTHON_TRACER_CONFIGURATOR, "updatable_tracer_configurator")
 
         base_resource_detectors = [
             "process_runtime",
