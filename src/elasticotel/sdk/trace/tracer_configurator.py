@@ -21,6 +21,8 @@ from opentelemetry.sdk.util.instrumentation import InstrumentationScope
 
 
 class _UpdatableRuleBasedTracerConfigurator:
+    """Updatatable version of what's available upstream"""
+
     def __init__(
         self,
         *,

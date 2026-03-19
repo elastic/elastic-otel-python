@@ -212,7 +212,7 @@ def _rules_from_deactivate_instrumentations(csv: str) -> _TracerConfiguratorRule
 
 
 def _handle_deactivate_instrumentations(remote_config) -> ConfigUpdate:
-    config_deactivate_instrumentations = remote_config.get(DEACTIVATE_INSTRUMENTATIONS_CONFIG_KEY, " ")
+    config_deactivate_instrumentations = remote_config.get(DEACTIVATE_INSTRUMENTATIONS_CONFIG_KEY, "")
 
     rules = _rules_from_deactivate_instrumentations(config_deactivate_instrumentations)
     # if the rules did not change we are fine
