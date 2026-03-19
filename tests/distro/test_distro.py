@@ -110,6 +110,13 @@ class TestDistribution(TestCase):
         self.assertTrue(isinstance(sampler, sampling._AlwaysOn))
 
     @mock.patch.dict("os.environ", {}, clear=True)
+    def test_tracer_configurator_configuration(self):
+        ElasticOpenTelemetryDistro()._configure()
+        ElasticOpenTelemetryConfigurator()._configure()
+        tracer_configurator = getattr(trace.get_tracer_provider(), "_tracer_configurator", None)
+        self.assertEqual(tracer_configurator, _updatable_tracer_configurator)
+
+    @mock.patch.dict("os.environ", {}, clear=True)
     def test_load_instrumentor_call_with_default_kwargs_for_SystemMetricsInstrumentor(self):
         distro = ElasticOpenTelemetryDistro()
         instrumentor_mock = mock.Mock()
