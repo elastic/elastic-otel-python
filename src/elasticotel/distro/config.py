@@ -224,7 +224,9 @@ def _handle_deactivate_instrumentations(remote_config) -> ConfigUpdate:
     # when rules are updated we need to clear the cache of the tracer_configurator function
     tracer_configurator._updatable_tracer_configurator.cache_clear()
     tracer_provider = trace.get_tracer_provider()
-    tracer_provider._set_tracer_configurator(tracer_configurator=tracer_configurator._updatable_tracer_configurator)
+    tracer_provider._set_tracer_configurator(  # type: ignore [reportAttributeAccessIssue]
+        tracer_configurator=tracer_configurator._updatable_tracer_configurator
+    )
 
     logger.debug("Updated deactive instrumentations to %s", config_deactivate_instrumentations)
     _config = _get_config()
