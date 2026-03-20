@@ -14,9 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import annotations
+
+import inspect
 from functools import lru_cache
 
-from opentelemetry.sdk.trace import _TracerConfig, _TracerConfiguratorRulesT
+from opentelemetry.sdk.trace import _TracerConfig, _TracerConfiguratorRulesT, _InstrumentationScopePredicateT
 from opentelemetry.sdk.util.instrumentation import InstrumentationScope
 
 
@@ -44,8 +47,28 @@ class _UpdatableRuleBasedTracerConfigurator:
     def rules(self):
         return self._rules
 
-    def update_rules(self, rules: _TracerConfiguratorRulesT):
+    def _comparable_rules(
+        self, rules: _TracerConfiguratorRulesT
+    ) -> list[tuple[str | _InstrumentationScopePredicateT, _TracerConfig]]:
+        """Transform the rules to be comparable"""
+
+        def unpack_pattern(predicate) -> str | _InstrumentationScopePredicateT:
+            # this assumes _scope_name_matches_glob is used to match
+            pattern = inspect.getclosurevars(predicate).nonlocals.get("glob_pattern")
+            if pattern is not None:
+                return pattern
+            return predicate
+
+        comparable_rules = [(unpack_pattern(predicate), config) for predicate, config in rules]
+        return comparable_rules
+
+    def update_rules(self, rules: _TracerConfiguratorRulesT) -> bool:
+        """Updates rules if they are different than the current ones"""
+        if self._comparable_rules(rules) == self._comparable_rules(self.rules):
+            return False
+
         self._rules = rules
+        return True
 
 
 _tracer_configurator = _UpdatableRuleBasedTracerConfigurator(rules=[], default_config=_TracerConfig(is_enabled=True))
