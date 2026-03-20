@@ -932,6 +932,38 @@ class TestOpAMPHandler(TestCase):
         _updatable_tracer_configurator.cache_clear()
 
     @mock.patch("elasticotel.distro.config._get_config")
+    @mock.patch("elasticotel.sdk.trace.tracer_configurator._get_tracer_configurator")
+    @mock.patch("opentelemetry.trace.get_tracer_provider")
+    def test_sets_deactivate_instrumentations_handles_unexpected_tracer_provider(
+        self, get_tracer_provider_mock, get_tracer_configurator_mock, get_config_mock
+    ):
+        config = Config()
+        get_config_mock.return_value = config
+        get_tracer_provider_mock.return_value = None
+
+        agent = mock.Mock()
+        client = mock.Mock()
+        config = opamp_pb2.AgentConfigMap()
+        config.config_map["elastic"].body = json.dumps({"deactivate_instrumentations": ""}).encode()
+        config.config_map["elastic"].content_type = "application/json"
+        remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
+        message = opamp_pb2.ServerToAgent(remote_config=remote_config)
+        opamp_handler(agent, client, message)
+
+        client._update_remote_config_status.assert_called_once_with(
+            remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
+        )
+        client._update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}}
+        )
+        client._build_remote_config_status_response_message.assert_called_once_with(
+            client._update_remote_config_status()
+        )
+        agent.send.assert_called_once_with(payload=mock.ANY)
+        client._build_full_state_message.assert_not_called()
+        get_tracer_configurator_mock.assert_not_called()
+
+    @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("opentelemetry.trace.get_tracer_provider")
     def test_calls_build_full_state_message_when_report_full_state_flag_is_set(
         self, get_tracer_provider_mock, get_config_mock
