@@ -227,7 +227,7 @@ def _handle_deactivate_instrumentations(remote_config) -> ConfigUpdate:
         tracer_configurator=tracer_configurator._updatable_tracer_configurator
     )
 
-    logger.debug("Updated deactivate instrumentations to %s", config_deactivate_instrumentations)
+    logger.debug('Updated deactivate instrumentations to "%s"', config_deactivate_instrumentations)
     _config = _get_config()
     if _config:
         _config.deactivate_instrumentations.update(value=config_deactivate_instrumentations)
