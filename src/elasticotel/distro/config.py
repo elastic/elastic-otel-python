@@ -26,6 +26,7 @@ from elasticotel.sdk.trace import tracer_configurator
 from opentelemetry import trace
 from opentelemetry._opamp import messages
 from opentelemetry._opamp.agent import OpAMPAgent
+from opentelemetry._opamp.callbacks import Callbacks, MessageData
 from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.exceptions import (
     OpAMPRemoteConfigDecodeException,
@@ -253,52 +254,46 @@ def _get_config():
     return _config
 
 
-def opamp_handler(agent: OpAMPAgent, client: OpAMPClient, message: opamp_pb2.ServerToAgent):
-    # server wants us to report full state as it cannot recognize us as agent because
-    # e.g it may have been restarted and lost state.
-    if _report_full_state(message):
-        # here we're not returning explicitly but usually we don't get a remote config when we get the flag set
-        payload = client._build_full_state_message()
-        agent.send(payload=payload)
+class EDOTOpAMPCallbacks(Callbacks):
+    def on_message(self, agent: OpAMPAgent, client: OpAMPClient, message: MessageData):
+        # we check config_hash because we need to track last received config and remote_config seems to be always truthy
+        if not message.remote_config or not message.remote_config.config_hash:
+            return
 
-    # we check config_hash because we need to track last received config and remote_config seems to be always truthy
-    if not message.remote_config or not message.remote_config.config_hash:
-        return
+        _config = _get_config()
+        error_messages = []
+        try:
+            for config_filename, remote_config in messages.decode_remote_config(message.remote_config):
+                # we don't have standardized config values so limit to configs coming from our backend
+                if config_filename == "elastic":
+                    logger.debug("Config %s: %s", config_filename, remote_config)
+                    config_update = _handle_logging_level(remote_config)
+                    if config_update.error_message:
+                        error_messages.append(config_update.error_message)
 
-    _config = _get_config()
-    error_messages = []
-    try:
-        for config_filename, remote_config in messages._decode_remote_config(message.remote_config):
-            # we don't have standardized config values so limit to configs coming from our backend
-            if config_filename == "elastic":
-                logger.debug("Config %s: %s", config_filename, remote_config)
-                config_update = _handle_logging_level(remote_config)
-                if config_update.error_message:
-                    error_messages.append(config_update.error_message)
+                    config_update = _handle_sampling_rate(remote_config)
+                    if config_update.error_message:
+                        error_messages.append(config_update.error_message)
 
-                config_update = _handle_sampling_rate(remote_config)
-                if config_update.error_message:
-                    error_messages.append(config_update.error_message)
+                    config_update = _handle_deactivate_instrumentations(remote_config)
+                    if config_update.error_message:
+                        error_messages.append(config_update.error_message)
+        except (OpAMPRemoteConfigParseException, OpAMPRemoteConfigDecodeException) as exc:
+            logger.error(str(exc))
+            error_messages.append(str(exc))
 
-                config_update = _handle_deactivate_instrumentations(remote_config)
-                if config_update.error_message:
-                    error_messages.append(config_update.error_message)
-    except (OpAMPRemoteConfigParseException, OpAMPRemoteConfigDecodeException) as exc:
-        logger.error(str(exc))
-        error_messages.append(str(exc))
+        error_message = "\n".join(error_messages)
+        status = opamp_pb2.RemoteConfigStatuses_FAILED if error_message else opamp_pb2.RemoteConfigStatuses_APPLIED
+        updated_remote_config = client.update_remote_config_status(
+            remote_config_hash=message.remote_config.config_hash, status=status, error_message=error_message
+        )
 
-    error_message = "\n".join(error_messages)
-    status = opamp_pb2.RemoteConfigStatuses_FAILED if error_message else opamp_pb2.RemoteConfigStatuses_APPLIED
-    updated_remote_config = client._update_remote_config_status(
-        remote_config_hash=message.remote_config.config_hash, status=status, error_message=error_message
-    )
+        # update the cached effective config with what we updated
+        if _config:
+            effective_config = {"elastic": _config.to_dict()}
+            client.update_effective_config(effective_config, content_type="application/json")
 
-    # update the cached effective config with what we updated
-    if _config:
-        effective_config = {"elastic": _config.to_dict()}
-        client._update_effective_config(effective_config)
-
-    # if we changed the config send an ack to the server so we don't receive the same config at every heartbeat response
-    if updated_remote_config is not None:
-        payload = client._build_remote_config_status_response_message(updated_remote_config)
-        agent.send(payload=payload)
+        # if we changed the config send an ack to the server so we don't receive the same config at every heartbeat response
+        if updated_remote_config is not None:
+            payload = client.build_remote_config_status_response_message(updated_remote_config)
+            agent.send(payload=payload)

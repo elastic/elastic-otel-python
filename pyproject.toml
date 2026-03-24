@@ -22,6 +22,7 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Typing :: Typed",
 ]
 
@@ -36,6 +37,7 @@ dependencies = [
     "opentelemetry-sdk == 1.40.0",
     "opentelemetry-sdk-extension-aws ~= 2.1.0",
     "opentelemetry-semantic-conventions == 0.61b0",
+    "opentelemetry-opamp-client == 0.1b0",
     "packaging",
     "uuid-utils",
 ]
@@ -108,10 +110,8 @@ pythonVersion = "3.9"
 
 include = [
   "src/elasticotel",
-  "src/opentelemetry",
 ]
 
 exclude = [
   "**/__pycache__",
-  "src/opentelemetry/_opamp/proto",
 ]
