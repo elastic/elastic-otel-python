@@ -58,6 +58,9 @@ _gcp = "opentelemetry.resourcedetector.gcp_resource_detector._detector:GoogleClo
 [project.entry-points.opentelemetry_traces_sampler]
 experimental_composite_parentbased_traceidratio = "elasticotel.sdk.sampler:DefaultSampler"
 
+[project.entry-points._opentelemetry_tracer_configurator]
+updatable_tracer_configurator = "elasticotel.sdk.trace.tracer_configurator:_updatable_tracer_configurator"
+
 [project.scripts]
 edot-bootstrap = "elasticotel.instrumentation.bootstrap:run"
 
