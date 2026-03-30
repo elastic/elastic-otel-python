@@ -39,6 +39,7 @@ opentelemetry-api==1.40.0
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-instrumentation
     #   opentelemetry-instrumentation-system-metrics
+    #   opentelemetry-opamp-client
     #   opentelemetry-resourcedetector-gcp
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
@@ -58,6 +59,8 @@ opentelemetry-instrumentation==0.61b0
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-instrumentation-system-metrics
 opentelemetry-instrumentation-system-metrics==0.61b0
+    # via elastic-opentelemetry (pyproject.toml)
+opentelemetry-opamp-client==0.1b0
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-proto==1.40.0
     # via
@@ -103,6 +106,7 @@ pluggy==1.6.0
 protobuf==6.33.5
     # via
     #   googleapis-common-protos
+    #   opentelemetry-opamp-client
     #   opentelemetry-proto
     #   oteltest
 psutil==7.2.2
@@ -137,7 +141,9 @@ typing-extensions==4.15.0
 urllib3==2.6.3
     # via requests
 uuid-utils==0.14.1
-    # via elastic-opentelemetry (pyproject.toml)
+    # via
+    #   elastic-opentelemetry (pyproject.toml)
+    #   opentelemetry-opamp-client
 wheel==0.46.3
     # via pip-tools
 wrapt==1.17.3

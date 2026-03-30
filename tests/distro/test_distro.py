@@ -20,7 +20,7 @@ import os
 from unittest import TestCase, mock
 
 from elasticotel.distro import ElasticOpenTelemetryConfigurator, ElasticOpenTelemetryDistro, logger as distro_logger
-from elasticotel.distro.config import opamp_handler, logger as config_logger, Config
+from elasticotel.distro.config import EDOTOpAMPCallbacks, logger as config_logger, Config
 from elasticotel.distro.environment_variables import (
     ELASTIC_OTEL_OPAMP_ENDPOINT,
     ELASTIC_OTEL_OPAMP_CERTIFICATE,
@@ -186,7 +186,7 @@ class TestDistribution(TestCase):
             tls_client_certificate=None,
             tls_client_key=None,
         )
-        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.assert_called_once_with(interval=30, callbacks=mock.ANY, client=client_mock)
         agent_mock.start.assert_called_once_with()
 
     @mock.patch.dict(
@@ -213,7 +213,7 @@ class TestDistribution(TestCase):
             tls_client_certificate=None,
             tls_client_key=None,
         )
-        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.assert_called_once_with(interval=30, callbacks=mock.ANY, client=client_mock)
         agent_mock.start.assert_called_once_with()
 
     @mock.patch.dict(
@@ -241,7 +241,7 @@ class TestDistribution(TestCase):
             tls_client_certificate=None,
             tls_client_key=None,
         )
-        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.assert_called_once_with(interval=30, callbacks=mock.ANY, client=client_mock)
         agent_mock.start.assert_called_once_with()
 
     @mock.patch.dict(
@@ -268,7 +268,7 @@ class TestDistribution(TestCase):
             tls_client_certificate=None,
             tls_client_key=None,
         )
-        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.assert_called_once_with(interval=30, callbacks=mock.ANY, client=client_mock)
         agent_mock.start.assert_called_once_with()
 
     @mock.patch.dict(
@@ -295,7 +295,7 @@ class TestDistribution(TestCase):
             tls_client_certificate=None,
             tls_client_key=None,
         )
-        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.assert_called_once_with(interval=30, callbacks=mock.ANY, client=client_mock)
         agent_mock.start.assert_called_once_with()
 
     @mock.patch.dict(
@@ -325,7 +325,7 @@ class TestDistribution(TestCase):
             tls_client_certificate="client.pem",
             tls_client_key="client.key",
         )
-        agent_mock.assert_called_once_with(interval=30, message_handler=opamp_handler, client=client_mock)
+        agent_mock.assert_called_once_with(interval=30, callbacks=mock.ANY, client=client_mock)
         agent_mock.start.assert_called_once_with()
 
     @mock.patch.dict("os.environ", {ELASTIC_OTEL_OPAMP_ENDPOINT: "localhost:4320/v1/opamp"}, clear=True)
@@ -513,7 +513,7 @@ class TestConfig(TestCase):
         )
 
 
-class TestOpAMPHandler(TestCase):
+class TestEDOTOpAMPCallbacks(TestCase):
     def tearDown(self):
         for _logger in Config._get_loggers():
             for handler in _logger.handlers:
@@ -525,7 +525,9 @@ class TestOpAMPHandler(TestCase):
         message = opamp_pb2.ServerToAgent()
         agent = mock.Mock()
         client = mock.Mock()
-        opamp_handler(agent, client, message)
+
+        callbacks = EDOTOpAMPCallbacks()
+        callbacks.on_message(agent, client, message)
 
         get_logger_mock.assert_not_called()
 
@@ -541,21 +543,22 @@ class TestOpAMPHandler(TestCase):
         agent_config.config_map["non-elastic"].content_type = "application/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=agent_config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(agent, client, message)
+
+        callbacks = EDOTOpAMPCallbacks()
+        callbacks.on_message(agent, client, message)
 
         config.update_loggers.assert_not_called()
 
-        client._update_remote_config_status.assert_called_once_with(
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("elasticotel.distro.config.logger")
@@ -568,22 +571,23 @@ class TestOpAMPHandler(TestCase):
         config.config_map["elastic"].content_type = "application/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(agent, client, message)
+
+        callbacks = EDOTOpAMPCallbacks()
+        callbacks.on_message(agent, client, message)
 
         error_message = "Failed to decode elastic with content type application/json: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)"
         logger_mock.error.assert_called_once_with(error_message)
 
-        client._update_remote_config_status.assert_called_once_with(
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_FAILED, error_message=error_message
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("elasticotel.distro.config.logger")
@@ -596,22 +600,23 @@ class TestOpAMPHandler(TestCase):
         config.config_map["elastic"].content_type = "not/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(agent, client, message)
+
+        callbacks = EDOTOpAMPCallbacks()
+        callbacks.on_message(agent, client, message)
 
         error_message = "Cannot parse elastic with content type not/json"
         logger_mock.error.assert_called_once_with(error_message)
 
-        client._update_remote_config_status.assert_called_once_with(
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_FAILED, error_message=error_message
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
     def test_sets_matching_logging_level(self, get_config_mock):
@@ -625,21 +630,22 @@ class TestOpAMPHandler(TestCase):
         agent_config.config_map["elastic"].content_type = "application/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=agent_config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(agent, client, message)
+
+        callbacks = EDOTOpAMPCallbacks()
+        callbacks.on_message(agent, client, message)
 
         config.update_loggers.assert_called_once_with(5)
 
-        client._update_remote_config_status.assert_called_once_with(
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "trace", "sampling_rate": "1.0", "deactivate_instrumentations": ""}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "trace", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
     def test_sets_logging_to_default_info_without_logging_level_entry_in_config(self, get_config_mock):
@@ -653,21 +659,22 @@ class TestOpAMPHandler(TestCase):
         agent_config.config_map["elastic"].content_type = "application/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=agent_config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(agent, client, message)
+
+        callbacks = EDOTOpAMPCallbacks()
+        callbacks.on_message(agent, client, message)
 
         config.update_loggers.assert_called_once_with(logging.WARNING)
 
-        client._update_remote_config_status.assert_called_once_with(
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch.object(logging, "getLogger")
@@ -681,18 +688,18 @@ class TestOpAMPHandler(TestCase):
         remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
 
+        callbacks = EDOTOpAMPCallbacks()
         with self.assertLogs(config_logger, logging.ERROR) as cm:
-            opamp_handler(agent, client, message)
+            callbacks.on_message(agent, client, message)
         self.assertEqual(cm.output, ["ERROR:elasticotel.distro.config:Logging level not handled: unexpected"])
 
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}}
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            content_type="application/json",
         )
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("opentelemetry.trace.get_tracer_provider")
@@ -707,24 +714,25 @@ class TestOpAMPHandler(TestCase):
         config.config_map["elastic"].content_type = "application/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(agent, client, message)
+
+        callbacks = EDOTOpAMPCallbacks()
+        callbacks.on_message(agent, client, message)
 
         self.assertIn(
             "ComposableParentThreshold{root=ComposableTraceIDRatioBased{threshold=8, ratio=0.5}}",
             sampler.get_description(),
         )
 
-        client._update_remote_config_status.assert_called_once_with(
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "0.5", "deactivate_instrumentations": ""}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "0.5", "deactivate_instrumentations": ""}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("opentelemetry.trace.get_tracer_provider")
@@ -741,21 +749,22 @@ class TestOpAMPHandler(TestCase):
         config.config_map["elastic"].content_type = "application/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(agent, client, message)
+
+        callbacks = EDOTOpAMPCallbacks()
+        callbacks.on_message(agent, client, message)
 
         self.assertEqual(sampler._root.rate, 1.0)
 
-        client._update_remote_config_status.assert_called_once_with(
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("opentelemetry.trace.get_tracer_provider")
@@ -771,25 +780,25 @@ class TestOpAMPHandler(TestCase):
         remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
 
+        callbacks = EDOTOpAMPCallbacks()
         with self.assertLogs(config_logger, logging.ERROR) as cm:
-            opamp_handler(agent, client, message)
+            callbacks.on_message(agent, client, message)
         self.assertEqual(
             cm.output, ["ERROR:elasticotel.distro.config:Invalid `sampling_rate` from config `unexpected`"]
         )
 
-        client._update_remote_config_status.assert_called_once_with(
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234",
             status=opamp_pb2.RemoteConfigStatuses_FAILED,
             error_message="Invalid sampling_rate unexpected",
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("opentelemetry.trace.get_tracer_provider")
@@ -804,24 +813,24 @@ class TestOpAMPHandler(TestCase):
         remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
 
+        callbacks = EDOTOpAMPCallbacks()
         with self.assertLogs(config_logger, logging.WARNING) as cm:
-            opamp_handler(agent, client, message)
+            callbacks.on_message(agent, client, message)
         self.assertEqual(
             cm.output,
             ["WARNING:elasticotel.distro.config:Sampler <class 'int'> is not supported, not applying sampling_rate."],
         )
 
-        client._update_remote_config_status.assert_called_once_with(
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("opentelemetry.trace.get_tracer_provider")
@@ -836,21 +845,21 @@ class TestOpAMPHandler(TestCase):
         remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
 
+        callbacks = EDOTOpAMPCallbacks()
         with self.assertLogs(config_logger, logging.DEBUG) as cm:
-            opamp_handler(agent, client, message)
+            callbacks.on_message(agent, client, message)
         self.assertIn("DEBUG:elasticotel.distro.config:Cannot get sampler from tracer provider.", cm.output)
 
-        client._update_remote_config_status.assert_called_once_with(
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("elasticotel.sdk.trace.tracer_configurator._get_tracer_configurator")
@@ -872,19 +881,20 @@ class TestOpAMPHandler(TestCase):
         config.config_map["elastic"].content_type = "application/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(agent, client, message)
 
-        client._update_remote_config_status.assert_called_once_with(
+        callbacks = EDOTOpAMPCallbacks()
+        callbacks.on_message(agent, client, message)
+
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": "*"}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": "*"}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
         get_tracer_provider_mock.return_value._set_tracer_configurator.assert_called_once()
         self.assertEqual(len(rule_based_tracer_configurator.rules), 1)
         _updatable_tracer_configurator.cache_clear()
@@ -914,19 +924,20 @@ class TestOpAMPHandler(TestCase):
         config.config_map["elastic"].content_type = "application/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(agent, client, message)
 
-        client._update_remote_config_status.assert_called_once_with(
+        callbacks = EDOTOpAMPCallbacks()
+        callbacks.on_message(agent, client, message)
+
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": "*"}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": "*"}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
         get_tracer_provider_mock.return_value._set_tracer_configurator.assert_not_called()
         self.assertEqual(len(rule_based_tracer_configurator.rules), 1)
         _updatable_tracer_configurator.cache_clear()
@@ -948,38 +959,18 @@ class TestOpAMPHandler(TestCase):
         config.config_map["elastic"].content_type = "application/json"
         remote_config = opamp_pb2.AgentRemoteConfig(config=config, config_hash=b"1234")
         message = opamp_pb2.ServerToAgent(remote_config=remote_config)
-        opamp_handler(agent, client, message)
 
-        client._update_remote_config_status.assert_called_once_with(
+        callbacks = EDOTOpAMPCallbacks()
+        callbacks.on_message(agent, client, message)
+
+        client.update_remote_config_status.assert_called_once_with(
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
-        client._update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}}
+        client.update_effective_config.assert_called_once_with(
+            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            content_type="application/json",
         )
-        client._build_remote_config_status_response_message.assert_called_once_with(
-            client._update_remote_config_status()
-        )
+        client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_full_state_message.assert_not_called()
+        client.build_full_state_message.assert_not_called()
         get_tracer_configurator_mock.assert_not_called()
-
-    @mock.patch("elasticotel.distro.config._get_config")
-    @mock.patch("opentelemetry.trace.get_tracer_provider")
-    def test_calls_build_full_state_message_when_report_full_state_flag_is_set(
-        self, get_tracer_provider_mock, get_config_mock
-    ):
-        get_config_mock.return_value = Config()
-        sampler = sampling.ParentBasedTraceIdRatio(rate=1.0)
-        get_tracer_provider_mock.return_value.sampler = sampler
-        agent = mock.Mock()
-        client = mock.Mock()
-        message = opamp_pb2.ServerToAgent(flags=opamp_pb2.ServerToAgentFlags_ReportFullState)
-        opamp_handler(agent, client, message)
-
-        self.assertEqual(sampler._root.rate, 1.0)
-
-        client._update_remote_config_status.assert_not_called()
-        client._update_effective_config.assert_not_called()
-        client._build_full_state_message.assert_called_once_with()
-        agent.send.assert_called_once_with(payload=mock.ANY)
-        client._build_remote_config_status_response_message.assert_not_called()

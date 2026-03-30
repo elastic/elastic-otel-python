@@ -66,7 +66,7 @@ from elasticotel.distro.environment_variables import (
     ELASTIC_OTEL_OPAMP_CLIENT_KEY,
 )
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
-from elasticotel.distro.config import opamp_handler, _initialize_config, DEFAULT_SAMPLING_RATE
+from elasticotel.distro.config import EDOTOpAMPCallbacks, _initialize_config, DEFAULT_SAMPLING_RATE
 
 
 logger = logging.getLogger(__name__)
@@ -147,7 +147,7 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                 )
                 opamp_agent = OpAMPAgent(
                     interval=30,
-                    message_handler=opamp_handler,
+                    callbacks=EDOTOpAMPCallbacks(),
                     client=opamp_client,
                 )
                 opamp_agent.start()
