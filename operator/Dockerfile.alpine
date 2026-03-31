@@ -15,7 +15,7 @@ RUN pip install --target workspace /opt/distro/*.whl -r requirements.txt
 
 FROM python:3.12-alpine3.22@sha256:f6973b8f9395204414a7f25d99a50ba1c7306064771d11a8c2a848e9af3697a6
 
-COPY --from=build /operator-build/workspace /autoinstrumentation
+COPY --chown=65534:65534 --from=build /operator-build/workspace /autoinstrumentation
 
 # Use "nobody" user, to mimic the non-root "nonroot" user/group used in Dockerfile.
 USER 65534:65534
