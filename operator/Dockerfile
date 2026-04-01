@@ -38,8 +38,11 @@ RUN pip install --no-cache-dir --target workspace /opt/distro/*.whl -r requireme
 
 FROM ${IMAGE}:${IMAGE_VERSION}
 
-COPY --from=build /operator-build/workspace /autoinstrumentation
-COPY --from=build-musl /operator-build/workspace /autoinstrumentation-musl
+COPY --chown=65532:65532 --from=build /operator-build/workspace /autoinstrumentation
+COPY --chown=65532:65532 --from=build-musl /operator-build/workspace /autoinstrumentation-musl
+
+# Use wolfi's "nonroot" user/group to satisfy k8s runAsNonRoot security policies.
+USER 65532:65532
 
 RUN chmod -R go+r /autoinstrumentation
 RUN chmod -R go+r /autoinstrumentation-musl
