@@ -26,7 +26,7 @@ from elasticotel.sdk.trace import tracer_configurator
 from opentelemetry import trace
 from opentelemetry._opamp import messages
 from opentelemetry._opamp.agent import OpAMPAgent
-from opentelemetry._opamp.callbacks import Callbacks, MessageData
+from opentelemetry._opamp.callbacks import OpAMPCallbacks, MessageData
 from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.exceptions import (
     OpAMPRemoteConfigDecodeException,
@@ -254,7 +254,7 @@ def _get_config():
     return _config
 
 
-class EDOTOpAMPCallbacks(Callbacks):
+class EDOTOpAMPCallbacks(OpAMPCallbacks):
     def on_message(self, agent: OpAMPAgent, client: OpAMPClient, message: MessageData):
         # we check config_hash because we need to track last received config and remote_config seems to be always truthy
         if not message.remote_config or not message.remote_config.config_hash:
