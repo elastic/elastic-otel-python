@@ -37,7 +37,7 @@ dependencies = [
     "opentelemetry-sdk == 1.40.0",
     "opentelemetry-sdk-extension-aws ~= 2.1.0",
     "opentelemetry-semantic-conventions == 0.61b0",
-    "opentelemetry-opamp-client == 0.1b0",
+    "opentelemetry-opamp-client == 0.2b0",
     "packaging",
     "uuid-utils",
 ]

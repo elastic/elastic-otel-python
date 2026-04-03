@@ -22,7 +22,7 @@ from unittest import mock
 import pytest
 
 from opentelemetry._opamp.agent import OpAMPAgent
-from opentelemetry._opamp.callbacks import Callbacks
+from opentelemetry._opamp.callbacks import OpAMPCallbacks
 from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 from elasticotel.distro.config import EDOTOpAMPCallbacks
@@ -33,7 +33,7 @@ from elasticotel.distro.config import EDOTOpAMPCallbacks
 def test_connection_remote_config_status_heartbeat_disconnection(caplog):
     caplog.set_level(logging.DEBUG, logger="opentelemetry._opamp.agent")
 
-    class TestCallbacks(Callbacks):
+    class TestCallbacks(OpAMPCallbacks):
         def on_message(self, agent, client, message):
             logger = logging.getLogger("opentelemetry._opamp.agent.opamp_handler")
 
