@@ -1,5 +1,17 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.12.0
+
+- Bump OpenTelemetry to 1.40.0/0.60b0 (#499)
+
+  Upstream changes:
+  * https://github.com/open-telemetry/opentelemetry-python/discussions/5608
+  * https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4411
+
+- Add support for Central Config `deactivate_instrumentations` where we can stop tracing for specific instrumentations at runtime, requires Elastic Stack 9.4.0 (#510)
+- Move to upstream OpAMP client (#512, #517)
+- Change Docker image to run as nonroot for k8s clusters restricting to runAsNonRoot (#515)
+
 ## v1.11.0
 
 - Bump OpenTelemetry to 1.38.0/0.59b0 (#454)

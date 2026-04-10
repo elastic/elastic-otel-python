@@ -27,6 +27,20 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.12.0 [edot-python-1.12.0-release-notes]
+
+### Features and enhancements [edot-python-1.12.0-features-enhancements]
+
+- Bump OpenTelemetry to 1.40.0/0.61b0 ([#499](https://github.com/elastic/elastic-otel-python/pull/499))
+
+  Upstream changes:
+  * [opentelemetry-python](https://github.com/open-telemetry/opentelemetry-python/discussions/5608)
+  * [opentelemetry-python-contrib](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4411)
+
+- Central configuration: Add support for `deactivate_instrumentations` to stop tracing for specific instrumentations at runtime (supports globbing, including `*` to switch off tracing for all instrumentations), requires Elastic Stack 9.4.0 ([#499](https://github.com/elastic/elastic-otel-python/pull/499))
+- Move to upstream OpAMP client ([#512](https://github.com/elastic/elastic-otel-python/pull/512), [#517](https://github.com/elastic/elastic-otel-python/pull/517))
+- Change Docker image to run as nonroot for k8s clusters restricting to runAsNonRoot ([#515](https://github.com/elastic/elastic-otel-python/pull/515))
+
 ## 1.11.0 [edot-python-1.11.0-release-notes]
 
 ### Features and enhancements [edot-python-1.11.0-features-enhancements]
