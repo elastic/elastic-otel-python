@@ -37,7 +37,7 @@ To check for security updates, go to [Security announcements for the Elastic sta
   * [opentelemetry-python](https://github.com/open-telemetry/opentelemetry-python/discussions/5608)
   * [opentelemetry-python-contrib](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4411)
 
-- Central configuration: Add support for `disable_instrumentations` to stop tracing for specific instrumentations at runtime (supports globbing, including `*` to switch off tracing for all instrumentations), requires Elastic Stack 9.4.0 ([#499](https://github.com/elastic/elastic-otel-python/pull/499))
+- Central configuration: Add support for `deactivate_instrumentations` to stop tracing for specific instrumentations at runtime (supports globbing, including `*` to switch off tracing for all instrumentations), requires Elastic Stack 9.4.0 ([#499](https://github.com/elastic/elastic-otel-python/pull/499))
 - Move to upstream OpAMP client ([#512](https://github.com/elastic/elastic-otel-python/pull/512), [#517](https://github.com/elastic/elastic-otel-python/pull/517))
 - Change Docker image to run as nonroot for k8s clusters restricting to runAsNonRoot ([#515](https://github.com/elastic/elastic-otel-python/pull/515))
 
