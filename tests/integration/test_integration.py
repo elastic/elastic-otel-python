@@ -77,6 +77,17 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
         resource = span["resource"]
         self.assertEqual(resource["service.name"], "my-service")
 
+    def test_traces_can_override_resource_attributes_from_env(self):
+        env = {"OTEL_RESOURCE_ATTRIBUTES": "telemetry.distro.name=custom-distro"}
+        stdout, stderr, returncode = self.run_script(
+            self.script, environment_variables=env, wrapper_script="opentelemetry-instrument"
+        )
+
+        telemetry = self.get_telemetry()
+        (span,) = telemetry["traces"]
+        resource = span["resource"]
+        self.assertEqual(resource["telemetry.distro.name"], "custom-distro")
+
     def test_metrics_default_does_not_contain_system_metrics(self):
         stdout, stderr, returncode = self.run_script(self.script, wrapper_script="opentelemetry-instrument")
 
