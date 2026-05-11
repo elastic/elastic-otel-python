@@ -19,6 +19,7 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import dataclass
+from typing import cast
 
 from elasticotel.distro.sanitization import _sanitize_headers_env_vars
 from elasticotel.sdk.sampler import DefaultSampler
@@ -185,6 +186,8 @@ def _handle_sampling_rate(remote_config) -> ConfigUpdate:
         except ValueError:
             logger.error("Invalid `sampling_rate` from config `%s`", config_sampling_rate)
             return ConfigUpdate(error_message=f"Invalid sampling_rate {config_sampling_rate}")
+
+    config_sampling_rate = cast(str, config_sampling_rate)
 
     sampler = getattr(trace.get_tracer_provider(), "sampler", None)
     if sampler is None:
