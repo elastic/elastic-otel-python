@@ -49,19 +49,14 @@ class _UpdatableRuleBasedTracerConfigurator(_RuleBasedTracerConfigurator):
         comparable_rules = [(unpack_pattern(predicate), config) for predicate, config in rules]
         return comparable_rules
 
-    def update_rules(self, rules: ConfiguratorRulesT) -> bool:
-        """Updates rules if they are different than the current ones"""
-        if self._comparable_rules(rules) == self._comparable_rules(self.rules):
-            return False
-
-        self._rules = rules
-        return True
+    def rules_changed(self, rules: ConfiguratorRulesT) -> bool:
+        return self._comparable_rules(rules) != self._comparable_rules(self.rules)
 
 
 _tracer_configurator = _UpdatableRuleBasedTracerConfigurator(rules=[], default_config=_TracerConfig(is_enabled=True))
 
 
-def _get_tracer_configurator() -> _RuleBasedTracerConfigurator:
+def _get_tracer_configurator() -> _UpdatableRuleBasedTracerConfigurator:
     global _tracer_configurator
     return _tracer_configurator
 

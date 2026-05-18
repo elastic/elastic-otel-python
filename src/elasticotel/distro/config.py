@@ -228,9 +228,13 @@ def _handle_deactivate_instrumentations(remote_config) -> ConfigUpdate:
 
     rules = _rules_from_deactivate_instrumentations(config_deactivate_instrumentations)
     current_tracer_configurator = tracer_configurator._get_tracer_configurator()
-    rules_updated = current_tracer_configurator.update_rules(rules)
+    try:
+        rules_changed = current_tracer_configurator.rules_changed(rules)
+    except AttributeError:
+        rules_changed = True
+    current_tracer_configurator.update_rules(rules)
     # if the rules did not change we are fine
-    if not rules_updated:
+    if not rules_changed:
         return ConfigUpdate()
 
     set_tracer_configurator(tracer_configurator=tracer_configurator._updatable_tracer_configurator)
