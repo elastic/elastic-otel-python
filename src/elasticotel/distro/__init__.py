@@ -190,10 +190,12 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         base_resource_detectors = [
             "process_runtime",
             "os",
-            "otel",
             "telemetry_distro",
             "service_instance",
             "containerid",
         ]
-        detectors = base_resource_detectors + get_cloud_resource_detectors()
+        # the `otel` resource detector reads the `OTEL_RESOURCE_ATTRIBUTES` and `OTEL_SERVICE_NAME`
+        # from the environment variables. Keep it last so we can override attributes by the other
+        # resource detectors
+        detectors = base_resource_detectors + get_cloud_resource_detectors() + ["otel"]
         os.environ.setdefault(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS, ",".join(detectors))
