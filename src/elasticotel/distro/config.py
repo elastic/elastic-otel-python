@@ -36,7 +36,9 @@ from opentelemetry._opamp.exceptions import (
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 from opentelemetry.sdk._logs import LoggingHandler
 from opentelemetry.sdk.environment_variables import OTEL_LOG_LEVEL, OTEL_TRACES_SAMPLER_ARG
-from opentelemetry.sdk.trace import _TracerConfig, _TracerConfiguratorRulesT, _scope_name_matches_glob
+from opentelemetry.sdk.trace import _TracerConfig
+from opentelemetry.sdk.util._configurator import ConfiguratorRulesT
+from opentelemetry.sdk.util.instrumentation import _scope_name_matches_glob
 
 
 logger = logging.getLogger(__name__)
@@ -205,7 +207,7 @@ def _handle_sampling_rate(remote_config) -> ConfigUpdate:
     return ConfigUpdate()
 
 
-def _rules_from_deactivate_instrumentations(csv: str) -> _TracerConfiguratorRulesT:
+def _rules_from_deactivate_instrumentations(csv: str) -> ConfiguratorRulesT:
     patterns = [pattern.strip() for pattern in csv.split(",") if pattern.strip()]
     if not patterns:
         return []
@@ -230,8 +232,6 @@ def _handle_deactivate_instrumentations(remote_config) -> ConfigUpdate:
     # if the rules did not change we are fine
     if not rules_updated:
         return ConfigUpdate()
-    # when rules are updated we need to clear the cache of the tracer_configurator function
-    tracer_configurator._updatable_tracer_configurator.cache_clear()
 
     set_tracer_configurator(tracer_configurator=tracer_configurator._updatable_tracer_configurator)
     logger.debug('Updated deactivate instrumentations to "%s".', config_deactivate_instrumentations)
