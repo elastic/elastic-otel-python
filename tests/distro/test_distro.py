@@ -50,7 +50,8 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_TRACES_SAMPLER,
     OTEL_TRACES_SAMPLER_ARG,
 )
-from opentelemetry.sdk.trace import _TracerConfig, _scope_name_matches_glob, sampling
+from opentelemetry.sdk.trace import _TracerConfig, sampling
+from opentelemetry.sdk.util.instrumentation import _scope_name_matches_glob
 from opentelemetry.util._once import Once
 
 
@@ -897,7 +898,6 @@ class TestEDOTOpAMPCallbacks(TestCase):
         client.build_full_state_message.assert_not_called()
         get_tracer_provider_mock.return_value._set_tracer_configurator.assert_called_once()
         self.assertEqual(len(rule_based_tracer_configurator.rules), 1)
-        _updatable_tracer_configurator.cache_clear()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("elasticotel.sdk.trace.tracer_configurator._get_tracer_configurator")
@@ -940,7 +940,6 @@ class TestEDOTOpAMPCallbacks(TestCase):
         client.build_full_state_message.assert_not_called()
         get_tracer_provider_mock.return_value._set_tracer_configurator.assert_not_called()
         self.assertEqual(len(rule_based_tracer_configurator.rules), 1)
-        _updatable_tracer_configurator.cache_clear()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("elasticotel.sdk.trace.tracer_configurator._get_tracer_configurator")
