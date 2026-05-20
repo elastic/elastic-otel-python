@@ -26,7 +26,7 @@ from opentelemetry.sdk.util.instrumentation import InstrumentationScope, _Instru
 class _UpdatableRuleBasedTracerConfigurator(_RuleBasedTracerConfigurator):
     """Updatatable version of what's available upstream
 
-    The updatable_rules return an hint if the rules changed or not so that
+    This provides a method to know if the rules changed or not so that
     we can avoid updating them at every configuration update if they haven't
     changed"""
 
