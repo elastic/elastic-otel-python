@@ -89,8 +89,11 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
         self.assertEqual(
             metrics_names,
             [
+                "otel.sdk.processor.log.queue.capacity",
                 "otel.sdk.span.started",
                 "otel.sdk.span.live",
+                "otel.sdk.processor.span.queue.size",
+                "otel.sdk.processor.log.queue.size",
                 "process.runtime.cpython.memory",
                 "process.runtime.cpython.cpu_time",
                 "process.runtime.cpython.gc_count",
@@ -119,8 +122,11 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
         self.assertEqual(
             metrics_names,
             [
+                "otel.sdk.processor.log.queue.capacity",
                 "otel.sdk.span.started",
                 "otel.sdk.span.live",
+                "otel.sdk.processor.span.queue.size",
+                "otel.sdk.processor.log.queue.size",
                 "system.cpu.time",
                 "system.cpu.utilization",
                 "system.memory.usage",
