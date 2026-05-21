@@ -36,7 +36,7 @@ from opentelemetry._opamp.exceptions import (
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
 try:
-    from opentelemetry.instrumentation.logging.handler import LoggingHandler
+    from opentelemetry.instrumentation.logging.handler import LoggingHandler  # type: ignore[reportAssignmentType]
 except ImportError:
 
     class LoggingHandler:
