@@ -1,12 +1,23 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
-## v1.12.0
+## v1.13.0
 
-- Bump OpenTelemetry to 1.40.0/0.60b0 (#499)
+- Bump OpenTelemetry to 1.41.1/0.62b1 (#546)
 
   Upstream changes:
-  * https://github.com/open-telemetry/opentelemetry-python/discussions/5608
-  * https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4411
+  * 1.41.0 core changes: https://github.com/open-telemetry/opentelemetry-python/discussions/5068
+  * 1.41.0 -contrib changes: https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4411
+  * 1.41.1 -contrib changes: https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4489
+
+- Bump `opentelemetry-resourcedetector-gcp` to latest, dropping our private `_gcp` entry point in favor of the upstream `gcp_resource_detector` (#547)
+
+## v1.12.0
+
+- Bump OpenTelemetry to 1.40.0/0.61b0 (#499)
+
+  Upstream changes:
+  * https://github.com/open-telemetry/opentelemetry-python/discussions/4951
+  * https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4296
 
 - Add support for Central Config `deactivate_instrumentations` where we can stop tracing for specific instrumentations at runtime, requires Elastic Stack 9.4.0 (#510)
 - Move to upstream OpAMP client (#512, #517)
