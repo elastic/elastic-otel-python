@@ -8,8 +8,8 @@
   * 1.41.0 core changes: https://github.com/open-telemetry/opentelemetry-python/discussions/5068
   * 1.41.0 -contrib changes: https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4411
   * 1.41.1 -contrib changes: https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4489
-
 - Bump `opentelemetry-resourcedetector-gcp` to latest, dropping our private `_gcp` entry point in favor of the upstream `gcp_resource_detector` (#547)
+- Consider `opentelemetry-instrumentation-logging` `LoggingHandler` when setting up logging (#552)
 
 ## v1.12.0
 

@@ -39,6 +39,10 @@ To check for security updates, go to [Security announcements for the Elastic sta
   * [opentelemetry-python-contrib 1.41.1](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4489)
 - Bump `opentelemetry-resourcedetector-gcp` to latest, dropping our private `_gcp` entry point in favor of the upstream `gcp_resource_detector` ([#547](https://github.com/elastic/elastic-otel-python/pull/547))
 
+### Fixes [edot-python-1.13.0-fixes]
+
+- Consider `opentelemetry-instrumentation-logging` `LoggingHandler` when setting up logging ([#552](https://github.com/elastic/elastic-otel-python/pull/552))
+
 ## 1.12.0 [edot-python-1.12.0-release-notes]
 
 ### Features and enhancements [edot-python-1.12.0-features-enhancements]
