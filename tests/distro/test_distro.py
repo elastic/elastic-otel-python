@@ -17,7 +17,7 @@
 import json
 import logging
 import os
-from unittest import TestCase, mock
+from unittest import TestCase, mock, skipIf
 
 from elasticotel.distro import ElasticOpenTelemetryConfigurator, ElasticOpenTelemetryDistro, logger as distro_logger
 from elasticotel.distro.config import EDOTOpAMPCallbacks, logger as config_logger, Config
@@ -40,7 +40,12 @@ from opentelemetry.environment_variables import (
     OTEL_METRICS_EXPORTER,
     OTEL_TRACES_EXPORTER,
 )
-from opentelemetry.sdk._logs import LoggingHandler
+
+try:
+    from opentelemetry.instrumentation.logging.handler import LoggingHandler
+except ImportError:
+    LoggingHandler = None
+from opentelemetry.sdk._logs import LoggingHandler as SDKLoggingHandler
 from opentelemetry.sdk.environment_variables import (
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
     OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
@@ -459,6 +464,27 @@ class TestConfig(TestCase):
                 _logger.removeHandler(_logger.handlers[0])
 
     def test_logging_setup_set_propagate_true_if_sdk_logging_handler_found(self):
+        root_logger = logging.getLogger()
+        handler = SDKLoggingHandler(logger_provider=mock.Mock())
+        root_logger.addHandler(handler)
+
+        config = Config()
+
+        config._setup_logging()
+
+        for _logger in config._get_loggers():
+            with self.subTest(logger=_logger):
+                self.assertEqual(len(_logger.handlers), 1)
+                self.assertTrue(_logger.propagate)
+
+                # cleanup
+                _logger.removeHandler(_logger.handlers[0])
+                _logger.propagate = True
+
+        root_logger.removeHandler(handler)
+
+    @skipIf(LoggingHandler is None, "opentelemetry-instrumentation-logging not installed")
+    def test_logging_setup_set_propagate_true_if_logging_instrumentation_handler_found(self):
         root_logger = logging.getLogger()
         handler = LoggingHandler(logger_provider=mock.Mock())
         root_logger.addHandler(handler)
