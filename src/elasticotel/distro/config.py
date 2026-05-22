@@ -34,7 +34,16 @@ from opentelemetry._opamp.exceptions import (
     OpAMPRemoteConfigParseException,
 )
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
-from opentelemetry.sdk._logs import LoggingHandler
+
+try:
+    from opentelemetry.instrumentation.logging.handler import LoggingHandler  # type: ignore[reportAssignmentType]
+except ImportError:
+
+    class LoggingHandler:
+        pass
+
+
+from opentelemetry.sdk._logs import LoggingHandler as SDKLoggingHandler
 from opentelemetry.sdk.environment_variables import OTEL_LOG_LEVEL, OTEL_TRACES_SAMPLER_ARG
 from opentelemetry.sdk.trace import _TracerConfig
 from opentelemetry.sdk.util._configurator import ConfiguratorRulesT
@@ -129,7 +138,16 @@ class Config:
                 _logger.addHandler(handler)
                 # We need to propagate if we have the OTel handler otherwise we don't see logs shipped, in the other
                 # cases we shouldn't
-                _logger.propagate = any(isinstance(_handler, LoggingHandler) for _handler in logging.root.handlers)
+                _logger.propagate = any(
+                    isinstance(
+                        _handler,
+                        (
+                            LoggingHandler,
+                            SDKLoggingHandler,
+                        ),
+                    )
+                    for _handler in logging.root.handlers
+                )
 
         # do validation, we only validate logging_level because sampling_rate is handled by the sdk already
         logging_level = _LOG_LEVELS_MAP.get(self.logging_level.value)

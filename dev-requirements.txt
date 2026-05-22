@@ -6,7 +6,7 @@
 #
 build==1.4.4
     # via pip-tools
-certifi==2026.4.22
+certifi==2026.5.20
     # via requests
 charset-normalizer==3.4.7
     # via requests
@@ -38,6 +38,7 @@ opentelemetry-api==1.41.1
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
     #   opentelemetry-instrumentation
+    #   opentelemetry-instrumentation-logging
     #   opentelemetry-instrumentation-system-metrics
     #   opentelemetry-opamp-client
     #   opentelemetry-resourcedetector-gcp
@@ -57,7 +58,10 @@ opentelemetry-exporter-otlp-proto-http==1.41.1
 opentelemetry-instrumentation==0.62b1
     # via
     #   elastic-opentelemetry (pyproject.toml)
+    #   opentelemetry-instrumentation-logging
     #   opentelemetry-instrumentation-system-metrics
+opentelemetry-instrumentation-logging==0.62b1
+    # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-instrumentation-system-metrics==0.62b1
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-opamp-client==0.2b0
@@ -146,7 +150,7 @@ uuid-utils==0.15.0
     #   opentelemetry-opamp-client
 wheel==0.47.0
     # via pip-tools
-wrapt==2.1.2
+wrapt==2.2.0
     # via opentelemetry-instrumentation
 zipp==3.23.1
     # via importlib-metadata
