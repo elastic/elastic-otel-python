@@ -150,7 +150,7 @@ uuid-utils==0.15.0
     #   opentelemetry-opamp-client
 wheel==0.47.0
     # via pip-tools
-wrapt==2.2.1
+wrapt==2.2.2
     # via opentelemetry-instrumentation
 zipp==3.23.1
     # via importlib-metadata
