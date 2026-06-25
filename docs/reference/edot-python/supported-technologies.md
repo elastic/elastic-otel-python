@@ -46,7 +46,6 @@ Refer to [EDOT SDKs compatibility](opentelemetry://reference/compatibility/sdks.
 
 The following Python versions are supported:
 
- * 3.9
  * 3.10
  * 3.11
  * 3.12

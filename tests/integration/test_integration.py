@@ -89,11 +89,6 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
         self.assertEqual(
             metrics_names,
             [
-                "otel.sdk.processor.log.queue.capacity",
-                "otel.sdk.span.started",
-                "otel.sdk.span.live",
-                "otel.sdk.processor.span.queue.size",
-                "otel.sdk.processor.log.queue.size",
                 "process.runtime.cpython.memory",
                 "process.runtime.cpython.cpu_time",
                 "process.runtime.cpython.gc_count",
@@ -122,11 +117,6 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
         self.assertEqual(
             metrics_names,
             [
-                "otel.sdk.processor.log.queue.capacity",
-                "otel.sdk.span.started",
-                "otel.sdk.span.live",
-                "otel.sdk.processor.span.queue.size",
-                "otel.sdk.processor.log.queue.size",
                 "system.cpu.time",
                 "system.cpu.utilization",
                 "system.memory.usage",
@@ -149,6 +139,40 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
                 "process.memory.virtual",
                 "process.open_file_descriptor.count",
                 "process.thread.count",
+                "process.disk.io",
+                "process.runtime.cpython.memory",
+                "process.runtime.cpython.cpu_time",
+                "process.runtime.cpython.gc_count",
+                "cpython.gc.collections",
+                "cpython.gc.collected_objects",
+                "cpython.gc.uncollectable_objects",
+                "process.runtime.cpython.thread_count",
+                "process.runtime.cpython.cpu.utilization",
+                "process.runtime.cpython.context_switches",
+            ],
+        )
+
+    def test_metrics_with_sdk_metrics(self):
+        env = {"OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED": "true"}
+        stdout, stderr, returncode = self.run_script(
+            self.script, environment_variables=env, wrapper_script="opentelemetry-instrument"
+        )
+
+        telemetry = self.get_telemetry()
+        (metrics,) = telemetry["metrics"]
+        (metrics_item,) = metrics["resourceMetrics"]
+        metrics_names = [
+            metric["name"] for scope_metrics in metrics_item["scopeMetrics"] for metric in scope_metrics["metrics"]
+        ]
+        self.maxDiff = None
+        self.assertEqual(
+            metrics_names,
+            [
+                "otel.sdk.processor.log.queue.capacity",
+                "otel.sdk.span.started",
+                "otel.sdk.span.live",
+                "otel.sdk.processor.span.queue.size",
+                "otel.sdk.processor.log.queue.size",
                 "process.runtime.cpython.memory",
                 "process.runtime.cpython.cpu_time",
                 "process.runtime.cpython.gc_count",

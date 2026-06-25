@@ -223,6 +223,20 @@ This example replaces the values of the `set-cookie` header and headers such as 
 ```sh
 export OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS=".*session.*,set-cookie"
 ```
+
+#### OpenTelemetry SDK metrics
+
+```{applies_to}
+product:
+  edot_python: preview 1.14.0
+```
+
+[OpenTelemetry SDK metrics](https://opentelemetry.io/docs/specs/semconv/otel/sdk-metrics/) are not enabled by default, you can enable them setting the `OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED` environment variable to `true`:
+
+```sh
+export OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED=true
+```
+
 #### Differences from OpenTelemetry Python
 
 EDOT Python uses different defaults than OpenTelemetry Python for the following configuration options:
