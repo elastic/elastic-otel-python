@@ -27,6 +27,22 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.13.0 [edot-python-1.13.0-release-notes]
+
+### Features and enhancements [edot-python-1.13.0-features-enhancements]
+
+- Bump OpenTelemetry to 1.41.1/0.62b1 ([#546](https://github.com/elastic/elastic-otel-python/pull/546))
+
+  Upstream changes:
+  * [opentelemetry-python 1.41.0](https://github.com/open-telemetry/opentelemetry-python/discussions/5068)
+  * [opentelemetry-python-contrib 1.41.0](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4411)
+  * [opentelemetry-python-contrib 1.41.1](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4489)
+- Bump `opentelemetry-resourcedetector-gcp` to latest, dropping our private `_gcp` entry point in favor of the upstream `gcp_resource_detector` ([#547](https://github.com/elastic/elastic-otel-python/pull/547))
+
+### Fixes [edot-python-1.13.0-fixes]
+
+- Consider `opentelemetry-instrumentation-logging` `LoggingHandler` when setting up logging ([#552](https://github.com/elastic/elastic-otel-python/pull/552))
+
 ## 1.12.0 [edot-python-1.12.0-release-notes]
 
 ### Features and enhancements [edot-python-1.12.0-features-enhancements]
@@ -34,8 +50,8 @@ To check for security updates, go to [Security announcements for the Elastic sta
 - Bump OpenTelemetry to 1.40.0/0.61b0 ([#499](https://github.com/elastic/elastic-otel-python/pull/499))
 
   Upstream changes:
-  * [opentelemetry-python](https://github.com/open-telemetry/opentelemetry-python/discussions/5608)
-  * [opentelemetry-python-contrib](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4411)
+  * [opentelemetry-python](https://github.com/open-telemetry/opentelemetry-python/discussions/4951)
+  * [opentelemetry-python-contrib](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4296)
 
 - Central configuration: Add support for `deactivate_instrumentations` to stop tracing for specific instrumentations at runtime (supports globbing, including `*` to switch off tracing for all instrumentations), requires Elastic Stack 9.4.0 ([#499](https://github.com/elastic/elastic-otel-python/pull/499))
 - Move to upstream OpAMP client ([#512](https://github.com/elastic/elastic-otel-python/pull/512), [#517](https://github.com/elastic/elastic-otel-python/pull/517))

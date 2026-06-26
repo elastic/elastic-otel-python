@@ -223,13 +223,27 @@ This example replaces the values of the `set-cookie` header and headers such as 
 ```sh
 export OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS=".*session.*,set-cookie"
 ```
+
+#### OpenTelemetry SDK metrics
+
+```{applies_to}
+product:
+  edot_python: preview 1.14.0
+```
+
+[OpenTelemetry SDK metrics](https://opentelemetry.io/docs/specs/semconv/otel/sdk-metrics/) are not enabled by default, you can enable them setting the `OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED` environment variable to `true`:
+
+```sh
+export OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED=true
+```
+
 #### Differences from OpenTelemetry Python
 
 EDOT Python uses different defaults than OpenTelemetry Python for the following configuration options:
 
 | Option | EDOT Python default | OpenTelemetry Python default | Notes |
 |---|---|---|---|
-| `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` | `process_runtime,os,telemetry_distro,service_instance,containerid,_gcp,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm,otel` | `otel` | |
+| `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` | `process_runtime,os,telemetry_distro,service_instance,containerid,gcp_resource_detector,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm,otel` | `otel` | |
 | `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | `DELTA` | `CUMULATIVE` | |
 | `OTEL_LOG_LEVEL` | `warn` | | {applies_to}`edot_python: ga 1.9.0` |
 | `OTEL_METRICS_EXEMPLAR_FILTER` | `always_off` | `trace_based` | |
@@ -237,7 +251,7 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 | `OTEL_TRACES_SAMPLER_ARG` | `1.0` | | {applies_to}`edot_python: ga 1.6.0`|
 
 :::{note}
-`OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` cloud resource detectors are dynamically set. When running in a Kubernetes Pod it will be set to `process_runtime,os,telemetry_distro,service_instance,_gcp,aws_eks,otel`.
+`OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` cloud resource detectors are dynamically set. When running in a Kubernetes Pod it will be set to `process_runtime,os,telemetry_distro,service_instance,gcp_resource_detector,aws_eks,otel`.
 :::
 
 :::{note}

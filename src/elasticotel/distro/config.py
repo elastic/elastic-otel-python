@@ -19,6 +19,7 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import dataclass
+from typing import cast
 
 from elasticotel.distro.sanitization import _sanitize_headers_env_vars
 from elasticotel.sdk.sampler import DefaultSampler
@@ -33,9 +34,20 @@ from opentelemetry._opamp.exceptions import (
     OpAMPRemoteConfigParseException,
 )
 from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
-from opentelemetry.sdk._logs import LoggingHandler
+
+try:
+    from opentelemetry.instrumentation.logging.handler import LoggingHandler  # type: ignore[reportAssignmentType]
+except ImportError:
+
+    class LoggingHandler:
+        pass
+
+
+from opentelemetry.sdk._logs import LoggingHandler as SDKLoggingHandler
 from opentelemetry.sdk.environment_variables import OTEL_LOG_LEVEL, OTEL_TRACES_SAMPLER_ARG
-from opentelemetry.sdk.trace import _TracerConfig, _TracerConfiguratorRulesT, _scope_name_matches_glob
+from opentelemetry.sdk.trace import _TracerConfig
+from opentelemetry.sdk.util._configurator import ConfiguratorRulesT
+from opentelemetry.sdk.util.instrumentation import _scope_name_matches_glob
 
 
 logger = logging.getLogger(__name__)
@@ -126,7 +138,16 @@ class Config:
                 _logger.addHandler(handler)
                 # We need to propagate if we have the OTel handler otherwise we don't see logs shipped, in the other
                 # cases we shouldn't
-                _logger.propagate = any(isinstance(_handler, LoggingHandler) for _handler in logging.root.handlers)
+                _logger.propagate = any(
+                    isinstance(
+                        _handler,
+                        (
+                            LoggingHandler,
+                            SDKLoggingHandler,
+                        ),
+                    )
+                    for _handler in logging.root.handlers
+                )
 
         # do validation, we only validate logging_level because sampling_rate is handled by the sdk already
         logging_level = _LOG_LEVELS_MAP.get(self.logging_level.value)
@@ -186,6 +207,8 @@ def _handle_sampling_rate(remote_config) -> ConfigUpdate:
             logger.error("Invalid `sampling_rate` from config `%s`", config_sampling_rate)
             return ConfigUpdate(error_message=f"Invalid sampling_rate {config_sampling_rate}")
 
+    config_sampling_rate = cast(str, config_sampling_rate)
+
     sampler = getattr(trace.get_tracer_provider(), "sampler", None)
     if sampler is None:
         logger.debug("Cannot get sampler from tracer provider.")
@@ -202,7 +225,7 @@ def _handle_sampling_rate(remote_config) -> ConfigUpdate:
     return ConfigUpdate()
 
 
-def _rules_from_deactivate_instrumentations(csv: str) -> _TracerConfiguratorRulesT:
+def _rules_from_deactivate_instrumentations(csv: str) -> ConfiguratorRulesT:
     patterns = [pattern.strip() for pattern in csv.split(",") if pattern.strip()]
     if not patterns:
         return []
@@ -223,12 +246,14 @@ def _handle_deactivate_instrumentations(remote_config) -> ConfigUpdate:
 
     rules = _rules_from_deactivate_instrumentations(config_deactivate_instrumentations)
     current_tracer_configurator = tracer_configurator._get_tracer_configurator()
-    rules_updated = current_tracer_configurator.update_rules(rules)
+    try:
+        rules_changed = current_tracer_configurator.rules_changed(rules)
+    except AttributeError:
+        rules_changed = True
+    current_tracer_configurator.update_rules(rules)
     # if the rules did not change we are fine
-    if not rules_updated:
+    if not rules_changed:
         return ConfigUpdate()
-    # when rules are updated we need to clear the cache of the tracer_configurator function
-    tracer_configurator._updatable_tracer_configurator.cache_clear()
 
     set_tracer_configurator(tracer_configurator=tracer_configurator._updatable_tracer_configurator)
     logger.debug('Updated deactivate instrumentations to "%s".', config_deactivate_instrumentations)

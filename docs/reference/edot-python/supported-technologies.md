@@ -46,7 +46,6 @@ Refer to [EDOT SDKs compatibility](opentelemetry://reference/compatibility/sdks.
 
 The following Python versions are supported:
 
- * 3.9
  * 3.10
  * 3.11
  * 3.12
@@ -72,7 +71,6 @@ Instrumentations are not installed by default. Use the [edot-bootstrap](/referen
 | [opentelemetry-instrumentation-asyncio](https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-asyncio) | `asyncio` | development | `opentelemetry.instrumentation.asyncio` |
 | [opentelemetry-instrumentation-asyncpg](https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-asyncpg) | `asyncpg >= 0.12.0` | development | `opentelemetry.instrumentation.asyncpg` |
 | [opentelemetry-instrumentation-aws-lambda](https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-aws-lambda) | | development | `opentelemetry.instrumentation.aws_lambda` |
-| [opentelemetry-instrumentation-boto](https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-boto) | `boto~=2.0` | development | `opentelemetry.instrumentation.boto` |
 | [opentelemetry-instrumentation-boto3sqs](https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-boto3sqs) | `boto3 ~= 1.0` | development | `opentelemetry.instrumentation.boto3sqs` |
 | [opentelemetry-instrumentation-botocore](https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-botocore) | `botocore ~= 1.0` | development | `opentelemetry.instrumentation.botocore`, `opentelemetry.instrumentation.botocore.bedrock-runtime`, `opentelemetry.instrumentation.botocore.dynamodb`, `opentelemetry.instrumentation.botocore.lambda`, `opentelemetry.instrumentation.botocore.secreatsmanager`, `opentelemetry.instrumentation.botocore.stepfunctions`, `opentelemetry.instrumentation.botocore.sns`, `opentelemetry.instrumentation.botocore.sqs` |
 | [opentelemetry-instrumentation-cassandra](https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-cassandra) | `cassandra-driver ~= 3.25`,`scylla-driver ~= 3.25` | development | `opentelemetry.instrumentation.cassandra` |

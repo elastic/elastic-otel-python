@@ -17,7 +17,7 @@
 import json
 import logging
 import os
-from unittest import TestCase, mock
+from unittest import TestCase, mock, skipIf
 
 from elasticotel.distro import ElasticOpenTelemetryConfigurator, ElasticOpenTelemetryDistro, logger as distro_logger
 from elasticotel.distro.config import EDOTOpAMPCallbacks, logger as config_logger, Config
@@ -40,7 +40,12 @@ from opentelemetry.environment_variables import (
     OTEL_METRICS_EXPORTER,
     OTEL_TRACES_EXPORTER,
 )
-from opentelemetry.sdk._logs import LoggingHandler
+
+try:
+    from opentelemetry.instrumentation.logging.handler import LoggingHandler
+except ImportError:
+    LoggingHandler = None
+from opentelemetry.sdk._logs import LoggingHandler as SDKLoggingHandler
 from opentelemetry.sdk.environment_variables import (
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
     OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
@@ -50,7 +55,8 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_TRACES_SAMPLER,
     OTEL_TRACES_SAMPLER_ARG,
 )
-from opentelemetry.sdk.trace import _TracerConfig, _scope_name_matches_glob, sampling
+from opentelemetry.sdk.trace import _TracerConfig, sampling
+from opentelemetry.sdk.util.instrumentation import _scope_name_matches_glob
 from opentelemetry.util._once import Once
 
 
@@ -69,7 +75,7 @@ class TestDistribution(TestCase):
         self.assertEqual("otlp", os.environ.get(OTEL_LOGS_EXPORTER))
         self.assertEqual("grpc", os.environ.get(OTEL_EXPORTER_OTLP_PROTOCOL))
         self.assertEqual(
-            "process_runtime,os,telemetry_distro,service_instance,containerid,_gcp,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm,otel",
+            "process_runtime,os,telemetry_distro,service_instance,containerid,gcp_resource_detector,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm,otel",
             os.environ.get(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS),
         )
         self.assertEqual("always_off", os.environ.get(OTEL_METRICS_EXEMPLAR_FILTER))
@@ -458,6 +464,27 @@ class TestConfig(TestCase):
                 _logger.removeHandler(_logger.handlers[0])
 
     def test_logging_setup_set_propagate_true_if_sdk_logging_handler_found(self):
+        root_logger = logging.getLogger()
+        handler = SDKLoggingHandler(logger_provider=mock.Mock())
+        root_logger.addHandler(handler)
+
+        config = Config()
+
+        config._setup_logging()
+
+        for _logger in config._get_loggers():
+            with self.subTest(logger=_logger):
+                self.assertEqual(len(_logger.handlers), 1)
+                self.assertTrue(_logger.propagate)
+
+                # cleanup
+                _logger.removeHandler(_logger.handlers[0])
+                _logger.propagate = True
+
+        root_logger.removeHandler(handler)
+
+    @skipIf(LoggingHandler is None, "opentelemetry-instrumentation-logging not installed")
+    def test_logging_setup_set_propagate_true_if_logging_instrumentation_handler_found(self):
         root_logger = logging.getLogger()
         handler = LoggingHandler(logger_provider=mock.Mock())
         root_logger.addHandler(handler)
@@ -897,7 +924,6 @@ class TestEDOTOpAMPCallbacks(TestCase):
         client.build_full_state_message.assert_not_called()
         get_tracer_provider_mock.return_value._set_tracer_configurator.assert_called_once()
         self.assertEqual(len(rule_based_tracer_configurator.rules), 1)
-        _updatable_tracer_configurator.cache_clear()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("elasticotel.sdk.trace.tracer_configurator._get_tracer_configurator")
@@ -940,7 +966,6 @@ class TestEDOTOpAMPCallbacks(TestCase):
         client.build_full_state_message.assert_not_called()
         get_tracer_provider_mock.return_value._set_tracer_configurator.assert_not_called()
         self.assertEqual(len(rule_based_tracer_configurator.rules), 1)
-        _updatable_tracer_configurator.cache_clear()
 
     @mock.patch("elasticotel.distro.config._get_config")
     @mock.patch("elasticotel.sdk.trace.tracer_configurator._get_tracer_configurator")

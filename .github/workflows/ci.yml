@@ -15,27 +15,27 @@ jobs:
   pre-commit:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./.github/actions/env-install
     - uses: pre-commit/action@v3.0.1
 
   license-header-check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - run: ./scripts/license_headers_check.sh
 
   pip-installable:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./.github/actions/env-install
     - run: pip install -e .
 
   pip-licenses:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./.github/actions/env-install
     - run: pip install -e .
     - run: pip install pip-licenses
@@ -46,14 +46,14 @@ jobs:
       USE_ELASTIC_REGISTRY: ${{ github.event_name != 'pull_request' || ( github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false && github.actor != 'dependabot[bot]' ) }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: ./.github/actions/env-install
     - run: pip install build
     - run: python -m build
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+      uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
     - name: Log in to the Elastic Container registry
-      uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+      uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
       with:
         registry: ${{ secrets.ELASTIC_DOCKER_REGISTRY }}
         username: ${{ secrets.ELASTIC_DOCKER_USERNAME }}
@@ -67,17 +67,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      py39: "3.9"
       py310: "3.10"
       py311: "3.11"
       py312: "3.12"
       py313: "3.13"
+      py314: "3.14"
     strategy:
       fail-fast: false
       matrix:
-        python-version: [py39, py310, py311, py312, py313]
+        python-version: [py310, py311, py312, py313, py314]
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up Python ${{ env[matrix.python-version] }}
       uses: actions/setup-python@v6
       with:
@@ -89,7 +89,7 @@ jobs:
   typecheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/env-install
       - run: pip install -r dev-requirements.txt
       - run: pip install pyright

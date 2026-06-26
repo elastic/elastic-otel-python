@@ -18,10 +18,10 @@ import os
 
 AWS_LAMBDA_DETECTORS = ["aws_lambda"]
 AZURE_FUNCTIONS_DETECTORS = ["azure_functions"]
-GCP_CLOUD_RUN_DETECTORS = ["_gcp"]
-KUBERNETES_DETECTORS = ["_gcp", "aws_eks"]
+GCP_CLOUD_RUN_DETECTORS = ["gcp_resource_detector"]
+KUBERNETES_DETECTORS = ["gcp_resource_detector", "aws_eks"]
 OTHER_CLOUD_DETECTORS = [
-    "_gcp",
+    "gcp_resource_detector",
     "aws_ec2",
     "aws_ecs",
     "aws_elastic_beanstalk",
