@@ -67,7 +67,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      py39: "3.9"
       py310: "3.10"
       py311: "3.11"
       py312: "3.12"
@@ -76,7 +75,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [py39, py310, py311, py312, py313, py314]
+        python-version: [py310, py311, py312, py313, py314]
     steps:
     - uses: actions/checkout@v7
     - name: Set up Python ${{ env[matrix.python-version] }}
