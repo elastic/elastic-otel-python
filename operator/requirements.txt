@@ -53,6 +53,6 @@ opentelemetry-instrumentation-tornado==0.63b1
 opentelemetry-instrumentation-tortoiseorm==0.63b1
 opentelemetry-instrumentation-urllib==0.63b1
 opentelemetry-instrumentation-urllib3==0.63b1
-opentelemetry-instrumentation-wsgi==0.63b1
+opentelemetry-instrumentation-wsgi==0.64b0
 
 elastic-opentelemetry-instrumentation-openai==1.2.0
