@@ -92,7 +92,7 @@ opentelemetry-semantic-conventions==0.63b1
     #   opentelemetry-instrumentation-logging
     #   opentelemetry-instrumentation-system-metrics
     #   opentelemetry-sdk
-oteltest==0.24.0
+oteltest==0.47.0
     # via elastic-opentelemetry (pyproject.toml)
 packaging==26.2
     # via
