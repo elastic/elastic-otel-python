@@ -27,6 +27,18 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.14.0 [edot-python-1.14.0-release-notes]
+
+### Features and enhancements [edot-python-1.14.0-features-enhancements]
+
+- Bump OpenTelemetry to 1.42.1/0.63b1: dropped support Python 3.9 ([#572](https://github.com/elastic/elastic-otel-python/pull/572))
+
+  Upstream changes:
+  * [opentelemetry-python 1.42.0](https://github.com/open-telemetry/opentelemetry-python/discussions/5228)
+  * [opentelemetry-python-contrib 1.42.0](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4604)
+  * [opentelemetry-python 1.42.1](https://github.com/open-telemetry/opentelemetry-python/discussions/5245)
+- Load `otel` resource detector as last to being able to override other detectors resource attributes with environment variables ([#532](https://github.com/elastic/elastic-otel-python/pull/532))
+
 ## 1.13.0 [edot-python-1.13.0-release-notes]
 
 ### Features and enhancements [edot-python-1.13.0-features-enhancements]

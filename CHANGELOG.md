@@ -1,5 +1,15 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.14.0
+
+- Bump OpenTelemetry to 1.42.1/0.63b1: dropped support for Python 3.9 (#572)
+
+  Upstream changes:
+  * 1.42.0 core changes: https://github.com/open-telemetry/opentelemetry-python/discussions/5228
+  * 1.42.0 -contrib changes: https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4604
+  * 1.42.1 core changes: https://github.com/open-telemetry/opentelemetry-python/discussions/5245
+- Load `otel` resource detector as last to being able to override other detectors resource attributes with environment variables (#532)
+
 ## v1.13.0
 
 - Bump OpenTelemetry to 1.41.1/0.62b1 (#546)
