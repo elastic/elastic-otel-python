@@ -14,11 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from unittest import TestCase, mock
+from unittest import TestCase
 
 from elasticotel.sdk.resources import (
     ProcessRuntimeResourceDetector,
-    ServiceInstanceResourceDetector,
     TelemetryDistroResourceDetector,
 )
 from opentelemetry.sdk.resources import (
@@ -41,20 +40,6 @@ class TestProcessRuntimeDetector(TestCase):
             sorted(aggregated_resource.attributes.keys()),
             [PROCESS_RUNTIME_DESCRIPTION, PROCESS_RUNTIME_NAME, PROCESS_RUNTIME_VERSION],
         )
-
-
-class TestServiceInstanceDetector(TestCase):
-    def test_service_instance_detector(self):
-        initial_resource = Resource(attributes={})
-        aggregated_resource = get_aggregated_resources([ServiceInstanceResourceDetector()], initial_resource)
-
-        self.assertEqual(
-            aggregated_resource.attributes,
-            {
-                "service.instance.id": mock.ANY,
-            },
-        )
-        self.assertTrue(isinstance(aggregated_resource.attributes["service.instance.id"], str))
 
 
 class TestTelemetryDistroDetector(TestCase):

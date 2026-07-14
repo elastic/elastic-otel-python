@@ -54,13 +54,14 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
         telemetry = self.get_telemetry()
         (span,) = telemetry["traces"]
         resource = span["resource"]
-        self.assertEqual(resource["telemetry.distro.name"], "elastic")
-        self.assertTrue(resource["telemetry.distro.version"])
         self.assertTrue(resource["process.runtime.description"])
         self.assertTrue(resource["process.runtime.name"])
         self.assertTrue(resource["process.runtime.version"])
+        self.assertTrue(resource["service.instance.id"])
         self.assertTrue(resource["os.type"])
         self.assertTrue(resource["os.version"])
+        self.assertEqual(resource["telemetry.distro.name"], "elastic")
+        self.assertTrue(resource["telemetry.distro.version"])
 
         container_id = ContainerResourceDetector().detect().attributes.get("container.id")
         if container_id:
