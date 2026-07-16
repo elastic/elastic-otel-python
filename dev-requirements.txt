@@ -4,11 +4,11 @@
 #
 #    pip-compile --extra=dev --output-file=dev-requirements.txt --strip-extras pyproject.toml
 #
-build==1.5.0
+build==1.5.1
     # via pip-tools
 certifi==2026.6.17
     # via requests
-charset-normalizer==3.4.7
+charset-normalizer==3.4.9
     # via requests
 click==8.4.2
     # via pip-tools
@@ -18,7 +18,7 @@ googleapis-common-protos==1.75.0
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-grpcio==1.81.1
+grpcio==1.82.1
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   oteltest
@@ -28,7 +28,7 @@ iniconfig==2.3.0
     # via pytest
 leb128==1.0.9
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-api==1.42.1
+opentelemetry-api==1.43.0
     # via
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-exporter-otlp-proto-grpc
@@ -41,28 +41,28 @@ opentelemetry-api==1.42.1
     #   opentelemetry-sdk
     #   opentelemetry-semantic-conventions
     #   oteltest
-opentelemetry-exporter-otlp==1.42.1
+opentelemetry-exporter-otlp==1.43.0
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-exporter-otlp-proto-common==1.42.1
+opentelemetry-exporter-otlp-proto-common==1.43.0
     # via
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-grpc==1.42.1
+opentelemetry-exporter-otlp-proto-grpc==1.43.0
     # via opentelemetry-exporter-otlp
-opentelemetry-exporter-otlp-proto-http==1.42.1
+opentelemetry-exporter-otlp-proto-http==1.43.0
     # via opentelemetry-exporter-otlp
-opentelemetry-instrumentation==0.63b1
+opentelemetry-instrumentation==0.64b0
     # via
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-instrumentation-logging
     #   opentelemetry-instrumentation-system-metrics
-opentelemetry-instrumentation-logging==0.63b1
+opentelemetry-instrumentation-logging==0.64b0
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-instrumentation-system-metrics==0.63b1
+opentelemetry-instrumentation-system-metrics==0.64b0
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-opamp-client==0.2b0
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-proto==1.42.1
+opentelemetry-proto==1.43.0
     # via
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-grpc
@@ -70,11 +70,11 @@ opentelemetry-proto==1.42.1
     #   oteltest
 opentelemetry-resource-detector-azure==0.1.5
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-resource-detector-containerid==0.63b1
+opentelemetry-resource-detector-containerid==0.64b0
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-resourcedetector-gcp==1.12.0a0
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-sdk==1.42.1
+opentelemetry-sdk==1.43.0
     # via
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-exporter-otlp-proto-grpc
@@ -85,7 +85,7 @@ opentelemetry-sdk==1.42.1
     #   opentelemetry-sdk-extension-aws
 opentelemetry-sdk-extension-aws==2.1.0
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-semantic-conventions==0.63b1
+opentelemetry-semantic-conventions==0.64b0
     # via
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-instrumentation
@@ -136,7 +136,7 @@ tomli==2.4.1
     #   build
     #   pip-tools
     #   pytest
-typing-extensions==4.15.0
+typing-extensions==4.16.0
     # via
     #   exceptiongroup
     #   grpcio
@@ -148,11 +148,11 @@ typing-extensions==4.15.0
     #   opentelemetry-semantic-conventions
 urllib3==2.7.0
     # via requests
-uuid-utils==0.16.2
+uuid-utils==0.17.0
     # via
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-opamp-client
-vcrpy==8.2.1
+vcrpy==8.3.0
     # via pytest-vcr
 wheel==0.47.0
     # via pip-tools
