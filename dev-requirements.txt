@@ -4,7 +4,7 @@
 #
 #    pip-compile --extra=dev --output-file=dev-requirements.txt --strip-extras pyproject.toml
 #
-build==1.5.1
+build==1.5.0
     # via pip-tools
 certifi==2026.6.17
     # via requests
@@ -60,7 +60,7 @@ opentelemetry-instrumentation-logging==0.64b0
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-instrumentation-system-metrics==0.64b0
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-opamp-client==0.2b0
+opentelemetry-opamp-client==0.3b0
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-proto==1.43.0
     # via
