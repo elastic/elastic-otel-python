@@ -45,7 +45,7 @@ dependencies = [
 dev = [
     "pytest",
     "pip-tools",
-    "oteltest==0.24.0",
+    "oteltest==0.47.0",
     "leb128",
     "pytest-vcr",
     "opentelemetry-instrumentation-logging",
