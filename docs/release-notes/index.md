@@ -1,6 +1,6 @@
 ---
-navigation_title: EDOT Python
-description: Release notes for Elastic Distribution of OpenTelemetry Python.
+navigation_title: Elastic OTel Python
+description: Release notes for Elastic OTel Python.
 applies_to:
   stack:
   serverless:
@@ -11,9 +11,9 @@ products:
   - id: edot-sdk
 ---
 
-# Elastic Distribution of OpenTelemetry Python release notes [edot-python-release-notes]
+# Elastic OTel Python release notes [edot-python-release-notes]
 
-Review the changes, fixes, and more in each version of Elastic Distribution of OpenTelemetry Python.
+Review the changes, fixes, and more in each version of Elastic OTel Python.
 
 To check for security updates, go to [Security announcements for the Elastic stack](https://discuss.elastic.co/c/announcements/security-announcements/31).
 

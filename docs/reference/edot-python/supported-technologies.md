@@ -1,6 +1,6 @@
 ---
 navigation_title: Supported Technologies
-description: Technologies Supported by the EDOT Python SDK.
+description: Technologies Supported by the Elastic OTel Python SDK.
 applies_to:
   stack:
   serverless:
@@ -13,9 +13,9 @@ products:
   - id: edot-sdk
 ---
 
-# Technologies supported by EDOT Python
+# Technologies supported by Elastic OTel Python [technologies-supported-by-edot-python]
 
-EDOT Python is a [distribution](https://opentelemetry.io/docs/concepts/distributions/) of OpenTelemetry Python. It inherits all the [supported](opentelemetry://reference/compatibility/nomenclature.md) technologies of the OpenTelemetry Python.
+Elastic OTel Python is a [distribution](https://opentelemetry.io/docs/concepts/distributions/) of OpenTelemetry Python. It inherits all the [supported](opentelemetry://reference/compatibility/nomenclature.md) technologies of the OpenTelemetry Python.
 
 :::{note}
 **Understanding auto-instrumentation scope**
@@ -32,15 +32,15 @@ If your application uses technologies not covered by auto-instrumentation, you h
 2. **Manual instrumentation** — Use the [OpenTelemetry API](https://opentelemetry.io/docs/languages/python/instrumentation/) to add custom spans, metrics, and logs for unsupported components.
 :::
 
-## EDOT Collector and Elastic Stack versions
+## {{agent}} and Elastic Stack versions [edot-collector-and-elastic-stack-versions]
 
-EDOT Python sends data through the OpenTelemetry protocol (OTLP). While OTLP ingest works with later 8.16+ versions of the EDOT Collector, for full support use either [EDOT Collector](elastic-agent://reference/edot-collector/index.md) versions 9.x or {{serverless-full}} for OTLP ingest.
+Elastic OTel Python sends data through the OpenTelemetry protocol (OTLP). While OTLP ingest works with later 8.16+ versions of {{agent}}, for full support use either [{{agent}}](elastic-agent://reference/edot-collector/index.md) versions 9.x or {{serverless-full}} for OTLP ingest.
 
 :::{note}
-Ingesting data from EDOT SDKs through EDOT Collector 9.x into Elastic Stack versions 8.18+ is supported.
+Ingesting data from Elastic OTel SDKs through {{agent}} 9.x into Elastic Stack versions 8.18+ is supported.
 :::
 
-Refer to [EDOT SDKs compatibility](opentelemetry://reference/compatibility/sdks.md) for support details.
+Refer to [Elastic OTel SDKs compatibility](opentelemetry://reference/compatibility/sdks.md) for support details.
 
 ## Python versions
 

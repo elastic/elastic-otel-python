@@ -1,6 +1,6 @@
 ---
 navigation_title: Configuration
-description: Configure the Elastic Distribution of OpenTelemetry Python (EDOT Python) to send data to Elastic.
+description: Configure Elastic OTel Python to send data to Elastic.
 applies_to:
   stack:
   serverless:
@@ -13,13 +13,13 @@ products:
   - id: edot-sdk
 ---
 
-# Configure the EDOT Python agent
+# Configure the Elastic OTel Python agent [configure-the-edot-python-agent]
 
-Configure the {{edot}} Python (EDOT Python) to send data to Elastic.
+Configure Elastic OTel Python to send data to Elastic.
 
 ## Configuration method
 
-Configure the OpenTelemetry SDK through the mechanisms [documented on the OpenTelemetry website](https://opentelemetry.io/docs/zero-code/python/configuration/). EDOT Python is typically configured with `OTEL_*` environment variables defined by the OpenTelemetry spec. For example:
+Configure the OpenTelemetry SDK through the mechanisms [documented on the OpenTelemetry website](https://opentelemetry.io/docs/zero-code/python/configuration/). Elastic OTel Python is typically configured with `OTEL_*` environment variables defined by the OpenTelemetry spec. For example:
 
 ```sh
 export OTEL_RESOURCE_ATTRIBUTES=service.name=<app-name>,deployment.environment.name=<env-name>
@@ -33,7 +33,7 @@ opentelemetry-instrument <command to start your service>
 Because the {{edot}} Python is an extension of OpenTelemetry Python, it supports both:
 
 * [General OpenTelemetry configuration options](#opentelemetry-configuration-options)
-* [Specific configuration options that are only available in EDOT Python](#configuration-options-only-available-in-edot-python)
+* [Specific configuration options that are only available in Elastic OTel Python](#configuration-options-only-available-in-edot-python)
 
 ## Central configuration
 
@@ -44,7 +44,7 @@ product:
   edot_python: preview 1.4.0
 ```
 
-APM Agent Central Configuration lets you configure EDOT Python instances remotely, see [Central configuration docs](opentelemetry://reference/central-configuration.md) for more details.
+APM Agent Central Configuration lets you configure Elastic OTel Python instances remotely, see [Central configuration docs](opentelemetry://reference/central-configuration.md) for more details.
 
 ### Turn on central configuration
 
@@ -94,19 +94,19 @@ export ELASTIC_OTEL_OPAMP_CLIENT_KEY=/path/to/client-key.pem
 
 ### Central configuration settings
 
-You can modify the following settings for EDOT Python through APM Agent Central Configuration:
+You can modify the following settings for Elastic OTel Python through APM Agent Central Configuration:
 
 | Settings      | Description                                  | Type    | Versions |
 |---------------|----------------------------------------------|---------|---------|
-| Logging level | Configure EDOT Python agent logging level.   | Dynamic | {applies_to}`stack: preview 9.1` <br> {applies_to}`edot_python: preview 1.4.0` |
-| Sampling rate | Configure EDOT Python tracing sampling rate. | Dynamic | {applies_to}`stack: preview 9.2` <br> {applies_to}`edot_python: preview 1.7.0` |
-| Deactivate instrumentations | Configure EDOT Python to deactivate tracers for specific instrumentations, supports globbing. Refer to [EDOT Python Supported technologies](/reference/edot-python/supported-technologies.md) for the names of the tracers. | Dynamic | {applies_to}`stack: preview 9.4` <br> {applies_to}`edot_python: preview 1.12.0` |
+| Logging level | Configure Elastic OTel Python agent logging level.   | Dynamic | {applies_to}`stack: preview 9.1` <br> {applies_to}`edot_python: preview 1.4.0` |
+| Sampling rate | Configure Elastic OTel Python tracing sampling rate. | Dynamic | {applies_to}`stack: preview 9.2` <br> {applies_to}`edot_python: preview 1.7.0` |
+| Deactivate instrumentations | Configure Elastic OTel Python to deactivate tracers for specific instrumentations, supports globbing. Refer to [Elastic OTel Python Supported technologies](/reference/edot-python/supported-technologies.md) for the names of the tracers. | Dynamic | {applies_to}`stack: preview 9.4` <br> {applies_to}`edot_python: preview 1.12.0` |
 
 Dynamic settings can be changed without having to restart the application.
 
 ### OpenTelemetry configuration options
 
-EDOT Python supports all configuration options listed in the [OpenTelemetry General SDK Configuration documentation](https://opentelemetry.io/docs/languages/sdk-configuration/general/) and [OpenTelemetry Python](https://opentelemetry.io/docs/languages/python).
+Elastic OTel Python supports all configuration options listed in the [OpenTelemetry General SDK Configuration documentation](https://opentelemetry.io/docs/languages/sdk-configuration/general/) and [OpenTelemetry Python](https://opentelemetry.io/docs/languages/python).
 
 #### TLS configuration for OTLP endpoint
 
@@ -239,15 +239,15 @@ export OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED=true
 
 #### Differences from OpenTelemetry Python
 
-EDOT Python uses different defaults than OpenTelemetry Python for the following configuration options:
+Elastic OTel Python uses different defaults than OpenTelemetry Python for the following configuration options:
 
-| Option | EDOT Python default | OpenTelemetry Python default | Notes |
+| Option | Elastic OTel Python default | OpenTelemetry Python default | Notes |
 |---|---|---|---|
 | `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` | `process_runtime,os,telemetry_distro,service_instance,containerid,gcp_resource_detector,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm,otel` | `otel` | |
 | `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | `DELTA` | `CUMULATIVE` | |
 | `OTEL_LOG_LEVEL` | `warn` | | {applies_to}`edot_python: ga 1.9.0` |
 | `OTEL_METRICS_EXEMPLAR_FILTER` | `always_off` | `trace_based` | |
-| `OTEL_TRACES_SAMPLER` | `experimental_composite_parentbased_traceidratio` | `parentbased_always_on` | {applies_to}`edot_python: ga 1.10.0`<br><br>The EDOT Python default was previously `parentbased_traceidratio` {applies_to}`edot_python: ga 1.5-1.9` |
+| `OTEL_TRACES_SAMPLER` | `experimental_composite_parentbased_traceidratio` | `parentbased_always_on` | {applies_to}`edot_python: ga 1.10.0`<br><br>The Elastic OTel Python default was previously `parentbased_traceidratio` {applies_to}`edot_python: ga 1.5-1.9` |
 | `OTEL_TRACES_SAMPLER_ARG` | `1.0` | | {applies_to}`edot_python: ga 1.6.0`|
 
 :::{note}
@@ -258,9 +258,9 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 `OTEL_LOG_LEVEL` accepts the following levels: `trace`, `debug`, `info`, `warn`, `error`, `fatal`, `off`.
 :::
 
-### Configuration options only available in EDOT Python
+### Configuration options only available in Elastic OTel Python [configuration-options-only-available-in-edot-python]
 
-`ELASTIC_OTEL_` options are specific to Elastic and will always live in EDOT Python include the following.
+`ELASTIC_OTEL_` options are specific to Elastic and will always live in Elastic OTel Python include the following.
 
 | Option(s) | Default | Description |
 |---|---|---|

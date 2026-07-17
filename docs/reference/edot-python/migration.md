@@ -1,6 +1,6 @@
 ---
 navigation_title: Migration
-description: Migrate from the Elastic APM Python agent to the Elastic Distribution of OpenTelemetry Python (EDOT Python).
+description: Migrate from the Elastic APM Python agent to Elastic OTel Python.
 applies_to:
   stack:
   serverless:
@@ -14,11 +14,11 @@ products:
   - id: apm-agent
 ---
 
-# Migrate to EDOT Python from the Elastic {{product.apm}} Python agent
+# Migrate to Elastic OTel Python from the Elastic {{product.apm}} Python agent [migrate-to-edot-python-from-the-elastic-apm-python-agent]
 
-Learn the differences between the [Elastic {{product.apm}} Python agent](apm-agent-python://reference/index.md) and the {{edot}} Python (EDOT Python).
+Learn the differences between the [Elastic {{product.apm}} Python agent](apm-agent-python://reference/index.md) and Elastic OTel Python.
 
-Follow the steps to migrate your instrumentation and settings. For step-by-step instructions on setting up EDOT Python refer to [Setup](/reference/edot-python/setup/index.md).
+Follow the steps to migrate your instrumentation and settings. For step-by-step instructions on setting up Elastic OTel Python refer to [Setup](/reference/edot-python/setup/index.md).
 
 ## Migration steps
 
@@ -26,23 +26,23 @@ Follow these steps to migrate:
 
 1. Remove any configuration and setup code needed by Elastic {{product.apm-agent-python}} from your application source code.
 2. Migrate any usage of Elastic {{product.apm-agent-python}} API to manual instrumentation with OpenTelemetry API in the application source code.
-3. Follow the [setup documentation](setup/index.md) on to install and configure EDOT Python.
+3. Follow the [setup documentation](setup/index.md) on to install and configure Elastic OTel Python.
 
 :::{agent-skill}
 :url: https://github.com/elastic/agent-skills/tree/main/skills/observability/edot-python-migrate
 
-Use this skill to migrate from the Elastic APM Python agent to EDOT Python.
+Use this skill to migrate from the Elastic APM Python agent to Elastic OTel Python.
 :::
 
 ## Configuration mapping
 
-The following are Elastic {{product.apm}} Python agent settings that you can migrate to EDOT Python.
+The following are Elastic {{product.apm}} Python agent settings that you can migrate to Elastic OTel Python.
 
-### Resource attributes when using the EDOT Collector
+### Resource attributes when using {{agent}} [resource-attributes-when-using-the-edot-collector]
 
-Ingesting OpenTelemetry data directly through {{product.apm-server}} is [no longer supported](opentelemetry://reference/architecture/index.md#limitations). Historically, when ingesting OpenTelemetry data through the Elastic {{product.apm-server}}, unmapped resource attributes were added under `labels.*`. This behavior does not apply when using the EDOT Collector and is not recommended for new deployments. Use the EDOT Collector or Managed OTLP for supported ingestion.
+Ingesting OpenTelemetry data directly through {{product.apm-server}} is [no longer supported](opentelemetry://reference/architecture/index.md#limitations). Historically, when ingesting OpenTelemetry data through the Elastic {{product.apm-server}}, unmapped resource attributes were added under `labels.*`. This behavior does not apply when using {{agent}} and is not recommended for new deployments. Use {{agent}} or Managed OTLP for supported ingestion.
 
-If you rely on specific attribute mappings for querying or filtering in {{product.observability}}, configure explicit attribute processors in the EDOT Collector pipeline.
+If you rely on specific attribute mappings for querying or filtering in {{product.observability}}, configure explicit attribute processors in the {{agent}} pipeline.
 
 ### `api_key`
 
@@ -147,7 +147,7 @@ Refer to [Central configuration](opentelemetry://reference/central-configuration
 
 ### AWS Lambda
 
-A custom lambda layer for the {{edot}} Python is not currently available. Refer to the [Lambda Auto-Instrumentation](https://opentelemetry.io/docs/faas/lambda-auto-instrument/).
+A custom lambda layer for Elastic OTel Python is not currently available. Refer to the [Lambda Auto-Instrumentation](https://opentelemetry.io/docs/faas/lambda-auto-instrument/).
 
 ### Missing instrumentations
 
@@ -167,16 +167,16 @@ The following libraries are currently missing an OpenTelemetry equivalent:
 
 ### Integration with structured logging
 
-EDOT Python lacks a [structlog integration](apm-agent-python://reference/logs.md#structlog) at the moment.
+Elastic OTel Python lacks a [structlog integration](apm-agent-python://reference/logs.md#structlog) at the moment.
 
 ### Span compression
 
-EDOT Python does not implement [span compression](docs-content://solutions/observability/apm/spans.md#apm-spans-span-compression).
+Elastic OTel Python does not implement [span compression](docs-content://solutions/observability/apm/spans.md#apm-spans-span-compression).
 
 ### Breakdown metrics
 
-EDOT Python is not sending metrics that power the [Breakdown metrics](docs-content://solutions/observability/apm/metrics.md#_breakdown_metrics).
+Elastic OTel Python is not sending metrics that power the [Breakdown metrics](docs-content://solutions/observability/apm/metrics.md#_breakdown_metrics).
 
 ## Troubleshooting
 
-If you're encountering issues during migration, refer to the [EDOT Python troubleshooting guide](docs-content://troubleshoot/ingest/opentelemetry/edot-sdks/python/index.md).
+If you're encountering issues during migration, refer to the [Elastic OTel Python troubleshooting guide](docs-content://troubleshoot/ingest/opentelemetry/edot-sdks/python/index.md).

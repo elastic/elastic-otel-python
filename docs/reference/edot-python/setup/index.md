@@ -1,6 +1,6 @@
 ---
 navigation_title: Setup
-description: Learn how to set up and configure the Elastic Distribution of OpenTelemetry (EDOT) Python to instrument your application or service.
+description: Learn how to set up and configure Elastic OTel Python to instrument your application or service.
 applies_to:
   stack:
   serverless:
@@ -13,16 +13,16 @@ products:
   - id: edot-sdk
 ---
 
-# Set up the EDOT Python agent
+# Set up the Elastic OTel Python agent [set-up-the-edot-python-agent]
 
-Learn how to set up the {{edot}} (EDOT) Python in various environments, including Kubernetes and others.
+Learn how to set up Elastic OTel Python in various environments, including Kubernetes and others.
 
 Follow these steps to get started.
 
 :::{agent-skill}
 :url: https://github.com/elastic/agent-skills/tree/main/skills/observability/edot-python-instrument
 
-Use this skill to instrument Python services with EDOT for tracing, metrics, and logs.
+Use this skill to instrument Python services with Elastic OTel for tracing, metrics, and logs.
 :::
 
 :::{warning}
@@ -32,7 +32,7 @@ Avoid using the Python SDK alongside any other APM agent, including Elastic APM 
 ::::::{stepper}
 
 ::::{step} Install the distribution
-Install EDOT Python by running pip:
+Install Elastic OTel Python by running pip:
 
 ```bash
 pip install elastic-opentelemetry
@@ -40,7 +40,7 @@ pip install elastic-opentelemetry
 ::::
 
 ::::{step} Install the available instrumentation
-EDOT Python doesn't install any instrumentation package by default. Instead, it relies on the `edot-bootstrap` command to scan the installed packages and install the available instrumentation. The following command installs all the instrumentations available for libraries installed in your environment:
+Elastic OTel Python doesn't install any instrumentation package by default. Instead, it relies on the `edot-bootstrap` command to scan the installed packages and install the available instrumentation. The following command installs all the instrumentations available for libraries installed in your environment:
 
 ```bash
 edot-bootstrap --action=install
@@ -51,20 +51,20 @@ Add this command every time you deploy an updated version of your application. A
 :::
 ::::
 
-::::{step} Configure EDOT Python
+::::{step} Configure Elastic OTel Python
 Refer to [Observability quickstart](docs-content://solutions/observability/get-started/opentelemetry/quickstart/index.md) documentation on how to setup your environment.
 
-To configure EDOT Python you need to set a few `OTLP_*` environment variables that are available when running EDOT Python:
+To configure Elastic OTel Python you need to set a few `OTLP_*` environment variables that are available when running Elastic OTel Python:
 
 * `OTEL_RESOURCE_ATTRIBUTES`: Use this to add a `service.name` and `deployment.environment.name`. This makes it easier to recognize your application when reviewing data sent to Elastic.
 
-The following environment variables are not required if you are sending data through a local EDOT Collector but are provided in the Elastic Observability platform onboarding:
+The following environment variables are not required if you are sending data through a local {{agent}} but are provided in the Elastic Observability platform onboarding:
 
 * `OTEL_EXPORTER_OTLP_ENDPOINT`: The full URL of the endpoint where data will be sent.
 * `OTEL_EXPORTER_OTLP_HEADERS`: A comma-separated list of `key=value` pairs that will be added to the headers of every request. This is typically used for authentication information.
 ::::
 
-::::{step} Run EDOT Python
+::::{step} Run Elastic OTel Python
 Wrap your service invocation with `opentelemetry-instrument`, which is the wrapper that provides automatic instrumentation. For example, a web service running with gunicorn might look like this:
 
 ```bash
@@ -72,11 +72,11 @@ opentelemetry-instrument gunicorn main:app
 ```
 ::::
 
-::::{step} Confirm that EDOT Python is working
-To confirm that EDOT Python has successfully connected to Elastic:
+::::{step} Confirm that Elastic OTel Python is working
+To confirm that Elastic OTel Python has successfully connected to Elastic:
 
 1. Go to **Observability** → **Applications** → **Service Inventory**
-2. Find the name of the service to which you just added EDOT Python. It can take several minutes after initializing EDOT Python for the service to show up in this list.
+2. Find the name of the service to which you just added Elastic OTel Python. It can take several minutes after initializing Elastic OTel Python for the service to show up in this list.
 3. Select the name in the list to see trace data.
 
 :::{note}
@@ -88,4 +88,4 @@ There might be no trace data to visualize unless you have invoked your applicati
 
 ## Troubleshooting
 
-For help with common setup issues, refer to the [EDOT Python troubleshooting guide](docs-content://troubleshoot/ingest/opentelemetry/edot-sdks/python/index.md).
+For help with common setup issues, refer to the [Elastic OTel Python troubleshooting guide](docs-content://troubleshoot/ingest/opentelemetry/edot-sdks/python/index.md).

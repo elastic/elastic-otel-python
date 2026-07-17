@@ -1,6 +1,6 @@
 ---
 navigation_title: Breaking changes 
-description: Breaking changes for Elastic Distribution of OpenTelemetry .
+description: Breaking changes for Elastic OTel Python.
 applies_to:
   stack:
   serverless:
@@ -11,9 +11,9 @@ products:
   - id: edot-sdk
 ---
 
-# Elastic Distribution of OpenTelemetry Python breaking changes [edot-python-breaking-changes]
+# Elastic OTel Python breaking changes [edot-python-breaking-changes]
 
-Breaking changes can impact your Elastic applications, potentially disrupting normal operations. Before you upgrade, carefully review the Elastic Distribution of OpenTelemetry Python breaking changes and take the necessary steps to mitigate any issues.
+Breaking changes can impact your Elastic applications, potentially disrupting normal operations. Before you upgrade, carefully review the Elastic OTel Python breaking changes and take the necessary steps to mitigate any issues.
 
 % ## Next version [edot-python-X.X.X-breaking-changes]
 

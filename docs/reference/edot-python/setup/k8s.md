@@ -13,20 +13,20 @@ products:
   - id: edot-sdk
 ---
 
-# Instrumenting Python applications with EDOT SDKs on Kubernetes
+# Instrumenting Python applications with Elastic OTel SDKs on Kubernetes [instrumenting-python-applications-with-edot-sdks-on-kubernetes]
 
-Learn how to instrument Python applications on Kubernetes using the OpenTelemetry Operator, the {{edot}} (EDOT) Collector, and the EDOT Python SDK.
+Learn how to instrument Python applications on Kubernetes using the OpenTelemetry Operator, the {{agent}}, and the Elastic OTel Python SDK.
 
-- For general knowledge about the EDOT Python SDK, refer to the [EDOT Python Intro page](/reference/edot-python/index.md).
+- For general knowledge about the Elastic OTel Python SDK, refer to the [Elastic OTel Python Intro page](/reference/edot-python/index.md).
 - For Python auto-instrumentation specifics, refer to [OpenTelemetry Operator Python auto-instrumentation](https://opentelemetry.io/docs/kubernetes/operator/automatic/#python).
-- To manually instrument your Python application code (by customizing spans and metrics), refer to [EDOT Python manual instrumentation](/reference/edot-python/setup/manual-instrumentation.md).
+- To manually instrument your Python application code (by customizing spans and metrics), refer to [Elastic OTel Python manual instrumentation](/reference/edot-python/setup/manual-instrumentation.md).
 - For general information about instrumenting applications on Kubernetes, refer to [instrumenting applications on Kubernetes](docs-content://solutions/observability/get-started/opentelemetry/use-cases/kubernetes/instrumenting-applications.md).
 
 ## Supported environments and configuration
 
 The following environments and configurations are supported:
 
-- EDOT Python container image supports `glibc` and `musl` based auto-instrumentation for Python 3.12.
+- Elastic OTel Python container image supports `glibc` and `musl` based auto-instrumentation for Python 3.12.
 - `musl` based containers instrumentation requires an [extra annotation](https://opentelemetry.io/docs/kubernetes/operator/automatic/#annotations-python-musl) and operator v0.113.0+.
 - To turn on logs auto-instrumentation, refer to [auto-instrument python logs](https://opentelemetry.io/docs/kubernetes/operator/automatic/#auto-instrumenting-python-logs).
 - To turn on specific instrumentation libraries, refer to [excluding auto-instrumentation](https://opentelemetry.io/docs/kubernetes/operator/automatic/#python-excluding-auto-instrumentation).

@@ -1,6 +1,6 @@
 ---
 navigation_title: Known issues 
-description: Known issues for Elastic Distribution of OpenTelemetry Python.
+description: Known issues for Elastic OTel Python.
 applies_to:
   stack:
   serverless:
@@ -11,6 +11,6 @@ products:
   - id: edot-sdk
 ---
 
-# Elastic Distribution of OpenTelemetry Python known issues
+# Elastic OTel Python known issues [elastic-distribution-of-opentelemetry-python-known-issues]
 
 No known issues.

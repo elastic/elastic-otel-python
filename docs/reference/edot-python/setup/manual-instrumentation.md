@@ -13,11 +13,11 @@ products:
   - id: edot-sdk
 ---
 
-# Manual instrumentation using the Elastic Distribution of OpenTelemetry Python
+# Manual instrumentation using Elastic OTel Python [manual-instrumentation-using-the-elastic-distribution-of-opentelemetry-python]
 
-Learn how to manually instrument Python applications using the {{edot}} Python SDK to add spans, metrics, and custom attributes. The following instructions require auto-instrumentation with OpenTelemetry to have been added to your application per [Setup](/reference/edot-python/setup/index.md).
+Learn how to manually instrument Python applications using the Elastic OTel Python SDK to add spans, metrics, and custom attributes. The following instructions require auto-instrumentation with OpenTelemetry to have been added to your application per [Setup](/reference/edot-python/setup/index.md).
 
-## Configure EDOT Python
+## Configure Elastic OTel Python [configure-edot-python]
 
 Refer to our [Setup](/reference/edot-python/setup/index.md) page for more details.
 
@@ -89,14 +89,14 @@ def hello():
     return f"Hello {choice}!"
 ```
 
-## Confirm that EDOT Python is working
+## Confirm that Elastic OTel Python is working [confirm-that-edot-python-is-working]
 
-To confirm that EDOT Python has successfully connected to Elastic:
+To confirm that Elastic OTel Python has successfully connected to Elastic:
 
 1. Go to **Observability** → **Applications** → **Service Inventory**
-1. Find the name of the service to which you just added EDOT Python. It can take several minutes after initializing EDOT Python for the service to show up in this list.
+1. Find the name of the service to which you just added Elastic OTel Python. It can take several minutes after initializing Elastic OTel Python for the service to show up in this list.
 1. Select the name in the list to see trace data.
 
 :::{note}
-There might be no trace data to visualize unless you have used your application since initializing EDOT Python.
+There might be no trace data to visualize unless you have used your application since initializing Elastic OTel Python.
 :::
