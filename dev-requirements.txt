@@ -62,7 +62,7 @@ opentelemetry-instrumentation-system-metrics==0.64b0
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-opamp-client==0.3b0
     # via elastic-opentelemetry (pyproject.toml)
-opentelemetry-proto==1.43.0
+opentelemetry-proto==1.44.0
     # via
     #   opentelemetry-exporter-otlp-proto-common
     #   opentelemetry-exporter-otlp-proto-grpc
