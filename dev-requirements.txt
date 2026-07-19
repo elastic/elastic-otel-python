@@ -56,7 +56,7 @@ opentelemetry-instrumentation==0.64b0
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-instrumentation-logging
     #   opentelemetry-instrumentation-system-metrics
-opentelemetry-instrumentation-logging==0.64b0
+opentelemetry-instrumentation-logging==0.65b0
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-instrumentation-system-metrics==0.64b0
     # via elastic-opentelemetry (pyproject.toml)
