@@ -1,5 +1,14 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.15.0
+
+- Bump OpenTelemetry to 1.43.0/0.64b0 (#587)
+
+  Upstream changes:
+  * 1.43.0 core changes: https://github.com/open-telemetry/opentelemetry-python/discussions/5350
+  * 1.43.0 -contrib changes: https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4738
+- Bump `opentelemetry-opamp-client` to 0.3b0 (#588)
+
 ## v1.14.0
 
 - Bump OpenTelemetry to 1.42.1/0.63b1: dropped support for Python 3.9 (#572)
