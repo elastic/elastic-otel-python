@@ -13,7 +13,7 @@ opentelemetry-instrumentation-aiopg==0.64b0
 opentelemetry-instrumentation-asgi==0.64b0
 opentelemetry-instrumentation-asyncclick==0.64b0
 opentelemetry-instrumentation-asyncio==0.64b0
-opentelemetry-instrumentation-asyncpg==0.64b0
+opentelemetry-instrumentation-asyncpg==0.65b0
 opentelemetry-instrumentation-boto3sqs==0.64b0
 opentelemetry-instrumentation-botocore==0.64b0
 opentelemetry-instrumentation-cassandra==0.64b0
