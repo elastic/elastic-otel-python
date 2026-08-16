@@ -35,7 +35,7 @@ opentelemetry-instrumentation-logging==0.64b0
 opentelemetry-instrumentation-mysql==0.64b0
 opentelemetry-instrumentation-mysqlclient==0.64b0
 opentelemetry-instrumentation-pika==0.64b0
-opentelemetry-instrumentation-psycopg==0.64b0
+opentelemetry-instrumentation-psycopg==0.65b0
 opentelemetry-instrumentation-psycopg2==0.64b0
 opentelemetry-instrumentation-pymemcache==0.64b0
 opentelemetry-instrumentation-pymongo==0.64b0
