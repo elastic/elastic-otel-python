@@ -197,34 +197,19 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
             ],
         )
 
-    def test_log_events_are_sent(self):
-        def send_event():
-            from opentelemetry._events import Event, get_event_logger
-
-            event = Event(name="test.event", attributes={}, body={"key": "value", "dict": {"nestedkey": "nestedvalue"}})
-            event_logger = get_event_logger(__name__)
-            event_logger.emit(event)
-
-        stdout, stderr, returncode = self.run_script(send_event, wrapper_script="opentelemetry-instrument")
-
-        telemetry = self.get_telemetry()
-        (log,) = telemetry["logs"]
-        self.assertEqual(log["attributes"]["event.name"], "test.event")
-        self.assertEqual(log["body"], {"key": "value", "dict": {"nestedkey": "nestedvalue"}})
-
     def test_edot_user_agent_is_used_in_otlp_grpc_exporter(self):
         def test_script():
             import sqlite3
 
-            from opentelemetry._events import Event, get_event_logger
+            from opentelemetry._logs import LogRecord, get_logger
 
             connection = sqlite3.connect(":memory:")
             cursor = connection.cursor()
             cursor.execute("CREATE TABLE movie(title, year, score)")
 
-            event = Event(name="test.event", attributes={}, body={"key": "value"})
-            event_logger = get_event_logger(__name__)
-            event_logger.emit(event)
+            log_record = LogRecord(body={"key": "value"})
+            logger = get_logger(__name__)
+            logger.emit(log_record)
 
         stdout, stderr, returncode = self.run_script(test_script, wrapper_script="opentelemetry-instrument")
 
@@ -246,11 +231,11 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
 
     def test_opamp_client_requests_are_not_instrumented(self):
         def test_script():
-            from opentelemetry._events import Event, get_event_logger
+            from opentelemetry._logs import LogRecord, get_logger
 
-            event = Event(name="test.event", attributes={}, body={"key": "value"})
-            event_logger = get_event_logger(__name__)
-            event_logger.emit(event)
+            log_record = LogRecord(body={"key": "value"})
+            logger = get_logger(__name__)
+            logger.emit(log_record)
 
         env = {"ELASTIC_OTEL_OPAMP_ENDPOINT": "https://httpbin.org/"}
         stdout, stderr, returncode = self.run_script(
@@ -286,15 +271,15 @@ class HTTPIntegrationTestCase(ElasticIntegrationHTTPTestCase):
         def test_script():
             import sqlite3
 
-            from opentelemetry._events import Event, get_event_logger
+            from opentelemetry._logs import LogRecord, get_logger
 
             connection = sqlite3.connect(":memory:")
             cursor = connection.cursor()
             cursor.execute("CREATE TABLE movie(title, year, score)")
 
-            event = Event(name="test.event", attributes={}, body={"key": "value"})
-            event_logger = get_event_logger(__name__)
-            event_logger.emit(event)
+            log_record = LogRecord(body={"key": "value"})
+            logger = get_logger(__name__)
+            logger.emit(log_record)
 
         stdout, stderr, returncode = self.run_script(test_script, wrapper_script="opentelemetry-instrument")
 
