@@ -17,7 +17,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Sequence
+from collections.abc import Sequence
 
 from opentelemetry.context import Context
 from opentelemetry.sdk.trace._sampling_experimental import (
