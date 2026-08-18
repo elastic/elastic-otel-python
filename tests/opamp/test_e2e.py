@@ -20,11 +20,11 @@ from time import sleep
 from unittest import mock
 
 import pytest
-
 from opentelemetry._opamp.agent import OpAMPAgent
 from opentelemetry._opamp.callbacks import OpAMPCallbacks
 from opentelemetry._opamp.client import OpAMPClient
-from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
+from opentelemetry._opamp.proto import opamp_pb2
+
 from elasticotel.distro.config import EDOTOpAMPCallbacks
 
 
