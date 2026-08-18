@@ -204,7 +204,8 @@ class ElasticIntegrationGRPCTestCase(unittest.TestCase):
                 for proto_scope_logs in resource_log["scopeLogs"]:
                     for proto_log in proto_scope_logs["logRecords"]:
                         log = proto_log.copy()
-                        log["attributes"] = normalize_attributes(log["attributes"])
+                        if "attributes" in log:
+                            log["attributes"] = normalize_attributes(log["attributes"])
                         log["body"] = normalize_kvlist(log["body"])
                         log["resource"] = resource_attributes
                         logs.append(log)
