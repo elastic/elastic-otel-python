@@ -32,10 +32,6 @@ from opentelemetry._opamp.exceptions import (
 )
 from opentelemetry._opamp.proto import opamp_pb2
 
-from elasticotel.distro.sanitization import _sanitize_headers_env_vars
-from elasticotel.sdk.sampler import DefaultSampler
-from elasticotel.sdk.trace import tracer_configurator
-
 try:
     from opentelemetry.instrumentation.logging.handler import LoggingHandler  # type: ignore[reportAssignmentType]
 except ImportError:
@@ -49,6 +45,10 @@ from opentelemetry.sdk.environment_variables import OTEL_LOG_LEVEL, OTEL_TRACES_
 from opentelemetry.sdk.trace import _TracerConfig
 from opentelemetry.sdk.util._configurator import ConfiguratorRulesT
 from opentelemetry.sdk.util.instrumentation import _scope_name_matches_glob
+
+from elasticotel.distro.sanitization import _sanitize_headers_env_vars
+from elasticotel.sdk.sampler import DefaultSampler
+from elasticotel.sdk.trace import tracer_configurator
 
 logger = logging.getLogger(__name__)
 

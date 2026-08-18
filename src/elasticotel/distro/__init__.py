@@ -22,7 +22,6 @@ from urllib.parse import urlparse, urlunparse
 
 from opentelemetry._opamp.agent import OpAMPAgent
 from opentelemetry._opamp.client import OpAMPClient
-from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 from opentelemetry.environment_variables import (
     OTEL_LOGS_EXPORTER,
     OTEL_METRICS_EXPORTER,
