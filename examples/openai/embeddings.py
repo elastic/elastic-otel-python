@@ -26,9 +26,9 @@ def main():
     client = openai.Client()
 
     products = [
-        "Search: Ingest your data, and explore Elastic's machine learning and retrieval augmented generation (RAG) capabilities."
+        "Search: Ingest your data, and explore Elastic's machine learning and retrieval augmented generation (RAG) capabilities.",
         "Observability: Unify your logs, metrics, traces, and profiling at scale in a single platform.",
-        "Security: Protect, investigate, and respond to cyber threats with AI-driven security analytics."
+        "Security: Protect, investigate, and respond to cyber threats with AI-driven security analytics.",
         "Elasticsearch: Distributed, RESTful search and analytics.",
         "Kibana: Visualize your data. Navigate the Stack.",
         "Beats: Collect, parse, and ship in a lightweight fashion.",
