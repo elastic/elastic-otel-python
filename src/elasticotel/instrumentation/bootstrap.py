@@ -23,7 +23,6 @@ from opentelemetry.instrumentation.bootstrap_gen import (
 )
 from packaging.requirements import Requirement
 
-
 # the instrumentations available in opentelemetry-bootstrap we want to skip
 _EXCLUDED_INSTRUMENTATIONS = {"opentelemetry-instrumentation-openai-v2"}
 

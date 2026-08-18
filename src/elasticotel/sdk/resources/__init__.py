@@ -16,15 +16,15 @@
 
 import sys
 
-from opentelemetry.semconv._incubating.attributes import telemetry_attributes
 from opentelemetry.sdk.resources import (
-    Attributes,
-    Resource,
-    ResourceDetector,
     PROCESS_RUNTIME_DESCRIPTION,
     PROCESS_RUNTIME_NAME,
     PROCESS_RUNTIME_VERSION,
+    Attributes,
+    Resource,
+    ResourceDetector,
 )
+from opentelemetry.semconv._incubating.attributes import telemetry_attributes
 
 from elasticotel.distro import version
 

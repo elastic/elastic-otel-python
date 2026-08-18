@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import inspect
 
-from opentelemetry.sdk.trace import _TracerConfig, _RuleBasedTracerConfigurator
+from opentelemetry.sdk.trace import _RuleBasedTracerConfigurator, _TracerConfig
 from opentelemetry.sdk.util._configurator import ConfiguratorRulesT
 from opentelemetry.sdk.util.instrumentation import InstrumentationScope, _InstrumentationScopePredicateT
 
@@ -57,7 +57,6 @@ _tracer_configurator = _UpdatableRuleBasedTracerConfigurator(rules=[], default_c
 
 
 def _get_tracer_configurator() -> _UpdatableRuleBasedTracerConfigurator:
-    global _tracer_configurator
     return _tracer_configurator
 
 
