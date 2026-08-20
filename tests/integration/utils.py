@@ -16,14 +16,14 @@
 
 import base64
 import inspect
+import os
 import random
 import subprocess
-import os
 import tempfile
 import unittest
+from collections.abc import Callable, Mapping
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
-from typing import Callable, Mapping, Optional
 
 import leb128
 from opentelemetry.util._importlib_metadata import version
@@ -223,9 +223,9 @@ class ElasticIntegrationGRPCTestCase(unittest.TestCase):
     def run_script(
         self,
         script_func: Callable[[], None],
-        environment_variables: Optional[Mapping[str, str]] = None,
-        wrapper_script: Optional[str] = None,
-        on_start: Optional[Callable[[], Optional[float]]] = None,
+        environment_variables: Mapping[str, str] | None = None,
+        wrapper_script: str | None = None,
+        on_start: Callable[[], float | None] | None = None,
     ):
         """Entry point for running the test scenario
 
@@ -247,7 +247,7 @@ class ElasticIntegrationGRPCTestCase(unittest.TestCase):
         with tempfile.NamedTemporaryFile() as fp:
             # handle script_func implemented both as method or as free function
             if inspect.ismethod(script_func):
-                fp.write("class Script:\n    ".encode())
+                fp.write(b"class Script:\n    ")
                 fp.write(source.strip().encode())
                 fp.write(f"\nScript().{script_func.__name__}()\n".encode())
             else:
@@ -303,7 +303,7 @@ class HttpSink(ot.HttpSink):
                 this.send_header("Content-type", "text/html")
                 this.end_headers()
 
-                this.wfile.write("OK".encode("utf-8"))
+                this.wfile.write(b"OK")
 
         self.httpd = HTTPServer(("", self.port), Handler)
         self.httpd.serve_forever()
@@ -363,9 +363,9 @@ class ElasticIntegrationHTTPTestCase(ElasticIntegrationGRPCTestCase):
     def run_script(
         self,
         script_func: Callable[[], None],
-        environment_variables: Optional[Mapping[str, str]] = None,
-        wrapper_script: Optional[str] = None,
-        on_start: Optional[Callable[[], Optional[float]]] = None,
+        environment_variables: Mapping[str, str] | None = None,
+        wrapper_script: str | None = None,
+        on_start: Callable[[], float | None] | None = None,
     ):
         # Add a sane default so that callers don't need to remember to set that
         if environment_variables is None:

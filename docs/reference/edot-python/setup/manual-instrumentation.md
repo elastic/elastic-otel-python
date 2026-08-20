@@ -37,6 +37,7 @@ tracer = trace.get_tracer(__name__)
 
 app = Flask(__name__)
 
+
 @app.route("/hello")
 def hello():
     choices = ["there", "world", "folks", "hello"]
@@ -77,6 +78,7 @@ hello_counter = meter.create_counter(
 )
 
 app = Flask(__name__)
+
 
 @app.route("/hello")
 def hello():

@@ -21,19 +21,16 @@ import os
 from dataclasses import dataclass
 from typing import cast
 
-from elasticotel.distro.sanitization import _sanitize_headers_env_vars
-from elasticotel.sdk.sampler import DefaultSampler
-from elasticotel.sdk.trace import tracer_configurator
 from opentelemetry import trace
 from opentelemetry._opamp import messages
 from opentelemetry._opamp.agent import OpAMPAgent
-from opentelemetry._opamp.callbacks import OpAMPCallbacks, MessageData
+from opentelemetry._opamp.callbacks import MessageData, OpAMPCallbacks
 from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.exceptions import (
     OpAMPRemoteConfigDecodeException,
     OpAMPRemoteConfigParseException,
 )
-from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
+from opentelemetry._opamp.proto import opamp_pb2
 
 try:
     from opentelemetry.instrumentation.logging.handler import LoggingHandler  # type: ignore[reportAssignmentType]
@@ -49,6 +46,9 @@ from opentelemetry.sdk.trace import _TracerConfig
 from opentelemetry.sdk.util._configurator import ConfiguratorRulesT
 from opentelemetry.sdk.util.instrumentation import _scope_name_matches_glob
 
+from elasticotel.distro.sanitization import _sanitize_headers_env_vars
+from elasticotel.sdk.sampler import DefaultSampler
+from elasticotel.sdk.trace import tracer_configurator
 
 logger = logging.getLogger(__name__)
 
@@ -118,9 +118,7 @@ class Config:
     def log_env_vars(self):
         # log all the environment variables that starts with OTEL_ or ELASTIC_OTEL_ to ease troubleshooting
         env_vars = [
-            _sanitize_headers_env_vars(k, v)
-            for k, v in os.environ.items()
-            if k.startswith("OTEL_") or k.startswith("ELASTIC_OTEL_")
+            _sanitize_headers_env_vars(k, v) for k, v in os.environ.items() if k.startswith(("OTEL_", "ELASTIC_OTEL_"))
         ]
 
         logger.info("EDOT Configuration")
@@ -275,7 +273,6 @@ def _initialize_config():
 
 
 def _get_config():
-    global _config
     return _config
 
 

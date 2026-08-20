@@ -14,11 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import nox
 import sys
 
+import nox
 
-def run_tests(session: nox.Session, pytest_extra_args: list[str] = []):
+
+def run_tests(session: nox.Session, pytest_extra_args: list[str] | None = None):
+    pytest_extra_args = pytest_extra_args or []
     python_version = (sys.version_info.major, sys.version_info.minor, sys.version_info.micro)
     vcrpy_is_supported = python_version >= (3, 10, 0)
 

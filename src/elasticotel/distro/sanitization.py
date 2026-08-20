@@ -14,8 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from opentelemetry.util.re import parse_env_headers
 import re
+
+from opentelemetry.util.re import parse_env_headers
 
 MASK = "[REDACTED]"
 

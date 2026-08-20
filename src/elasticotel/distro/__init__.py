@@ -20,6 +20,8 @@ import logging
 import os
 from urllib.parse import urlparse, urlunparse
 
+from opentelemetry._opamp.agent import OpAMPAgent
+from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry.environment_variables import (
     OTEL_LOGS_EXPORTER,
     OTEL_METRICS_EXPORTER,
@@ -37,6 +39,8 @@ from opentelemetry.instrumentation.distro import BaseDistro
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
 from opentelemetry.instrumentation.system_metrics import (
     _DEFAULT_CONFIG as SYSTEM_METRICS_DEFAULT_CONFIG,
+)
+from opentelemetry.instrumentation.system_metrics import (
     SystemMetricsInstrumentor,
 )
 from opentelemetry.sdk._configuration import _OTelSDKConfigurator
@@ -52,22 +56,18 @@ from opentelemetry.sdk.environment_variables import (
 from opentelemetry.sdk.resources import OTELResourceDetector
 from opentelemetry.util._importlib_metadata import EntryPoint
 from opentelemetry.util.re import parse_env_headers
-from opentelemetry._opamp.agent import OpAMPAgent
-from opentelemetry._opamp.client import OpAMPClient
-from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
 
 from elasticotel.distro import version
+from elasticotel.distro.config import DEFAULT_SAMPLING_RATE, EDOTOpAMPCallbacks, _initialize_config
 from elasticotel.distro.environment_variables import (
-    ELASTIC_OTEL_OPAMP_ENDPOINT,
-    ELASTIC_OTEL_OPAMP_HEADERS,
-    ELASTIC_OTEL_SYSTEM_METRICS_ENABLED,
     ELASTIC_OTEL_OPAMP_CERTIFICATE,
     ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE,
     ELASTIC_OTEL_OPAMP_CLIENT_KEY,
+    ELASTIC_OTEL_OPAMP_ENDPOINT,
+    ELASTIC_OTEL_OPAMP_HEADERS,
+    ELASTIC_OTEL_SYSTEM_METRICS_ENABLED,
 )
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
-from elasticotel.distro.config import EDOTOpAMPCallbacks, _initialize_config, DEFAULT_SAMPLING_RATE
-
 
 logger = logging.getLogger(__name__)
 
@@ -134,7 +134,7 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                     headers = None
 
                 # If string is a path to the certificate, if bool means to check the server certificate. Behaviour inherited from requests
-                tls_certificate: str | bool = os.environ.get(ELASTIC_OTEL_OPAMP_CERTIFICATE, True)
+                tls_certificate: str | bool = os.environ.get(ELASTIC_OTEL_OPAMP_CERTIFICATE) or True
                 tls_client_certificate: str | None = os.environ.get(ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE)
                 tls_client_key: str | None = os.environ.get(ELASTIC_OTEL_OPAMP_CLIENT_KEY)
                 opamp_client = OpAMPClient(
@@ -170,7 +170,7 @@ class ElasticOpenTelemetryDistro(BaseDistro):
                 instrumentor_kwargs["config"] = {
                     k: v
                     for k, v in SYSTEM_METRICS_DEFAULT_CONFIG.items()
-                    if k.startswith("process.runtime") or k.startswith("cpython")
+                    if k.startswith(("process.runtime", "cpython"))
                 }
         instrumentor_class(**instrumentor_kwargs).instrument(**kwargs)  # type: ignore[reportCallIssue]
 

@@ -19,26 +19,29 @@ import logging
 import os
 from unittest import TestCase, mock, skipIf
 
-from elasticotel.distro import ElasticOpenTelemetryConfigurator, ElasticOpenTelemetryDistro, logger as distro_logger
-from elasticotel.distro.config import EDOTOpAMPCallbacks, logger as config_logger, Config
-from elasticotel.distro.environment_variables import (
-    ELASTIC_OTEL_OPAMP_ENDPOINT,
-    ELASTIC_OTEL_OPAMP_CERTIFICATE,
-    ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE,
-    ELASTIC_OTEL_OPAMP_CLIENT_KEY,
-    ELASTIC_OTEL_SYSTEM_METRICS_ENABLED,
-)
-from elasticotel.sdk.trace.tracer_configurator import (
-    _UpdatableRuleBasedTracerConfigurator,
-    _updatable_tracer_configurator,
-)
-from elasticotel.sdk.sampler import DefaultSampler
 from opentelemetry import trace
-from opentelemetry._opamp.proto import opamp_pb2 as opamp_pb2
+from opentelemetry._opamp.proto import opamp_pb2
 from opentelemetry.environment_variables import (
     OTEL_LOGS_EXPORTER,
     OTEL_METRICS_EXPORTER,
     OTEL_TRACES_EXPORTER,
+)
+
+from elasticotel.distro import ElasticOpenTelemetryConfigurator, ElasticOpenTelemetryDistro
+from elasticotel.distro import logger as distro_logger
+from elasticotel.distro.config import Config, EDOTOpAMPCallbacks
+from elasticotel.distro.config import logger as config_logger
+from elasticotel.distro.environment_variables import (
+    ELASTIC_OTEL_OPAMP_CERTIFICATE,
+    ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE,
+    ELASTIC_OTEL_OPAMP_CLIENT_KEY,
+    ELASTIC_OTEL_OPAMP_ENDPOINT,
+    ELASTIC_OTEL_SYSTEM_METRICS_ENABLED,
+)
+from elasticotel.sdk.sampler import DefaultSampler
+from elasticotel.sdk.trace.tracer_configurator import (
+    _updatable_tracer_configurator,
+    _UpdatableRuleBasedTracerConfigurator,
 )
 
 try:

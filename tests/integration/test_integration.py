@@ -17,17 +17,17 @@
 import os.path
 
 import pytest
-
 from opentelemetry.resource.detector.containerid import (
     ContainerResourceDetector,
 )
 
 from elasticotel.distro import version
+
 from .utils import (
-    ElasticIntegrationGRPCTestCase,
-    ElasticIntegrationHTTPTestCase,
     OTEL_INSTRUMENTATION_VERSION,
     ROOT_DIR,
+    ElasticIntegrationGRPCTestCase,
+    ElasticIntegrationHTTPTestCase,
 )
 
 
@@ -49,7 +49,7 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
         cursor.execute("CREATE TABLE movie(title, year, score)")
 
     def test_traces_default_resource_attributes(self):
-        stdout, stderr, returncode = self.run_script(self.script, wrapper_script="opentelemetry-instrument")
+        _, _, _ = self.run_script(self.script, wrapper_script="opentelemetry-instrument")
 
         telemetry = self.get_telemetry()
         (span,) = telemetry["traces"]
@@ -69,9 +69,7 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
 
     def test_traces_sets_resource_attributes_from_env(self):
         env = {"OTEL_RESOURCE_ATTRIBUTES": "service.name=my-service"}
-        stdout, stderr, returncode = self.run_script(
-            self.script, environment_variables=env, wrapper_script="opentelemetry-instrument"
-        )
+        _, _, _ = self.run_script(self.script, environment_variables=env, wrapper_script="opentelemetry-instrument")
 
         telemetry = self.get_telemetry()
         (span,) = telemetry["traces"]
@@ -80,9 +78,7 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
 
     def test_traces_can_override_resource_attributes_from_env(self):
         env = {"OTEL_RESOURCE_ATTRIBUTES": "telemetry.distro.name=custom-distro"}
-        stdout, stderr, returncode = self.run_script(
-            self.script, environment_variables=env, wrapper_script="opentelemetry-instrument"
-        )
+        _, _, _ = self.run_script(self.script, environment_variables=env, wrapper_script="opentelemetry-instrument")
 
         telemetry = self.get_telemetry()
         (span,) = telemetry["traces"]
@@ -90,7 +86,7 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
         self.assertEqual(resource["telemetry.distro.name"], "custom-distro")
 
     def test_metrics_default_does_not_contain_system_metrics(self):
-        stdout, stderr, returncode = self.run_script(self.script, wrapper_script="opentelemetry-instrument")
+        _, _, _ = self.run_script(self.script, wrapper_script="opentelemetry-instrument")
 
         telemetry = self.get_telemetry()
         (metrics,) = telemetry["metrics"]
@@ -115,9 +111,7 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
 
     def test_metrics_with_system_metrics(self):
         env = {"ELASTIC_OTEL_SYSTEM_METRICS_ENABLED": "true"}
-        stdout, stderr, returncode = self.run_script(
-            self.script, environment_variables=env, wrapper_script="opentelemetry-instrument"
-        )
+        _, _, _ = self.run_script(self.script, environment_variables=env, wrapper_script="opentelemetry-instrument")
 
         telemetry = self.get_telemetry()
         (metrics,) = telemetry["metrics"]
@@ -166,9 +160,7 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
 
     def test_metrics_with_sdk_metrics(self):
         env = {"OTEL_PYTHON_SDK_INTERNAL_METRICS_ENABLED": "true"}
-        stdout, stderr, returncode = self.run_script(
-            self.script, environment_variables=env, wrapper_script="opentelemetry-instrument"
-        )
+        _, _, _ = self.run_script(self.script, environment_variables=env, wrapper_script="opentelemetry-instrument")
 
         telemetry = self.get_telemetry()
         (metrics,) = telemetry["metrics"]
@@ -211,7 +203,7 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
             logger = get_logger(__name__)
             logger.emit(log_record)
 
-        stdout, stderr, returncode = self.run_script(test_script, wrapper_script="opentelemetry-instrument")
+        _, _, _ = self.run_script(test_script, wrapper_script="opentelemetry-instrument")
 
         telemetry = self.get_telemetry()
         (metrics_headers, logs_headers, traces_headers) = (
@@ -238,9 +230,7 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
             logger.emit(log_record)
 
         env = {"ELASTIC_OTEL_OPAMP_ENDPOINT": "https://httpbin.org/"}
-        stdout, stderr, returncode = self.run_script(
-            test_script, environment_variables=env, wrapper_script="opentelemetry-instrument"
-        )
+        _, _, _ = self.run_script(test_script, environment_variables=env, wrapper_script="opentelemetry-instrument")
 
         telemetry = self.get_telemetry()
         self.assertFalse(telemetry["traces"])
@@ -251,7 +241,7 @@ class GRPCIntegrationTestCase(ElasticIntegrationGRPCTestCase):
             pass
 
         env = {"OTEL_LOG_LEVEL": "info", "OTEL_ENV_VAR": "value"}
-        stdout, stderr, returncode = self.run_script(
+        _, stderr, _ = self.run_script(
             test_script, environment_variables=env, wrapper_script="opentelemetry-instrument"
         )
 
@@ -281,7 +271,7 @@ class HTTPIntegrationTestCase(ElasticIntegrationHTTPTestCase):
             logger = get_logger(__name__)
             logger.emit(log_record)
 
-        stdout, stderr, returncode = self.run_script(test_script, wrapper_script="opentelemetry-instrument")
+        _, _, _ = self.run_script(test_script, wrapper_script="opentelemetry-instrument")
 
         telemetry = self.get_telemetry()
         (metrics_headers, logs_headers, traces_headers) = (
@@ -325,7 +315,7 @@ class OperatorTestCase(ElasticIntegrationHTTPTestCase):
         cursor.execute("CREATE TABLE movie(title, year, score)")
 
     def test_auto_instrumentation_works(self):
-        stdout, stderr, returncode = self.run_script(self.script, wrapper_script="opentelemetry-instrument")
+        _, _, returncode = self.run_script(self.script, wrapper_script="opentelemetry-instrument")
 
         telemetry = self.get_telemetry()
         (span,) = telemetry["traces"]

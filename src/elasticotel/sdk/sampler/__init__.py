@@ -17,16 +17,16 @@
 from __future__ import annotations
 
 import logging
-from typing import Sequence
+from collections.abc import Sequence
 
 from opentelemetry.context import Context
-from opentelemetry.sdk.trace.sampling import Sampler, SamplingResult
-from opentelemetry.trace import Link, SpanKind, TraceState
 from opentelemetry.sdk.trace._sampling_experimental import (
-    composite_sampler,
     composable_parent_threshold,
     composable_traceid_ratio_based,
+    composite_sampler,
 )
+from opentelemetry.sdk.trace.sampling import Sampler, SamplingResult
+from opentelemetry.trace import Link, SpanKind, TraceState
 from opentelemetry.util.types import Attributes
 
 logger = logging.getLogger(__name__)

@@ -15,10 +15,10 @@
 # limitations under the License.
 
 import ast
+from pathlib import Path
 
 # this requires python 3.11
 import tomllib
-from pathlib import Path
 
 root_dir = Path(__file__).parent.parent
 instrumentations_repo_dir = root_dir.parent / "elastic-otel-python-instrumentations"

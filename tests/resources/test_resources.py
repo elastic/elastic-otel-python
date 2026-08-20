@@ -16,19 +16,19 @@
 
 from unittest import TestCase
 
-from elasticotel.sdk.resources import (
-    ProcessRuntimeResourceDetector,
-    TelemetryDistroResourceDetector,
-)
 from opentelemetry.sdk.resources import (
-    PROCESS_RUNTIME_NAME,
     PROCESS_RUNTIME_DESCRIPTION,
+    PROCESS_RUNTIME_NAME,
     PROCESS_RUNTIME_VERSION,
     Resource,
     get_aggregated_resources,
 )
 
 from elasticotel.distro import version
+from elasticotel.sdk.resources import (
+    ProcessRuntimeResourceDetector,
+    TelemetryDistroResourceDetector,
+)
 
 
 class TestProcessRuntimeDetector(TestCase):
