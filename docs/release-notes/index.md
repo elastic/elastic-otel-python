@@ -27,6 +27,17 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.16.0 [edot-python-1.16.0-release-notes]
+
+### Features and enhancements [edot-python-1.16.0-features-enhancements]
+
+- Bump OpenTelemetry to 1.44.0/0.65b0 ([#616](https://github.com/elastic/elastic-otel-python/pull/616))
+
+  Upstream changes:
+  * [opentelemetry-python 1.44.0](https://github.com/open-telemetry/opentelemetry-python/discussions/5424)
+  * [opentelemetry-python-contrib 1.44.0](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4825)
+- Bump `opentelemetry-resourcedetector-gcp` to 1.14a0 ([#607](https://github.com/elastic/elastic-otel-python/pull/607))
+
 ## 1.15.0 [edot-python-1.15.0-release-notes]
 
 ### Features and enhancements [edot-python-1.15.0-features-enhancements]

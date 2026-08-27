@@ -1,5 +1,14 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.16.0
+
+- Bump OpenTelemetry to 1.44.0/0.65b0 (#616)
+
+  Upstream changes:
+  * 1.44.0 core changes: https://github.com/open-telemetry/opentelemetry-python/discussions/5424
+  * 1.44.0 -contrib changes: https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/4825
+- Bump `opentelemetry-resourcedetector-gcp` to 1.14a0 (#607)
+
 ## v1.15.0
 
 - Bump OpenTelemetry to 1.43.0/0.64b0 (#587)
