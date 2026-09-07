@@ -29,7 +29,7 @@ Follow these steps to migrate:
 3. Follow the [setup documentation](setup/index.md) on to install and configure EDOT Python.
 
 :::{agent-skill}
-:url: https://github.com/elastic/agent-skills@observability-onboarding
+:url: https://github.com/elastic/agent-skills/tree/main/skills/observability/onboarding
 
 Use this skill to migrate from the Elastic APM Python agent to EDOT Python.
 :::
