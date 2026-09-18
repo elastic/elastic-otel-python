@@ -68,7 +68,7 @@ opentelemetry-proto==1.44.0
     #   opentelemetry-exporter-otlp-proto-grpc
     #   opentelemetry-exporter-otlp-proto-http
     #   oteltest
-opentelemetry-resource-detector-azure==0.1.5
+opentelemetry-resource-detector-azure==0.2.0
     # via elastic-opentelemetry (pyproject.toml)
 opentelemetry-resource-detector-containerid==0.65b0
     # via elastic-opentelemetry (pyproject.toml)
