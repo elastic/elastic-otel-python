@@ -1,5 +1,9 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.16.1
+
+- Fix handling of `OTEL_EXPORTER_OTLP_*HEADERS` environment variables for the `http/protobuf` exporter (#645)
+
 ## v1.16.0
 
 - Bump OpenTelemetry to 1.44.0/0.65b0 (#616)

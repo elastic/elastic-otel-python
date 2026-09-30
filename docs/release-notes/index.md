@@ -27,6 +27,12 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.16.1 [edot-python-1.16.1-release-notes]
+
+### Fixes [edot-python-1.16.1-fixes]
+
+- Fix handling of `OTEL_EXPORTER_OTLP_*HEADERS` environment variables for the `http/protobuf` exporter ([#645](https://github.com/elastic/elastic-otel-python/pull/645))
+
 ## 1.16.0 [edot-python-1.16.0-release-notes]
 
 ### Features and enhancements [edot-python-1.16.0-features-enhancements]
