@@ -289,6 +289,88 @@ class HTTPIntegrationTestCase(ElasticIntegrationHTTPTestCase):
         self.assertIn(edot_user_agent, traces_headers[0]["User-Agent"])
         self.assertIn(edot_user_agent, logs_headers[0]["User-Agent"])
 
+    def test_otel_exporter_otlp_headers_are_preserved(self):
+        def test_script():
+            import sqlite3
+
+            from opentelemetry._logs import LogRecord, get_logger
+
+            connection = sqlite3.connect(":memory:")
+            cursor = connection.cursor()
+            cursor.execute("CREATE TABLE movie(title, year, score)")
+
+            log_record = LogRecord(body={"key": "value"})
+            logger = get_logger(__name__)
+            logger.emit(log_record)
+
+        env = {
+            "OTEL_EXPORTER_OTLP_ENDPOINT": f"http://localhost:{self.get_http_port()}",
+            "OTEL_EXPORTER_OTLP_HEADERS": "Authorization=Bearer token",
+            "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+        }
+        _, _, _ = self.run_script(test_script, environment_variables=env, wrapper_script="opentelemetry-instrument")
+
+        telemetry = self.get_telemetry()
+        (metrics_headers, logs_headers, traces_headers) = (
+            telemetry["metrics_headers"],
+            telemetry["logs_headers"],
+            telemetry["traces_headers"],
+        )
+
+        assert metrics_headers
+        assert traces_headers
+        assert logs_headers
+
+        edot_user_agent = "elastic-otlp-http-python/" + version.__version__
+        self.assertIn(edot_user_agent, metrics_headers[0]["User-Agent"])
+        self.assertIn(edot_user_agent, traces_headers[0]["User-Agent"])
+        self.assertIn(edot_user_agent, logs_headers[0]["User-Agent"])
+        self.assertEqual("Bearer token", metrics_headers[0]["authorization"])
+        self.assertEqual("Bearer token", traces_headers[0]["authorization"])
+        self.assertEqual("Bearer token", logs_headers[0]["authorization"])
+
+    def test_signal_specific_headers_are_preserved(self):
+        def test_script():
+            import sqlite3
+
+            from opentelemetry._logs import LogRecord, get_logger
+
+            connection = sqlite3.connect(":memory:")
+            cursor = connection.cursor()
+            cursor.execute("CREATE TABLE movie(title, year, score)")
+
+            log_record = LogRecord(body={"key": "value"})
+            logger = get_logger(__name__)
+            logger.emit(log_record)
+
+        env = {
+            "OTEL_EXPORTER_OTLP_ENDPOINT": f"http://localhost:{self.get_http_port()}",
+            "OTEL_EXPORTER_OTLP_LOGS_HEADERS": "Authorization=Bearer logs",
+            "OTEL_EXPORTER_OTLP_METRICS_HEADERS": "Authorization=Bearer metrics",
+            "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+            "OTEL_EXPORTER_OTLP_TRACES_HEADERS": "Authorization=Bearer traces",
+        }
+        _, _, _ = self.run_script(test_script, environment_variables=env, wrapper_script="opentelemetry-instrument")
+
+        telemetry = self.get_telemetry()
+        (metrics_headers, logs_headers, traces_headers) = (
+            telemetry["metrics_headers"],
+            telemetry["logs_headers"],
+            telemetry["traces_headers"],
+        )
+
+        assert metrics_headers
+        assert traces_headers
+        assert logs_headers
+
+        edot_user_agent = "elastic-otlp-http-python/" + version.__version__
+        self.assertIn(edot_user_agent, metrics_headers[0]["User-Agent"])
+        self.assertIn(edot_user_agent, traces_headers[0]["User-Agent"])
+        self.assertIn(edot_user_agent, logs_headers[0]["User-Agent"])
+        self.assertEqual("Bearer metrics", metrics_headers[0]["authorization"])
+        self.assertEqual("Bearer traces", traces_headers[0]["authorization"])
+        self.assertEqual("Bearer logs", logs_headers[0]["authorization"])
+
 
 @pytest.mark.integration
 class OperatorTestCase(ElasticIntegrationHTTPTestCase):
