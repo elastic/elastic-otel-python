@@ -1,5 +1,9 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.17.0
+
+- Bump `opentelemetry-opamp-client` to 0.4b0 (#650)
+
 ## v1.16.1
 
 - Fix handling of `OTEL_EXPORTER_OTLP_*HEADERS` environment variables for the `http/protobuf` exporter (#645)
