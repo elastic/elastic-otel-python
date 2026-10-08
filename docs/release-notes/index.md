@@ -27,6 +27,12 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.17.0 [edot-python-1.17.0-release-notes]
+
+### Features and enhancements [edot-python-1.17.0-features-enhancements]
+
+- Bump `opentelemetry-opamp-client` to 0.4b0 ([#650](https://github.com/elastic/elastic-otel-python/pull/650))
+
 ## 1.16.1 [edot-python-1.16.1-release-notes]
 
 ### Fixes [edot-python-1.16.1-fixes]
