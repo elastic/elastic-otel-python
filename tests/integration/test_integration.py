@@ -285,9 +285,9 @@ class HTTPIntegrationTestCase(ElasticIntegrationHTTPTestCase):
         assert logs_headers
 
         edot_user_agent = "elastic-otlp-http-python/" + version.__version__
-        self.assertIn(edot_user_agent, metrics_headers[0]["User-Agent"])
-        self.assertIn(edot_user_agent, traces_headers[0]["User-Agent"])
-        self.assertIn(edot_user_agent, logs_headers[0]["User-Agent"])
+        self.assertIn(edot_user_agent, metrics_headers[0]["user-agent"])
+        self.assertIn(edot_user_agent, traces_headers[0]["user-agent"])
+        self.assertIn(edot_user_agent, logs_headers[0]["user-agent"])
 
     def test_otel_exporter_otlp_headers_are_preserved(self):
         def test_script():
@@ -322,9 +322,9 @@ class HTTPIntegrationTestCase(ElasticIntegrationHTTPTestCase):
         assert logs_headers
 
         edot_user_agent = "elastic-otlp-http-python/" + version.__version__
-        self.assertIn(edot_user_agent, metrics_headers[0]["User-Agent"])
-        self.assertIn(edot_user_agent, traces_headers[0]["User-Agent"])
-        self.assertIn(edot_user_agent, logs_headers[0]["User-Agent"])
+        self.assertIn(edot_user_agent, metrics_headers[0]["user-agent"])
+        self.assertIn(edot_user_agent, traces_headers[0]["user-agent"])
+        self.assertIn(edot_user_agent, logs_headers[0]["user-agent"])
         self.assertEqual("Bearer token", metrics_headers[0]["authorization"])
         self.assertEqual("Bearer token", traces_headers[0]["authorization"])
         self.assertEqual("Bearer token", logs_headers[0]["authorization"])
@@ -364,9 +364,9 @@ class HTTPIntegrationTestCase(ElasticIntegrationHTTPTestCase):
         assert logs_headers
 
         edot_user_agent = "elastic-otlp-http-python/" + version.__version__
-        self.assertIn(edot_user_agent, metrics_headers[0]["User-Agent"])
-        self.assertIn(edot_user_agent, traces_headers[0]["User-Agent"])
-        self.assertIn(edot_user_agent, logs_headers[0]["User-Agent"])
+        self.assertIn(edot_user_agent, metrics_headers[0]["user-agent"])
+        self.assertIn(edot_user_agent, traces_headers[0]["user-agent"])
+        self.assertIn(edot_user_agent, logs_headers[0]["user-agent"])
         self.assertEqual("Bearer metrics", metrics_headers[0]["authorization"])
         self.assertEqual("Bearer traces", traces_headers[0]["authorization"])
         self.assertEqual("Bearer logs", logs_headers[0]["authorization"])
