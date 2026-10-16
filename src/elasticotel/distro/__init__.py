@@ -46,8 +46,12 @@ from opentelemetry.instrumentation.system_metrics import (
 from opentelemetry.sdk._configuration import _OTelSDKConfigurator
 from opentelemetry.sdk.environment_variables import (
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
+    OTEL_EXPORTER_OTLP_HEADERS,
+    OTEL_EXPORTER_OTLP_LOGS_HEADERS,
+    OTEL_EXPORTER_OTLP_METRICS_HEADERS,
     OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
     OTEL_EXPORTER_OTLP_PROTOCOL,
+    OTEL_EXPORTER_OTLP_TRACES_HEADERS,
     OTEL_METRICS_EXEMPLAR_FILTER,
     OTEL_PYTHON_TRACER_CONFIGURATOR,
     OTEL_TRACES_SAMPLER,
@@ -75,6 +79,20 @@ EDOT_GRPC_USER_AGENT_HEADER_VALUE = "elastic-otlp-grpc-python/" + version.__vers
 EDOT_HTTP_USER_AGENT_HEADER_VALUE = "elastic-otlp-http-python/" + version.__version__
 
 
+def _http_exporter_options(signal_headers_env_var: str) -> dict[str, dict[str, str]]:
+    headers_env = os.environ.get(
+        signal_headers_env_var,
+        os.environ.get(OTEL_EXPORTER_OTLP_HEADERS, ""),
+    )
+    return {
+        "headers": {
+            **parse_env_headers(headers_env, liberal=True),
+            **_OTLP_HTTP_HEADERS,
+            "User-Agent": f"{EDOT_HTTP_USER_AGENT_HEADER_VALUE} {_OTLP_HTTP_HEADERS['User-Agent']}",
+        }
+    }
+
+
 class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
     def _configure(self, **kwargs):
         # override GRPC and HTTP user agent headers
@@ -83,19 +101,13 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                 ("grpc.primary_user_agent", f"{EDOT_GRPC_USER_AGENT_HEADER_VALUE} {_USER_AGENT_HEADER_VALUE}"),
             )
         }
-        otlp_http_exporter_options = {
-            "headers": {
-                **_OTLP_HTTP_HEADERS,
-                "User-Agent": f"{EDOT_HTTP_USER_AGENT_HEADER_VALUE} {_OTLP_HTTP_HEADERS['User-Agent']}",
-            }
-        }
         kwargs["exporter_args_map"] = {
             GRPCOTLPLogExporter: otlp_grpc_exporter_options,
             GRPCOTLPMetricExporter: otlp_grpc_exporter_options,
             GRPCOTLPSpanExporter: otlp_grpc_exporter_options,
-            HTTPOTLPLogExporter: otlp_http_exporter_options,
-            HTTPOTLPMetricExporter: otlp_http_exporter_options,
-            HTTPOTLPSpanExporter: otlp_http_exporter_options,
+            HTTPOTLPLogExporter: _http_exporter_options(OTEL_EXPORTER_OTLP_LOGS_HEADERS),
+            HTTPOTLPMetricExporter: _http_exporter_options(OTEL_EXPORTER_OTLP_METRICS_HEADERS),
+            HTTPOTLPSpanExporter: _http_exporter_options(OTEL_EXPORTER_OTLP_TRACES_HEADERS),
         }
 
         super()._configure(**kwargs)

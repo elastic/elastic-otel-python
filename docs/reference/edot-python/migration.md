@@ -29,7 +29,7 @@ Follow these steps to migrate:
 3. Follow the [setup documentation](setup/index.md) on to install and configure EDOT Python.
 
 :::{agent-skill}
-:url: https://github.com/elastic/agent-skills/tree/main/skills/observability/edot-python-migrate
+:url: https://github.com/elastic/agent-skills/tree/main/skills/observability/onboarding
 
 Use this skill to migrate from the Elastic APM Python agent to EDOT Python.
 :::
@@ -154,7 +154,6 @@ A custom lambda layer for the {{edot}} Python is not currently available. Refer 
 The following libraries are currently missing an OpenTelemetry equivalent:
 
 - Azure storage and Azure queue
-- `aiobotocore`
 - `aiomysql`
 - `aioredis`
 - `Graphene`
@@ -164,10 +163,6 @@ The following libraries are currently missing an OpenTelemetry equivalent:
 - `python-memcached`
 - `Sanic`
 - `zlib`
-
-### Integration with structured logging
-
-EDOT Python lacks a [structlog integration](apm-agent-python://reference/logs.md#structlog) at the moment.
 
 ### Span compression
 
