@@ -1,5 +1,15 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.18.0
+
+- Bump OpenTelemetry to 1.45.1/0.66b1 (#654)
+
+  Upstream changes:
+  * 1.45.0 core changes: https://github.com/open-telemetry/opentelemetry-python/discussions/5691
+  * 1.45.1 core changes: https://github.com/open-telemetry/opentelemetry-python/discussions/5754
+  * 1.45.0 -contrib changes: https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/5104
+- Bump `opentelemetry-resource-detector-azure` to 0.3.0 (#655)
+
 ## v1.17.0
 
 - Bump `opentelemetry-opamp-client` to 0.4b0 (#650)
