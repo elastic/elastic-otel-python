@@ -1,9 +1,10 @@
 toc:
   - file: index.md
-  - file: setup/index.md
+  - folder: setup
     children:
-      - file: setup/k8s.md
-      - file: setup/manual-instrumentation.md
+      - file: index.md
+      - file: k8s.md
+      - file: manual-instrumentation.md
   - file: configuration.md
   - file: supported-technologies.md
   - file: migration.md
