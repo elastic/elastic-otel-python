@@ -134,4 +134,3 @@ If you have commit access, the process is as follows:
 1. Edit and publish the [draft Github release](https://github.com/elastic/elastic-otel-python/releases)
    created by Github Actions. Substitute the generated changelog with one hand written into the body of the
    release.
-1. Open a PR from `main` to the major branch, e.g. `1.x` to update it. In order to keep history you may want to
