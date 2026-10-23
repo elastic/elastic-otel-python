@@ -14,9 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import importlib
 import json
 import logging
 import os
+import sys
 from unittest import TestCase, mock, skipIf
 
 from opentelemetry import trace
@@ -26,6 +28,9 @@ from opentelemetry.environment_variables import (
     OTEL_METRICS_EXPORTER,
     OTEL_TRACES_EXPORTER,
 )
+from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter as HTTPOTLPLogExporter
+from opentelemetry.exporter.otlp.proto.http.metric_exporter import OTLPMetricExporter as HTTPOTLPMetricExporter
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter as HTTPOTLPSpanExporter
 
 from elasticotel.distro import ElasticOpenTelemetryConfigurator, ElasticOpenTelemetryDistro
 from elasticotel.distro import logger as distro_logger
@@ -48,6 +53,7 @@ try:
     from opentelemetry.instrumentation.logging.handler import LoggingHandler
 except ImportError:
     LoggingHandler = None
+from opentelemetry.sdk._configuration import _initialize_components
 from opentelemetry.sdk._logs import LoggingHandler as SDKLoggingHandler
 from opentelemetry.sdk.environment_variables import (
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
@@ -58,7 +64,7 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_TRACES_SAMPLER,
     OTEL_TRACES_SAMPLER_ARG,
 )
-from opentelemetry.sdk.trace import _TracerConfig, sampling
+from opentelemetry.sdk.trace import TracerProvider, _TracerConfig, sampling
 from opentelemetry.sdk.util.instrumentation import _scope_name_matches_glob
 from opentelemetry.util._once import Once
 
@@ -429,6 +435,37 @@ class TestDistribution(TestCase):
         ElasticOpenTelemetryConfigurator()._configure()
 
         logger_mock.assert_not_called()
+
+    @mock.patch.dict("os.environ", {OTEL_EXPORTER_OTLP_PROTOCOL: "http/protobuf"}, clear=True)
+    def test_configurator_works_without_grpc(self):
+        # The k8s operator injects the distro from its own image into the application container, so the bundled
+        # grpcio may not be built for the application's Python version (e.g. cp312 wheels on Python 3.13) and
+        # grpc fails to import. The operator exports via http/protobuf so we must still configure the SDK.
+        import elasticotel.distro as distro_module
+
+        grpc_modules = {
+            name: None
+            for name in [*sys.modules, "grpc"]
+            if name.split(".")[0] == "grpc" or name.startswith("opentelemetry.exporter.otlp.proto.grpc")
+        }
+        self.addCleanup(importlib.reload, distro_module)
+        with (
+            mock.patch.dict(sys.modules, grpc_modules),
+            mock.patch(
+                "opentelemetry.sdk._configuration._initialize_components", wraps=_initialize_components
+            ) as initialize_components_mock,
+        ):
+            importlib.reload(distro_module)
+            distro_module.ElasticOpenTelemetryDistro()._configure()
+            distro_module.ElasticOpenTelemetryConfigurator()._configure()
+
+        self.assertIsInstance(trace.get_tracer_provider(), TracerProvider)
+        exporter_args_map = initialize_components_mock.call_args.kwargs["exporter_args_map"]
+        self.assertEqual(set(exporter_args_map), {HTTPOTLPLogExporter, HTTPOTLPMetricExporter, HTTPOTLPSpanExporter})
+        for exporter_args in exporter_args_map.values():
+            self.assertTrue(
+                exporter_args["headers"]["User-Agent"].startswith(distro_module.EDOT_HTTP_USER_AGENT_HEADER_VALUE)
+            )
 
 
 class TestConfig(TestCase):
