@@ -159,7 +159,7 @@ typing-extensions==4.16.0
     #   pip-tools
 urllib3==2.8.0
     # via requests
-uuid-utils==0.18.0
+uuid-utils==1.0.0
     # via
     #   elastic-opentelemetry (pyproject.toml)
     #   opentelemetry-opamp-client
