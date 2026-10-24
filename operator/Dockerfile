@@ -1,5 +1,5 @@
 ARG PYTHON_GLIBC_IMAGE="docker.elastic.co/wolfi/python"
-ARG PYTHON_GLIBC_IMAGE_VERSION="v3.12.15-r4-dev@sha256:57ad5a565ab422051a8b39dc162a76fa4fac01b91c8f63c90bf4f081dee21c5a"
+ARG PYTHON_GLIBC_IMAGE_VERSION="v3.12.15-r6-dev@sha256:8e211a396d7efe35f3cd1d78c20e95c6d64d271dee1fc6cfbf9736cf0bd478aa"
 
 ARG IMAGE="docker.elastic.co/wolfi/chainguard-base"
 ARG IMAGE_VERSION="latest@sha256:f65a81308a518df9ece3998aa13dddf85dc7913f5aa8ed15f9566b196d254c50"
