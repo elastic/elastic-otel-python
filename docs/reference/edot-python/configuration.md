@@ -28,6 +28,174 @@ export OTEL_EXPORTER_OTLP_HEADERS="Authorization=ApiKey P....l"
 opentelemetry-instrument <command to start your service>
 ```
 
+## Declarative configuration
+
+```{applies_to}
+product:
+  edot_python: preview 1.19.0
+```
+
+Declarative configuration describes resources, telemetry pipelines, sampling, and propagation in a YAML or JSON file. EDOT Python can load this file through the experimental OpenTelemetry configuration package. For details, refer to the [upstream Python declarative configuration documentation](https://opentelemetry-python.readthedocs.io/en/latest/sdk/configuration.html).
+
+### Install configuration support
+
+Install EDOT Python with the `config` extra in your application's environment, then install the instrumentations for your application's libraries:
+
+```sh
+pip install 'elastic-opentelemetry[config]'
+edot-bootstrap --action=install
+```
+
+### Create the configuration file
+
+Save the following as `edot-python-config.yaml`. It reproduces EDOT's default OTLP/gRPC pipelines, initial sampling policy, delta metric temporality, disabled exemplars, and resource detector order. The cloud-detector list must be adjusted for the environments described below.
+
+```yaml
+# Install elastic-opentelemetry[config] and set OTEL_CONFIG_FILE to this file.
+# Run through EDOT's opentelemetry-instrument entry point to retain its
+# instrumentation setup, runtime-metric filtering, and central configuration.
+# Declarative SDK construction does not retain EDOT's exporter user-agent or
+# DefaultSampler wrapper, so central sampling-rate updates are unavailable.
+file_format: "1.0"
+disabled: ${OTEL_SDK_DISABLED:-false}
+log_level: ${OTEL_LOG_LEVEL:-warn}
+
+resource:
+  detection/development:
+    detectors:
+      - process_runtime: {}
+      - os: {}
+      - telemetry_distro: {}
+      - service_instance: {}
+      - containerid: {}
+
+      # EDOT's cloud-detector list when none of its environment checks match.
+      # YAML cannot select detectors conditionally. Replace these six entries
+      # with the appropriate list for your environment (first match wins):
+      # AWS_LAMBDA_FUNCTION_NAME set: aws_lambda
+      # FUNCTIONS_WORKER_RUNTIME set: azure_functions
+      # K_CONFIGURATION set: gcp_resource_detector
+      # KUBERNETES_SERVICE_HOST set: gcp_resource_detector, aws_eks
+      - gcp_resource_detector: {}
+      - aws_ec2: {}
+      - aws_ecs: {}
+      - aws_elastic_beanstalk: {}
+      - azure_app_service: {}
+      - azure_vm: {}
+
+      # Keep last: applies OTEL_RESOURCE_ATTRIBUTES and then OTEL_SERVICE_NAME,
+      # preserving EDOT's environment-variable precedence over detection.
+      - otel: {}
+
+propagator:
+  composite_list: ${OTEL_PROPAGATORS:-tracecontext,baggage}
+
+tracer_provider:
+  processors:
+    - batch:
+        exporter:
+          otlp_grpc:
+            endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+            headers_list: ${OTEL_EXPORTER_OTLP_HEADERS}
+  sampler:
+    composite/development:
+      parent_threshold:
+        root:
+          probability:
+            ratio: ${OTEL_TRACES_SAMPLER_ARG:-1.0}
+
+meter_provider:
+  exemplar_filter: ${OTEL_METRICS_EXEMPLAR_FILTER:-always_off}
+  readers:
+    - periodic:
+        exporter:
+          otlp_grpc:
+            endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+            headers_list: ${OTEL_EXPORTER_OTLP_HEADERS}
+            temporality_preference: ${OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE:-delta}
+
+logger_provider:
+  processors:
+    - batch:
+        exporter:
+          otlp_grpc:
+            endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+            headers_list: ${OTEL_EXPORTER_OTLP_HEADERS}
+```
+
+The `otel` detector reads `OTEL_RESOURCE_ATTRIBUTES` and `OTEL_SERVICE_NAME`. Keeping it last lets those values override detected resource attributes, with `OTEL_SERVICE_NAME` taking precedence when both variables specify a service name.
+
+EDOT normally selects cloud detectors automatically. A static YAML file cannot express that selection. The example uses EDOT's fallback list for environments outside AWS Lambda, Azure Functions, Google Cloud Run, and Kubernetes. In those environments, replace the six cloud detectors according to the comments in the example. Preserve the base detectors and the final `otel` detector.
+
+### Start your application
+
+Set `OTEL_CONFIG_FILE` to the file's path and start your application with `opentelemetry-instrument`:
+
+```sh
+export OTEL_CONFIG_FILE="$PWD/edot-python-config.yaml"
+export OTEL_SERVICE_NAME=my-service
+export OTEL_EXPORTER_OTLP_ENDPOINT=https://my-deployment.ingest.us-west1.gcp.cloud.es.io
+export OTEL_EXPORTER_OTLP_HEADERS="Authorization=ApiKey P....l"
+opentelemetry-instrument python app.py
+```
+
+The example reads the endpoint and authentication headers from the environment. If no endpoint is set, the exporters use their local collector default. To change the initial sampling ratio, set `OTEL_TRACES_SAMPLER_ARG` to a number between `0.0` and `1.0`. Metric temporality values must be lowercase, for example `delta`.
+
+The file controls SDK construction. Environment settings with declarative equivalents must be represented in the file, for example through `${VAR}` or `${VAR:-default}` references. The example keeps the default gRPC exporters; changing `OTEL_EXPORTER_OTLP_PROTOCOL` alone does not switch these exporters to HTTP. The same applies to selecting a different sampler with `OTEL_TRACES_SAMPLER`: edit the sampler in the file instead.
+
+### Rule-based sampling
+
+Use the experimental rule-based sampler to exclude requests based on attributes available when a span starts. For example, the following configuration drops HTTP root spans whose `url.path` is `/rolldice` and samples all other root spans.
+
+In a copy of the configuration above named `config.yaml`, replace `tracer_provider.sampler` with the following sampler block. Keep the existing processors, exporters, and other provider settings:
+
+```yaml
+tracer_provider:
+  ...
+  sampler:
+    composite/development:
+      parent_threshold:
+        root:
+          rule_based:
+            rules:
+              - attribute_patterns:
+                  key: url.path
+                  included:
+                    - "/rolldice"
+                sampler:
+                  always_off:
+              - sampler:
+                  probability:
+                    ratio: 1.0
+```
+
+Rules are evaluated in order, and the first matching rule selects the sampler. The first rule uses `always_off` for the matching path. The final rule has no conditions and samples all remaining root spans, including spans without a `url.path` attribute. Patterns are case-sensitive; use `/rolldice/*` to match paths below `/rolldice/`. Refer to the [upstream rule-based sampler configuration reference](https://opentelemetry.io/docs/specs/otel-config/types/#experimentalcomposablerulebasedsampler) for other conditions.
+
+This example uses the [stable HTTP semantic conventions](https://opentelemetry.io/docs/specs/semconv/http/), including `url.path`. With Flask and its instrumentation installed, opt in to those conventions when starting the application:
+
+```sh
+OTEL_SEMCONV_STABILITY_OPT_IN=http OTEL_CONFIG_FILE=config.yaml opentelemetry-instrument flask run
+```
+
+The rules are under `parent_threshold.root`, so they apply only when there is no valid parent span context. Requests with an incoming parent context follow the parent's sampling decision, even when the path matches `/rolldice`. Child spans also follow their parent's sampling decision.
+
+Sampling runs when the span is created. Rules can only inspect attributes supplied at that point; attributes added later, such as the HTTP response status code, cannot affect this decision.
+
+### Differences from environment-based configuration
+
+This example preserves the settings listed above, with these limitations:
+
+- Cloud detector selection is manual, as described above.
+- The declarative loader creates the upstream composite sampler instead of EDOT's updateable sampler wrapper. Initial sampling works, but central configuration cannot update the sampling rate.
+- Exporters use the upstream user-agent because declarative construction bypasses EDOT's exporter customization.
+
+Continue using EDOT's `opentelemetry-instrument` startup path to retain EDOT's instrumentation setup and runtime-metric filtering. Calling the upstream `configure_sdk()` function directly does not run that setup.
+
+### Upstream SDK compatibility
+
+This configuration requires EDOT Python. A clean upstream OpenTelemetry SDK installation with the `opentelemetry-configuration` package installed accepts the file's schema, but is missing the `process_runtime` and `telemetry_distro` resource detectors supplied by EDOT.
+Cloud and container detectors require their respective packages to be installed.
+
 ## Configuration options
 
 Because the {{edot}} Python is an extension of OpenTelemetry Python, it supports both:
@@ -243,7 +411,7 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 
 | Option | EDOT Python default | OpenTelemetry Python default | Notes |
 |---|---|---|---|
-| `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` | `process_runtime,os,telemetry_distro,service_instance,containerid,gcp_resource_detector,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm,otel` | `otel` | |
+| `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` | `process_runtime,os,telemetry_distro,service_instance,containerid,gcp_resource_detector,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm,otel` | `service_instance,otel` | |
 | `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | `DELTA` | `CUMULATIVE` | |
 | `OTEL_LOG_LEVEL` | `warn` | | {applies_to}`edot_python: ga 1.9.0` |
 | `OTEL_METRICS_EXEMPLAR_FILTER` | `always_off` | `trace_based` | |
