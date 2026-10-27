@@ -208,8 +208,8 @@ class ElasticOpenTelemetryDistro(BaseDistro):
         os.environ.setdefault(OTEL_EXPORTER_OTLP_PROTOCOL, "grpc")
         # disable exemplars by default for now
         os.environ.setdefault(OTEL_METRICS_EXEMPLAR_FILTER, "always_off")
-        # preference to use DELTA temporality as we can handle only this kind of Histograms
-        os.environ.setdefault(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE, "DELTA")
+        # preference to use delta temporality as we can handle only this kind of Histograms
+        os.environ.setdefault(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE, "delta")
         os.environ.setdefault(OTEL_TRACES_SAMPLER, "experimental_composite_parentbased_traceidratio")
         os.environ.setdefault(OTEL_TRACES_SAMPLER_ARG, str(DEFAULT_SAMPLING_RATE))
         os.environ.setdefault(OTEL_PYTHON_TRACER_CONFIGURATOR, "updatable_tracer_configurator")
