@@ -48,7 +48,7 @@ edot-bootstrap --action=install
 
 ### Create the configuration file
 
-Save the following as `edot-python-config.yaml`. It reproduces EDOT's default OTLP/gRPC pipelines, initial sampling policy, delta metric temporality, disabled exemplars, and resource detector order. The cloud-detector list must be adjusted for the environments described below.
+Save the following as `edot-python-config.yaml`. It reproduces EDOT's default OTLP/gRPC pipelines, initial sampling policy, delta metric temporality, turned off exemplars, and resource detector order. The cloud-detector list must be adjusted for the environments in the following section.
 
 ```yaml
 # Install elastic-opentelemetry[config] and set OTEL_CONFIG_FILE to this file.
@@ -183,11 +183,11 @@ Sampling runs when the span is created. Rules can only inspect attributes suppli
 
 ### Differences from environment-based configuration
 
-This example preserves the settings listed above, with these limitations:
+This example preserves the settings in the preceding section, with these limitations:
 
-- Cloud detector selection is manual, as described above.
-- The declarative loader creates the upstream composite sampler instead of EDOT's updateable sampler wrapper. Initial sampling works, but central configuration cannot update the sampling rate.
-- Exporters use the upstream user-agent because declarative construction bypasses EDOT's exporter customization.
+- Cloud detector selection is manual, as earlier on this page.
+- The declarative loader creates the upstream composite sampler instead of EDOT updateable sampler wrapper. Initial sampling works, but central configuration cannot update the sampling rate.
+- Exporters use the upstream user-agent because declarative construction bypasses EDOT exporter customization.
 
 Continue using EDOT's `opentelemetry-instrument` startup path to retain EDOT's instrumentation setup and runtime-metric filtering. Calling the upstream `configure_sdk()` function directly does not run that setup.
 
@@ -383,7 +383,7 @@ product:
 
 Some headers might contain sensitive data such as personally identifiable information (PII), session keys, passwords, and so on. To avoid storing this data, OpenTelemetry Python provides a sanitization system through the `OTEL_INSTRUMENTATION_HTTP_CAPTURE_HEADERS_SANITIZE_FIELDS`
 environment variable.
-Set the environment variable to a comma delimited list of HTTP header names to be sanitized. You can use use regular expressions. 
+Set the environment variable to a comma delimited list of HTTP header names to be sanitized. You can use regular expressions.
 All header names are matched in a case-insensitive manner.
 
 This example replaces the values of the `set-cookie` header and headers such as `session-id` that matches the provided regular expression with `[REDACTED]` in the span:
