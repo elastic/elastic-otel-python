@@ -412,7 +412,7 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 | Option | EDOT Python default | OpenTelemetry Python default | Notes |
 |---|---|---|---|
 | `OTEL_EXPERIMENTAL_RESOURCE_DETECTORS` | `process_runtime,os,telemetry_distro,service_instance,containerid,gcp_resource_detector,aws_ec2,aws_ecs,aws_elastic_beanstalk,azure_app_service,azure_vm,otel` | `service_instance,otel` | |
-| `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | `DELTA` | `CUMULATIVE` | |
+| `OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE` | `delta` | `cumulative` | |
 | `OTEL_LOG_LEVEL` | `warn` | | {applies_to}`edot_python: ga 1.9.0` |
 | `OTEL_METRICS_EXEMPLAR_FILTER` | `always_off` | `trace_based` | |
 | `OTEL_TRACES_SAMPLER` | `experimental_composite_parentbased_traceidratio` | `parentbased_always_on` | {applies_to}`edot_python: ga 1.10.0`<br><br>The EDOT Python default was previously `parentbased_traceidratio` {applies_to}`edot_python: ga 1.5-1.9` |
