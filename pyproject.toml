@@ -29,7 +29,7 @@ dependencies = [
     "opentelemetry-api == 1.45.1",
     "opentelemetry-exporter-otlp == 1.45.1",
     "opentelemetry-instrumentation == 0.66b1",
-    "opentelemetry-instrumentation-system-metrics == 0.66b1",
+    "opentelemetry-instrumentation-system-metrics == 0.66b2",
     "opentelemetry-resourcedetector-gcp ~= 1.14.0a0",
     "opentelemetry-resource-detector-azure ~= 0.3.0",
     "opentelemetry-resource-detector-containerid == 0.66b1",
