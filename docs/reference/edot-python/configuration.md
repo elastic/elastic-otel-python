@@ -146,7 +146,7 @@ The file controls SDK construction. Environment settings with declarative equiva
 
 Use the experimental rule-based sampler to exclude requests based on attributes available when a span starts. For example, the following configuration drops HTTP root spans whose `url.path` is `/rolldice` and samples all other root spans.
 
-In a copy of the configuration above named `config.yaml`, replace `tracer_provider.sampler` with the following sampler block. Keep the existing processors, exporters, and other provider settings:
+In the configuration above, replace `tracer_provider.sampler` with the following sampler block. Keep the existing processors, exporters, and other provider settings:
 
 ```yaml
 tracer_provider:
@@ -173,7 +173,7 @@ Rules are evaluated in order, and the first matching rule selects the sampler. T
 This example uses the [stable HTTP semantic conventions](https://opentelemetry.io/docs/specs/semconv/http/), including `url.path`. With Flask and its instrumentation installed, opt in to those conventions when starting the application:
 
 ```sh
-OTEL_SEMCONV_STABILITY_OPT_IN=http OTEL_CONFIG_FILE=config.yaml opentelemetry-instrument flask run
+OTEL_SEMCONV_STABILITY_OPT_IN=http OTEL_CONFIG_FILE=edot-python-config.yaml opentelemetry-instrument flask run
 ```
 
 The rules are under `parent_threshold.root`, so they apply only when there is no valid parent span context. Requests with an incoming parent context follow the parent's sampling decision, even when the path matches `/rolldice`. Child spans also follow their parent's sampling decision.
