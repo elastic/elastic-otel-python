@@ -88,7 +88,7 @@ class TestDistribution(TestCase):
             os.environ.get(OTEL_EXPERIMENTAL_RESOURCE_DETECTORS),
         )
         self.assertEqual("always_off", os.environ.get(OTEL_METRICS_EXEMPLAR_FILTER))
-        self.assertEqual("DELTA", os.environ.get(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE))
+        self.assertEqual("delta", os.environ.get(OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE))
         self.assertEqual("experimental_composite_parentbased_traceidratio", os.environ.get(OTEL_TRACES_SAMPLER))
         self.assertEqual("1.0", os.environ.get(OTEL_TRACES_SAMPLER_ARG))
         self.assertEqual("updatable_tracer_configurator", os.environ.get(OTEL_PYTHON_TRACER_CONFIGURATOR))

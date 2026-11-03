@@ -41,6 +41,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+config = [
+    "opentelemetry-configuration == 0.66b1"
+]
 dev = [
     "pytest",
     "pip-tools",

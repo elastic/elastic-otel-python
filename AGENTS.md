@@ -1,3 +1,8 @@
+# Documentation
+
+- When changing documentation, run Vale over the affected documentation files.
+- Fix every Vale error and warning. Investigate every suggestion and apply it when appropriate.
+
 # Release updates
 
 - Set the package version in `src/elasticotel/distro/version.py`. `pyproject.toml` reads this value dynamically.
