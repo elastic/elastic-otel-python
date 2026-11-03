@@ -34,8 +34,7 @@ opentelemetry-instrument <command to start your service>
 product:
   edot_python: preview 1.19.0
 ```
-
-Declarative configuration describes resources, telemetry pipelines, sampling, and propagation in a YAML or JSON file. EDOT Python can load this file through the experimental OpenTelemetry configuration package. For details, refer to the [upstream Python declarative configuration documentation](https://opentelemetry-python.readthedocs.io/en/latest/sdk/configuration.html).
+Declarative configuration describes resources, telemetry pipelines, sampling, and propagation in a YAML or JSON file. Use it when you want a single, version-controlled configuration file, or when you need options that environment variables can't express, such as rule-based sampling. EDOT Python can load this file through the experimental OpenTelemetry configuration package. For details, refer to the [upstream Python declarative configuration documentation](https://opentelemetry-python.readthedocs.io/en/latest/sdk/configuration.html).
 
 ### Install configuration support
 
@@ -48,7 +47,7 @@ edot-bootstrap --action=install
 
 ### Create the configuration file
 
-Save the following as `edot-python-config.yaml`. It reproduces EDOT's default OTLP/gRPC pipelines, initial sampling policy, delta metric temporality, turned off exemplars, and resource detector order. The cloud-detector list must be adjusted for the environments in the following section.
+Save the following as `edot-python-config.yaml`. It reproduces EDOT's default OTLP/gRPC pipelines, initial sampling policy, delta metric temporality, turned off exemplars, and resource detector order. Adjust the cloud-detector list as described in the next section.
 
 ```yaml
 # Install elastic-opentelemetry[config] and set OTEL_CONFIG_FILE to this file.
@@ -151,7 +150,7 @@ In a copy of the configuration above named `config.yaml`, replace `tracer_provid
 
 ```yaml
 tracer_provider:
-  ...
+  ... # keep existing processors and exporters
   sampler:
     composite/development:
       parent_threshold:
@@ -186,7 +185,7 @@ Sampling runs when the span is created. Rules can only inspect attributes suppli
 This example preserves the settings in the preceding section, with these limitations:
 
 - Cloud detector selection is manual, as earlier on this page.
-- The declarative loader creates the upstream composite sampler instead of EDOT updateable sampler wrapper. Initial sampling works, but central configuration cannot update the sampling rate.
+- The declarative loader creates the upstream composite sampler instead of EDOT's `DefaultSampler` wrapper. Initial sampling works, but central configuration cannot update the sampling rate.
 - Exporters use the upstream user-agent because declarative construction bypasses EDOT exporter customization.
 
 Continue using EDOT's `opentelemetry-instrument` startup path to retain EDOT's instrumentation setup and runtime-metric filtering. Calling the upstream `configure_sdk()` function directly does not run that setup.
