@@ -1,5 +1,15 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.19.0
+
+- Bump OpenTelemetry to 1.45.2/0.66b2 (#682)
+
+  Upstream changes:
+  * 1.45.2 core changes: https://github.com/open-telemetry/opentelemetry-python/discussions/5864
+  * 1.45.2 -contrib changes: https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/5265
+- Bump `opentelemetry-opamp-client` to 0.5b0, removing the `uuid-utils` dependency (#672)
+- Fix startup when `grpc` cannot be imported and the `http/protobuf` exporter is used (#666)
+
 ## v1.18.0
 
 - Bump OpenTelemetry to 1.45.1/0.66b1 (#654)
