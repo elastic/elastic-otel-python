@@ -27,6 +27,21 @@ To check for security updates, go to [Security announcements for the Elastic sta
 % ### Fixes [edot-python-X.X.X-fixes]
 % *
 
+## 1.19.0 [edot-python-1.19.0-release-notes]
+
+### Features and enhancements [edot-python-1.19.0-features-enhancements]
+
+- Bump OpenTelemetry to 1.45.2/0.66b2 ([#682](https://github.com/elastic/elastic-otel-python/pull/682))
+
+  Upstream changes:
+  * [opentelemetry-python 1.45.2](https://github.com/open-telemetry/opentelemetry-python/discussions/5864)
+  * [opentelemetry-python-contrib 1.45.2](https://github.com/open-telemetry/opentelemetry-python-contrib/discussions/5265)
+- Bump `opentelemetry-opamp-client` to 0.5b0, removing the `uuid-utils` dependency ([#672](https://github.com/elastic/elastic-otel-python/pull/672))
+
+### Fixes [edot-python-1.19.0-fixes]
+
+- Fix startup when `grpc` cannot be imported and the `http/protobuf` exporter is used ([#666](https://github.com/elastic/elastic-otel-python/pull/666))
+
 ## 1.18.0 [edot-python-1.18.0-release-notes]
 
 ### Features and enhancements [edot-python-1.18.0-features-enhancements]
