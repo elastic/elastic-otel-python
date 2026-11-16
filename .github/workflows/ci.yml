@@ -30,7 +30,8 @@ jobs:
     steps:
     - uses: actions/checkout@v7
     - uses: ./.github/actions/env-install
-    - run: pip install -e .
+    - run: pip install .
+    - run: pip install ".[config]"
 
   pip-licenses:
     runs-on: ubuntu-latest

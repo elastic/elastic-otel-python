@@ -42,7 +42,7 @@ dependencies = [
 
 [project.optional-dependencies]
 config = [
-    "opentelemetry-configuration == 0.66b1"
+    "opentelemetry-configuration == 0.66b2"
 ]
 dev = [
     "pytest",
