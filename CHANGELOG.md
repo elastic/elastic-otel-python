@@ -1,5 +1,9 @@
 # Elastic Distribution of OpenTelemetry Python Changelog
 
+## v1.19.1
+
+- Bump `opentelemetry-configuration` to 0.66b2 to match the distribution packages (#693)
+
 ## v1.19.0
 
 - Bump OpenTelemetry to 1.45.2/0.66b2 (#682)
