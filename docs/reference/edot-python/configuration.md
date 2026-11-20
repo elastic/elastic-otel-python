@@ -144,23 +144,29 @@ The file controls SDK construction. Environment settings with declarative equiva
 
 ### Rule-based sampling
 
-Use the experimental rule-based sampler to exclude requests based on attributes available when a span starts. For example, the following configuration drops HTTP root spans whose `url.path` is `/rolldice` and samples all other root spans.
+Use the experimental rule-based sampler to exclude spans based on attributes available when a span starts. Both examples drop HTTP server spans for `/rolldice`. The placement of the rule determines whether it also applies to spans with a parent.
 
-In the configuration above, replace `tracer_provider.sampler` with the following sampler block. Keep the existing processors, exporters, and other provider settings:
+Replace `tracer_provider.sampler` in the configuration above with the block from one of the following examples. Keep the existing processors, exporters, and other provider settings.
+
+#### Exclude only root spans
+
+Place the rule under `parent_threshold.root` to drop matching root spans and sample all other root spans. Spans with a valid parent context follow their parent's sampling decision, even when the request path is `/rolldice`.
 
 ```yaml
 tracer_provider:
-  ... # keep existing processors and exporters
+  ... # Keep existing processors and exporters.
   sampler:
     composite/development:
       parent_threshold:
         root:
           rule_based:
             rules:
-              - attribute_patterns:
+              - span_kinds:
+                  - server
+                attribute_patterns:
                   key: url.path
                   included:
-                    - "/rolldice"
+                    - /rolldice
                 sampler:
                   always_off:
               - sampler:
@@ -168,19 +174,45 @@ tracer_provider:
                     ratio: 1.0
 ```
 
-Rules are evaluated in order, and the first matching rule selects the sampler. The first rule uses `always_off` for the matching path. The final rule has no conditions and samples all remaining root spans, including spans without a `url.path` attribute. Patterns are case-sensitive; use `/rolldice/*` to match paths below `/rolldice/`. Refer to the [upstream rule-based sampler configuration reference](https://opentelemetry.io/docs/specs/otel-config/types/#experimentalcomposablerulebasedsampler) for other conditions.
+#### Exclude spans regardless of parent context
 
-This example uses the [stable HTTP semantic conventions](https://opentelemetry.io/docs/specs/semconv/http/), including `url.path`. With Flask and its instrumentation installed, opt in to those conventions when starting the application:
+Evaluate the exclusion before `parent_threshold` to drop matching spans even when their parent was sampled. All other spans reach `parent_threshold`, which follows the parent's sampling decision when there is a valid parent context and samples all remaining root spans.
+
+```yaml
+tracer_provider:
+  ... # Keep existing processors and exporters.
+  sampler:
+    composite/development:
+      rule_based:
+        rules:
+          - span_kinds:
+              - server
+            attribute_patterns:
+              key: url.path
+              included:
+                - /rolldice
+            sampler:
+              always_off:
+          - sampler:
+              parent_threshold:
+                root:
+                  probability:
+                    ratio: 1.0
+```
+
+#### Use the rules with your application
+
+Rules are evaluated in order. The first matching rule selects the sampler. Patterns are case-sensitive. Use `/rolldice/*` to match paths below `/rolldice/`. Refer to the [upstream rule-based sampler configuration reference](https://opentelemetry.io/docs/specs/otel-config/types/#experimentalcomposablerulebasedsampler) for other conditions.
+
+Both examples use the [stable HTTP semantic conventions](https://opentelemetry.io/docs/specs/semconv/http/), including `url.path`. With Flask and its instrumentation installed, opt in to those conventions when starting the application:
 
 ```sh
 OTEL_SEMCONV_STABILITY_OPT_IN=http OTEL_CONFIG_FILE=edot-python-config.yaml opentelemetry-instrument flask run
 ```
 
-The rules are under `parent_threshold.root`, so they apply only when there is no valid parent span context. Requests with an incoming parent context follow the parent's sampling decision, even when the path matches `/rolldice`. Child spans also follow their parent's sampling decision.
+Sampling runs when the span is created. Rules can only inspect attributes supplied at that point. Attributes added later, such as the HTTP response status code, cannot affect this decision.
 
-Sampling runs when the span is created. Rules can only inspect attributes supplied at that point; attributes added later, such as the HTTP response status code, cannot affect this decision.
-
-While this example is using HTTP attributes it's not limited to that, for example since {applies_to}`edot_python: preview 1.20.0` `messaging.destination.name` or `messaging.destination` attributes (depending on the instrumentation, refer to [Messaging spans semantic conventions](https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/#messaging-spans)) will let to do sampling decisions based on the name of the queue or the topic a message is sent to.
+{applies_to}`edot_python: preview 1.20.0` You can exclude messaging spans by queue or topic name when the instrumentation supplies the destination attribute at span creation. Choose the example that matches the parent behavior you want. To adapt the exclusion rule, remove the `span_kinds: [server]` condition and set `attribute_patterns.key` to `messaging.destination.name` or `messaging.destination`, depending on the instrumentation. Replace `/rolldice` under `included` with the queue or topic name to match. Refer to the [messaging span semantic conventions](https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/).
 
 ### Differences from environment-based configuration
 
