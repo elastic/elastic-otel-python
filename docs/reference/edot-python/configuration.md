@@ -212,7 +212,17 @@ OTEL_SEMCONV_STABILITY_OPT_IN=http OTEL_CONFIG_FILE=edot-python-config.yaml open
 
 Sampling runs when the span is created. Rules can only inspect attributes supplied at that point. Attributes added later, such as the HTTP response status code, cannot affect this decision.
 
-{applies_to}`edot_python: preview 1.20.0` You can exclude messaging spans by queue or topic name when the instrumentation supplies the destination attribute at span creation. Choose the example that matches the parent behavior you want. To adapt the exclusion rule, remove the `span_kinds: [server]` condition and set `attribute_patterns.key` to `messaging.destination.name` or `messaging.destination`, depending on the instrumentation. Replace `/rolldice` under `included` with the queue or topic name to match. Refer to the [messaging span semantic conventions](https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/).
+{applies_to}`edot_python: preview 1.20.0` To drop messaging spans for the `orders` queue or topic, replace the `/rolldice` rule in either example with this rule. Use the destination attribute your instrumentation supplies at span creation. Some instrumentations use `messaging.destination` instead of `messaging.destination.name`. Refer to the [messaging span semantic conventions](https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/).
+
+```yaml
+          ... # Keep existing sampler rules.
+          - attribute_patterns:
+              key: messaging.destination.name
+              included:
+                - myTopic
+            sampler:
+              always_off:
+```
 
 ### Differences from environment-based configuration
 
