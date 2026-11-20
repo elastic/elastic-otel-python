@@ -180,6 +180,8 @@ The rules are under `parent_threshold.root`, so they apply only when there is no
 
 Sampling runs when the span is created. Rules can only inspect attributes supplied at that point; attributes added later, such as the HTTP response status code, cannot affect this decision.
 
+While this example is using HTTP attributes it's not limited to that, for example since {applies_to}`edot_python: preview 1.20.0` `messaging.destination.name` or `messaging.destination` attributes (depending on the instrumentation, refer to [Messaging spans semantic conventions](https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/#messaging-spans)) will let to do sampling decisions based on the name of the queue or the topic a message is sent to.
+
 ### Differences from environment-based configuration
 
 This example preserves the settings in the preceding section, with these limitations:
