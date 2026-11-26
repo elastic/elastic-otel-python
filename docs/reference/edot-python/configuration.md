@@ -219,7 +219,7 @@ Sampling runs when the span is created. Rules can only inspect attributes suppli
           - attribute_patterns:
               key: messaging.destination.name
               included:
-                - myTopic
+                - orders
             sampler:
               always_off:
 ```
