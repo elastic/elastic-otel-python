@@ -212,17 +212,35 @@ OTEL_SEMCONV_STABILITY_OPT_IN=http OTEL_CONFIG_FILE=edot-python-config.yaml open
 
 Sampling runs when the span is created. Rules can only inspect attributes supplied at that point. Attributes added later, such as the HTTP response status code, cannot affect this decision.
 
-{applies_to}`edot_python: preview 1.20.0` To drop messaging spans for the `orders` queue or topic, replace the `/rolldice` rule in either example with this rule. Use the destination attribute your instrumentation supplies at span creation. Some instrumentations use `messaging.destination` instead of `messaging.destination.name`. Refer to the [messaging span semantic conventions](https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/).
+#### Exclude messaging spans by destination
+
+```{applies_to}
+product:
+  edot_python: preview 1.20.0
+```
+
+To drop messaging spans for the `orders` queue or topic, replace `tracer_provider.sampler` with the `sampler` block below. Start copying at `sampler:` and keep the other `tracer_provider` settings. This replaces the `/rolldice` rule from [Exclude spans regardless of parent context](#exclude-spans-regardless-of-parent-context) with a destination rule. The rule runs before `parent_threshold`, so it also drops matching spans that have a sampled parent.
 
 ```yaml
-          ... # Keep existing sampler rules.
+  ... # Keep existing sampler rules.
+  sampler:
+    composite/development:
+      rule_based:
+        rules:
           - attribute_patterns:
               key: messaging.destination.name
               included:
                 - orders
             sampler:
               always_off:
+          - sampler:
+              parent_threshold:
+                root:
+                  probability:
+                    ratio: 1.0
 ```
+
+Use the destination attribute your instrumentation supplies at span creation. Some instrumentations use `messaging.destination` instead of `messaging.destination.name`. Refer to the [messaging span semantic conventions](https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/).
 
 ### Differences from environment-based configuration
 
