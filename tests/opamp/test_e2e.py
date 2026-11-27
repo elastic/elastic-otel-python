@@ -25,6 +25,8 @@ from opentelemetry._opamp.agent import OpAMPAgent
 from opentelemetry._opamp.callbacks import OpAMPCallbacks
 from opentelemetry._opamp.client import OpAMPClient
 from opentelemetry._opamp.proto import opamp_pb2
+from opentelemetry._opamp.transport.base import HttpTransport
+from opentelemetry._opamp.transport.exceptions import OpAMPException
 from opentelemetry._opamp.transport.requests import RequestsTransport
 
 from elasticotel.distro.config import EDOTOpAMPCallbacks
@@ -122,32 +124,45 @@ def test_connection_remote_config_status_heartbeat_disconnection(caplog):
     _assert_opamp_exchange(TestCallbacks(), caplog)
 
 
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="vcr.py not working with urllib 2 and older Pythons")
-@pytest.mark.vcr()
-def test_with_server_not_responding(caplog):
-    caplog.set_level(logging.DEBUG, logger="opentelemetry._opamp.agent")
+def test_with_server_not_responding():
+    connection_error = OpAMPException("Connection refused")
+    transport = mock.Mock(spec=HttpTransport)
+    transport.send.side_effect = connection_error
 
-    callbacks = mock.Mock()
+    connection_failed = Event()
+    connection_errors = []
+    received_messages = []
+
+    class TestCallbacks(OpAMPCallbacks):
+        def on_connect_failed(self, agent, client, error):
+            connection_errors.append(error)
+            connection_failed.set()
+
+        def on_message(self, agent, client, message):
+            received_messages.append(message)
 
     opamp_client = OpAMPClient(
-        endpoint="http://localhost:4321/v1/opamp",
+        endpoint="http://opamp.invalid/v1/opamp",
         agent_identifying_attributes={
             "service.name": "foo",
             "deployment.environment.name": "foo",
         },
+        transport=transport,
     )
     opamp_agent = OpAMPAgent(
         interval=1,
-        callbacks=callbacks,
+        callbacks=TestCallbacks(),
         client=opamp_client,
     )
     try:
         opamp_agent.start()
+        assert connection_failed.wait(timeout=10), "OpAMP agent did not report the connection failure"
     finally:
         atexit.unregister(opamp_agent.stop)
         opamp_agent.stop()
 
-    assert callbacks.on_message.call_count == 0
+    assert connection_errors[0] is connection_error
+    assert not received_messages
 
 
 @pytest.mark.skipif(sys.version_info < (3, 10), reason="vcr.py not working with urllib 2 and older Pythons")
