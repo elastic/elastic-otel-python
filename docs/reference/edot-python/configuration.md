@@ -249,6 +249,7 @@ This example preserves the settings in the preceding section, with these limitat
 - Cloud detector selection is manual, as earlier on this page.
 - The declarative loader creates the upstream composite sampler instead of EDOT's `DefaultSampler` wrapper. Initial sampling works, but central configuration cannot update the sampling rate.
 - Exporters use the upstream user-agent because declarative construction bypasses EDOT exporter customization.
+- [Span naming](#span-naming) options are not available, from environment variables or central configuration, because declarative construction bypasses EDOT exporter customization.
 
 Continue using EDOT's `opentelemetry-instrument` startup path to retain EDOT's instrumentation setup and runtime-metric filtering. Calling the upstream `configure_sdk()` function directly does not run that setup.
 
@@ -330,6 +331,8 @@ You can modify the following settings for EDOT Python through APM Agent Central 
 | Logging level | Configure EDOT Python agent logging level.   | Dynamic | {applies_to}`stack: preview 9.1` <br> {applies_to}`edot_python: preview 1.4.0` |
 | Sampling rate | Configure EDOT Python tracing sampling rate. | Dynamic | {applies_to}`stack: preview 9.2` <br> {applies_to}`edot_python: preview 1.7.0` |
 | Deactivate instrumentations | Configure EDOT Python to deactivate tracers for specific instrumentations, supports globbing. Refer to [EDOT Python Supported technologies](/reference/edot-python/supported-technologies.md) for the names of the tracers. | Dynamic | {applies_to}`stack: preview 9.4` <br> {applies_to}`edot_python: preview 1.12.0` |
+| Use path as span name (`use_path_as_span_name`) | Name HTTP server spans that have no route using the URL path. Refer to [Span naming](#use-path-as-span-name). | Dynamic | {applies_to}`edot_python: preview 1.20.0` |
+| Span name groups (`span_name_groups`) | Rename spans that match wildcard patterns. Refer to [Span naming](#span-name-groups). | Dynamic | {applies_to}`edot_python: preview 1.20.0` |
 
 Dynamic settings can be changed without having to restart the application.
 
@@ -494,6 +497,35 @@ EDOT Python uses different defaults than OpenTelemetry Python for the following 
 | Option(s) | Default | Description |
 |---|---|---|
 | `ELASTIC_OTEL_SYSTEM_METRICS_ENABLED` | `false` | When set to `true`, sends *system namespace* metrics. |
+| `ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME` | `false` | When set to `true`, names HTTP server spans that have no route using the URL path. Refer to [Span naming](#use-path-as-span-name). |
+| `ELASTIC_OTEL_SPAN_NAME_GROUPS` | (empty) | Comma-separated list of wildcard patterns. A span whose name matches a pattern is renamed to that pattern. Refer to [Span naming](#span-name-groups). |
+
+## Span naming
+
+```{applies_to}
+product:
+  edot_python: preview 1.20.0
+```
+
+EDOT Python can rename spans when they are exported, for example when instrumentation can't determine a URL route.
+
+### Use path as span name
+
+HTTP server spans are named `{method} {route}` when the instrumentation provides a route. When it does not, the span name can be only the HTTP method, such as `GET`.
+
+Set `ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME` to `true` to name those spans `{method} {path}` instead, for example `GET /users/42/cart`. The path comes from the `url.path` attribute, or from the `http.target` attribute without its query string. Spans with any other name are not modified.
+
+Because paths often contain identifiers, this can create many distinct span names. Use [span name groups](#span-name-groups) to consolidate them.
+
+### Span name groups
+
+Set `ELASTIC_OTEL_SPAN_NAME_GROUPS` to a comma-separated list of wildcard patterns. A span whose name matches a pattern is renamed to that pattern, and the first matching pattern wins. This applies to all spans, after [use path as span name](#use-path-as-span-name).
+
+For example, `ELASTIC_OTEL_SPAN_NAME_GROUPS="GET /users/*/cart"` renames both `GET /users/42/cart` and `GET /users/73/cart` to `GET /users/*/cart`.
+
+Patterns support the `*` wildcard, which matches zero or more characters, including `/`. Other characters, such as `?` and `[`, match only themselves. Matching is case-sensitive.
+
+Both options can be changed at runtime through [central configuration](#central-configuration-settings). Removing a setting from central configuration restores its default value, not the value of the environment variable. These options are not available with [declarative configuration](#declarative-configuration).
 
 ## LLM settings
 

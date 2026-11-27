@@ -46,9 +46,14 @@ from opentelemetry.sdk.trace import _TracerConfig
 from opentelemetry.sdk.util._configurator import ConfiguratorRulesT
 from opentelemetry.sdk.util.instrumentation import _scope_name_matches_glob
 
+from elasticotel.distro.environment_variables import (
+    ELASTIC_OTEL_SPAN_NAME_GROUPS,
+    ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME,
+)
 from elasticotel.distro.sanitization import _sanitize_headers_env_vars
 from elasticotel.sdk.sampler import DefaultSampler
 from elasticotel.sdk.trace import tracer_configurator
+from elasticotel.sdk.trace.span_name import parse_span_name_groups, span_name_settings
 
 logger = logging.getLogger(__name__)
 
@@ -65,12 +70,29 @@ _LOG_LEVELS_MAP: dict[str, int] = {
 
 DEFAULT_SAMPLING_RATE = 1.0
 DEFAULT_LOGGING_LEVEL = "warn"
+DEFAULT_USE_PATH_AS_SPAN_NAME = "false"
+DEFAULT_SPAN_NAME_GROUPS = ""
 
 DEACTIVATE_INSTRUMENTATIONS_CONFIG_KEY = "deactivate_instrumentations"
 LOGGING_LEVEL_CONFIG_KEY = "logging_level"
 SAMPLING_RATE_CONFIG_KEY = "sampling_rate"
+USE_PATH_AS_SPAN_NAME_CONFIG_KEY = "use_path_as_span_name"
+SPAN_NAME_GROUPS_CONFIG_KEY = "span_name_groups"
 
 _config: Config | None = None
+
+
+def _parse_bool(value: object) -> bool | None:
+    """Parses a boolean config value, returning None if it is not a valid boolean"""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        value = value.strip().lower()
+        if value == "true":
+            return True
+        if value == "false":
+            return False
+    return None
 
 
 class ConfigItem:
@@ -107,12 +129,18 @@ class Config:
     # currently the sdk does not handle OTEL_LOG_LEVEL, so we use handle it on our own
     logging_level = ConfigItem(default=DEFAULT_LOGGING_LEVEL, from_env_var=OTEL_LOG_LEVEL)
     deactivate_instrumentations = ConfigItem(default="")
+    use_path_as_span_name = ConfigItem(
+        default=DEFAULT_USE_PATH_AS_SPAN_NAME, from_env_var=ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME
+    )
+    span_name_groups = ConfigItem(default=DEFAULT_SPAN_NAME_GROUPS, from_env_var=ELASTIC_OTEL_SPAN_NAME_GROUPS)
 
     def to_dict(self):
         return {
             LOGGING_LEVEL_CONFIG_KEY: self.logging_level.value,
             SAMPLING_RATE_CONFIG_KEY: self.sampling_rate.value,
             DEACTIVATE_INSTRUMENTATIONS_CONFIG_KEY: self.deactivate_instrumentations.value,
+            USE_PATH_AS_SPAN_NAME_CONFIG_KEY: self.use_path_as_span_name.value,
+            SPAN_NAME_GROUPS_CONFIG_KEY: self.span_name_groups.value,
         }
 
     def log_env_vars(self):
@@ -166,13 +194,30 @@ class Config:
         for logger in self._get_loggers():
             logger.setLevel(logging_level)
 
+    def _setup_span_names(self):
+        use_path = _parse_bool(self.use_path_as_span_name.value)
+        if use_path is None:
+            logger.warning(
+                "Invalid value for %s: %s, using %s",
+                ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME,
+                self.use_path_as_span_name.value,
+                DEFAULT_USE_PATH_AS_SPAN_NAME,
+            )
+            use_path = False
+        self.use_path_as_span_name.update(value=str(use_path).lower())
+        span_name_settings.set_use_path_as_span_name(use_path)
+        span_name_settings.set_span_name_groups(parse_span_name_groups(self.span_name_groups.value))
+
     def __post_init__(self):
         # we need to initialize each config item when we instantiate the Config and not at declaration time
         self.sampling_rate.init()
         self.logging_level.init()
         self.deactivate_instrumentations.init()
+        self.use_path_as_span_name.init()
+        self.span_name_groups.init()
 
         self._setup_logging()
+        self._setup_span_names()
 
 
 def _handle_logging_level(remote_config) -> ConfigUpdate:
@@ -261,6 +306,36 @@ def _handle_deactivate_instrumentations(remote_config) -> ConfigUpdate:
     return ConfigUpdate()
 
 
+def _handle_use_path_as_span_name(remote_config) -> ConfigUpdate:
+    # when config option has default value you don't get it so need to handle the default
+    config_use_path = remote_config.get(USE_PATH_AS_SPAN_NAME_CONFIG_KEY, DEFAULT_USE_PATH_AS_SPAN_NAME)
+    use_path = _parse_bool(config_use_path)
+    if use_path is None:
+        logger.error("Invalid `use_path_as_span_name` from config `%s`", config_use_path)
+        return ConfigUpdate(error_message=f"Invalid use_path_as_span_name {config_use_path}")
+
+    span_name_settings.set_use_path_as_span_name(use_path)
+    logger.debug("Updated use_path_as_span_name to %s", use_path)
+    _config = _get_config()
+    if _config:
+        _config.use_path_as_span_name.update(value=str(use_path).lower())
+    return ConfigUpdate()
+
+
+def _handle_span_name_groups(remote_config) -> ConfigUpdate:
+    config_span_name_groups = remote_config.get(SPAN_NAME_GROUPS_CONFIG_KEY, DEFAULT_SPAN_NAME_GROUPS)
+    if not isinstance(config_span_name_groups, str):
+        logger.error("Invalid `span_name_groups` from config `%s`", config_span_name_groups)
+        return ConfigUpdate(error_message=f"Invalid span_name_groups {config_span_name_groups}")
+
+    span_name_settings.set_span_name_groups(parse_span_name_groups(config_span_name_groups))
+    logger.debug('Updated span_name_groups to "%s"', config_span_name_groups)
+    _config = _get_config()
+    if _config:
+        _config.span_name_groups.update(value=config_span_name_groups)
+    return ConfigUpdate()
+
+
 def _report_full_state(message: opamp_pb2.ServerToAgent):
     return message.flags & opamp_pb2.ServerToAgentFlags_ReportFullState
 
@@ -298,6 +373,14 @@ class EDOTOpAMPCallbacks(OpAMPCallbacks):
                         error_messages.append(config_update.error_message)
 
                     config_update = _handle_deactivate_instrumentations(remote_config)
+                    if config_update.error_message:
+                        error_messages.append(config_update.error_message)
+
+                    config_update = _handle_use_path_as_span_name(remote_config)
+                    if config_update.error_message:
+                        error_messages.append(config_update.error_message)
+
+                    config_update = _handle_span_name_groups(remote_config)
                     if config_update.error_message:
                         error_messages.append(config_update.error_message)
         except (OpAMPRemoteConfigParseException, OpAMPRemoteConfigDecodeException) as exc:

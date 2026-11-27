@@ -67,3 +67,21 @@ Client private key path to use in mTLS communication in PEM format.
 
 **Default value:** ``not set``
 """
+
+ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME = "ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME"
+"""
+.. envvar:: ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME
+
+Names HTTP server spans that have no route as ``{method} {path}``, using the URL path, instead of only the HTTP method.
+
+**Default value:** ``false``
+"""
+
+ELASTIC_OTEL_SPAN_NAME_GROUPS = "ELASTIC_OTEL_SPAN_NAME_GROUPS"
+"""
+.. envvar:: ELASTIC_OTEL_SPAN_NAME_GROUPS
+
+Comma-separated list of wildcard patterns. A span whose name matches a pattern is renamed to that pattern.
+
+**Default value:** ``not set``
+"""

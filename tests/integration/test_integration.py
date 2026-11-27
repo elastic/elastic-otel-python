@@ -404,3 +404,54 @@ class OperatorTestCase(ElasticIntegrationHTTPTestCase):
         self.assertTrue(span)
 
         self.assertEqual(returncode, 0)
+
+
+@pytest.mark.integration
+class SpanNameIntegrationTestCase(ElasticIntegrationGRPCTestCase):
+    @classmethod
+    def requirements(cls):
+        requirements = super().requirements()
+        return requirements + [
+            f"opentelemetry-instrumentation-wsgi=={OTEL_INSTRUMENTATION_VERSION}",
+        ]
+
+    def test_span_name_groups_rename_wsgi_spans(self):
+        def test_script():
+            from wsgiref.util import setup_testing_defaults
+
+            from opentelemetry.instrumentation.wsgi import OpenTelemetryMiddleware
+
+            def app(environ, start_response):
+                start_response("200 OK", [])
+                return [b"ok"]
+
+            for path in ("/users/42", "/users/73", "/orders/1"):
+                environ = {"PATH_INFO": path}
+                setup_testing_defaults(environ)
+                for _ in OpenTelemetryMiddleware(app)(environ, lambda status, headers: None):
+                    pass
+
+        env = {"ELASTIC_OTEL_SPAN_NAME_GROUPS": "GET /users/*"}
+        _, _, _ = self.run_script(test_script, environment_variables=env, wrapper_script="opentelemetry-instrument")
+
+        telemetry = self.get_telemetry()
+        self.assertEqual(
+            [span["name"] for span in telemetry["traces"]], ["GET /users/*", "GET /users/*", "GET /orders/1"]
+        )
+        # attributes set at span start are kept by the default sampler
+        self.assertEqual([span["attributes"].get("http.method") for span in telemetry["traces"]], ["GET", "GET", "GET"])
+
+    def test_use_path_as_span_name(self):
+        def test_script():
+            from opentelemetry import trace
+
+            tracer = trace.get_tracer("test")
+            tracer.start_span(
+                "GET", kind=trace.SpanKind.SERVER, attributes={"http.method": "GET", "http.target": "/users/42?id=1"}
+            ).end()
+
+        env = {"ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME": "true"}
+        _, _, _ = self.run_script(test_script, environment_variables=env, wrapper_script="opentelemetry-instrument")
+
+        telemetry = self.get_telemetry()
+        self.assertEqual([span["name"] for span in telemetry["traces"]], ["GET /users/42"])

@@ -55,6 +55,8 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_TRACES_SAMPLER_ARG,
 )
 from opentelemetry.sdk.resources import OTELResourceDetector
+from opentelemetry.sdk.trace import SpanProcessor
+from opentelemetry.sdk.trace.export import BatchSpanProcessor, SpanExporter
 from opentelemetry.util._importlib_metadata import EntryPoint
 from opentelemetry.util.re import parse_env_headers
 
@@ -69,6 +71,7 @@ from elasticotel.distro.environment_variables import (
     ELASTIC_OTEL_SYSTEM_METRICS_ENABLED,
 )
 from elasticotel.distro.resource_detectors import get_cloud_resource_detectors
+from elasticotel.sdk.trace.span_name import SpanNamingSpanExporter
 
 logger = logging.getLogger(__name__)
 
@@ -124,6 +127,15 @@ class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
                 }
             )
         kwargs["exporter_args_map"] = exporter_args_map
+
+        # wrap every span exporter so span names can be rewritten at export time, also when the span naming options
+        # are turned on later through central configuration
+        export_span_processor = kwargs.get("export_span_processor") or BatchSpanProcessor
+
+        def _span_naming_export_processor(span_exporter: SpanExporter, *args, **kw) -> SpanProcessor:
+            return export_span_processor(SpanNamingSpanExporter(span_exporter), *args, **kw)
+
+        kwargs["export_span_processor"] = _span_naming_export_processor
 
         super()._configure(**kwargs)
 
