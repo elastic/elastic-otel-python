@@ -54,7 +54,7 @@ class DefaultSampler(Sampler):
         links: Sequence[Link] | None = None,
         trace_state: TraceState | None = None,
     ) -> SamplingResult:
-        return self._delegate.should_sample(
+        result = self._delegate.should_sample(
             parent_context,
             trace_id,
             name,
@@ -63,6 +63,13 @@ class DefaultSampler(Sampler):
             links,
             trace_state,
         )
+        # Workaround: the SDK Tracer uses the attributes returned by the sampler as the whole set of span attributes,
+        # but the composite sampler, following the spec, only returns the attributes it adds, dropping the attributes
+        # the span was started with. Add them back until the SDK merges them itself.
+        # https://github.com/open-telemetry/opentelemetry-python/pull/5975
+        if not attributes or not result.decision.is_recording():
+            return result
+        return SamplingResult(result.decision, {**attributes, **result.attributes}, result.trace_state)
 
     def set_ratio(self, ratio: float):
         self._delegate = _new_sampler(ratio)

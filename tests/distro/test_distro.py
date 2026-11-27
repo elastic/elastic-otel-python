@@ -41,9 +41,12 @@ from elasticotel.distro.environment_variables import (
     ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE,
     ELASTIC_OTEL_OPAMP_CLIENT_KEY,
     ELASTIC_OTEL_OPAMP_ENDPOINT,
+    ELASTIC_OTEL_SPAN_NAME_GROUPS,
     ELASTIC_OTEL_SYSTEM_METRICS_ENABLED,
+    ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME,
 )
 from elasticotel.sdk.sampler import DefaultSampler
+from elasticotel.sdk.trace.span_name import SpanNamingSpanExporter, span_name_settings
 from elasticotel.sdk.trace.tracer_configurator import (
     _updatable_tracer_configurator,
     _UpdatableRuleBasedTracerConfigurator,
@@ -65,6 +68,7 @@ from opentelemetry.sdk.environment_variables import (
     OTEL_TRACES_SAMPLER_ARG,
 )
 from opentelemetry.sdk.trace import TracerProvider, _TracerConfig, sampling
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.util.instrumentation import _scope_name_matches_glob
 from opentelemetry.util._once import Once
 
@@ -130,6 +134,43 @@ class TestDistribution(TestCase):
         ElasticOpenTelemetryConfigurator()._configure()
         tracer_configurator = getattr(trace.get_tracer_provider(), "_tracer_configurator", None)
         self.assertEqual(tracer_configurator, _updatable_tracer_configurator)
+
+    @mock.patch.dict(
+        "os.environ",
+        {
+            OTEL_TRACES_EXPORTER: "console",
+            OTEL_METRICS_EXPORTER: "none",
+            OTEL_LOGS_EXPORTER: "none",
+            ELASTIC_OTEL_SPAN_NAME_GROUPS: "GET /users/*",
+        },
+        clear=True,
+    )
+    def test_configurator_renames_exported_spans(self):
+        self.addCleanup(span_name_settings.set_span_name_groups, [])
+        with (
+            mock.patch("elasticotel.distro.BatchSpanProcessor", SimpleSpanProcessor),
+            mock.patch("opentelemetry.sdk.trace.export.ConsoleSpanExporter.export") as export_mock,
+        ):
+            ElasticOpenTelemetryDistro()._configure()
+            ElasticOpenTelemetryConfigurator()._configure()
+            trace.get_tracer("test").start_span("GET /users/42").end()
+
+        export_mock.assert_called_once()
+        self.assertEqual([span.name for span in export_mock.call_args.args[0]], ["GET /users/*"])
+
+    @mock.patch.dict(
+        "os.environ",
+        {OTEL_TRACES_EXPORTER: "console", OTEL_METRICS_EXPORTER: "none", OTEL_LOGS_EXPORTER: "none"},
+        clear=True,
+    )
+    def test_configurator_wraps_span_exporter_for_given_export_span_processor(self):
+        export_span_processor = mock.Mock(side_effect=SimpleSpanProcessor)
+
+        ElasticOpenTelemetryDistro()._configure()
+        ElasticOpenTelemetryConfigurator()._configure(export_span_processor=export_span_processor)
+
+        export_span_processor.assert_called_once()
+        self.assertIsInstance(export_span_processor.call_args.args[0], SpanNamingSpanExporter)
 
     @mock.patch.dict("os.environ", {}, clear=True)
     def test_load_instrumentor_call_with_default_kwargs_for_SystemMetricsInstrumentor(self):
@@ -561,7 +602,14 @@ class TestConfig(TestCase):
     def test_to_dict(self):
         config = Config()
         self.assertEqual(
-            config.to_dict(), {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}
+            config.to_dict(),
+            {
+                "logging_level": "warn",
+                "sampling_rate": "1.0",
+                "deactivate_instrumentations": "",
+                "use_path_as_span_name": "false",
+                "span_name_groups": "",
+            },
         )
 
     @mock.patch.object(logging, "getLogger")
@@ -620,7 +668,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
@@ -649,7 +705,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_FAILED, error_message=error_message
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
@@ -678,7 +742,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_FAILED, error_message=error_message
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
@@ -707,7 +779,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "trace", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            {
+                "elastic": {
+                    "logging_level": "trace",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
@@ -736,7 +816,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
@@ -762,7 +850,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
 
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         agent.send.assert_called_once_with(payload=mock.ANY)
@@ -794,7 +890,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "0.5", "deactivate_instrumentations": ""}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "0.5",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
@@ -826,7 +930,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
@@ -860,7 +972,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
             error_message="Invalid sampling_rate unexpected",
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
@@ -892,7 +1012,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
@@ -921,7 +1049,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
@@ -956,7 +1092,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": "*"}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "*",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
@@ -998,7 +1142,15 @@ class TestEDOTOpAMPCallbacks(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": "*"}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "*",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
@@ -1032,10 +1184,161 @@ class TestEDOTOpAMPCallbacks(TestCase):
             remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
         )
         client.update_effective_config.assert_called_once_with(
-            {"elastic": {"logging_level": "warn", "sampling_rate": "1.0", "deactivate_instrumentations": ""}},
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "false",
+                    "span_name_groups": "",
+                }
+            },
             content_type="application/json",
         )
         client.build_remote_config_status_response_message.assert_called_once_with(client.update_remote_config_status())
         agent.send.assert_called_once_with(payload=mock.ANY)
         client.build_full_state_message.assert_not_called()
         get_tracer_configurator_mock.assert_not_called()
+
+
+class TestSpanNameConfig(TestCase):
+    def setUp(self):
+        self.addCleanup(span_name_settings.set_use_path_as_span_name, False)
+        self.addCleanup(span_name_settings.set_span_name_groups, [])
+
+    def tearDown(self):
+        for _logger in Config._get_loggers():
+            for handler in _logger.handlers:
+                _logger.removeHandler(handler)
+            _logger.propagate = True
+
+    @staticmethod
+    def span_name_config():
+        config = span_name_settings._get()
+        return config.use_path, [group.name for group in config.groups]
+
+    @staticmethod
+    def on_message(remote_config: dict, config: Config):
+        agent = mock.Mock()
+        client = mock.Mock()
+        config_map = opamp_pb2.AgentConfigMap()
+        config_map.config_map["elastic"].body = json.dumps(remote_config).encode()
+        config_map.config_map["elastic"].content_type = "application/json"
+        message = opamp_pb2.ServerToAgent(
+            remote_config=opamp_pb2.AgentRemoteConfig(config=config_map, config_hash=b"1234")
+        )
+        with mock.patch("elasticotel.distro.config._get_config", return_value=config):
+            EDOTOpAMPCallbacks().on_message(agent, client, message)
+        return client
+
+    @mock.patch.dict(os.environ, {}, clear=True)
+    def test_defaults(self):
+        config = Config()
+
+        self.assertEqual(config.use_path_as_span_name.value, "false")
+        self.assertEqual(config.span_name_groups.value, "")
+        self.assertEqual(self.span_name_config(), (False, []))
+
+    @mock.patch.dict(
+        os.environ,
+        {ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME: "TRUE", ELASTIC_OTEL_SPAN_NAME_GROUPS: "GET /users/*, GET /orders/*"},
+        clear=True,
+    )
+    def test_from_environment_variables(self):
+        config = Config()
+
+        self.assertEqual(config.use_path_as_span_name.value, "true")
+        self.assertEqual(config.span_name_groups.value, "GET /users/*, GET /orders/*")
+        self.assertEqual(self.span_name_config(), (True, ["GET /users/*", "GET /orders/*"]))
+
+    @mock.patch.dict(os.environ, {ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME: "yes"}, clear=True)
+    def test_invalid_use_path_as_span_name_environment_variable(self):
+        with self.assertLogs(config_logger, logging.WARNING) as cm:
+            config = Config()
+
+        self.assertEqual(
+            cm.output,
+            [
+                "WARNING:elasticotel.distro.config:Invalid value for ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME: yes, using false"
+            ],
+        )
+        self.assertEqual(config.use_path_as_span_name.value, "false")
+        self.assertEqual(self.span_name_config(), (False, []))
+
+    @mock.patch.dict(os.environ, {}, clear=True)
+    def test_central_config_sets_values(self):
+        config = Config()
+
+        client = self.on_message({"use_path_as_span_name": "true", "span_name_groups": "GET /users/*"}, config)
+
+        self.assertEqual(self.span_name_config(), (True, ["GET /users/*"]))
+        client.update_remote_config_status.assert_called_once_with(
+            remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
+        )
+        client.update_effective_config.assert_called_once_with(
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "true",
+                    "span_name_groups": "GET /users/*",
+                }
+            },
+            content_type="application/json",
+        )
+
+    @mock.patch.dict(
+        os.environ,
+        {ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME: "true", ELASTIC_OTEL_SPAN_NAME_GROUPS: "GET /users/*"},
+        clear=True,
+    )
+    def test_central_config_missing_keys_reset_to_defaults(self):
+        config = Config()
+        self.assertEqual(self.span_name_config(), (True, ["GET /users/*"]))
+
+        client = self.on_message({}, config)
+
+        self.assertEqual(self.span_name_config(), (False, []))
+        self.assertEqual(config.use_path_as_span_name.value, "false")
+        self.assertEqual(config.span_name_groups.value, "")
+        client.update_remote_config_status.assert_called_once_with(
+            remote_config_hash=b"1234", status=opamp_pb2.RemoteConfigStatuses_APPLIED, error_message=""
+        )
+
+    @mock.patch.dict(
+        os.environ,
+        {ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME: "true", ELASTIC_OTEL_SPAN_NAME_GROUPS: "GET /users/*"},
+        clear=True,
+    )
+    def test_central_config_invalid_values_keep_current_values(self):
+        config = Config()
+
+        with self.assertLogs(config_logger, logging.ERROR) as cm:
+            client = self.on_message({"use_path_as_span_name": "bogus", "span_name_groups": 42}, config)
+
+        self.assertEqual(
+            cm.output,
+            [
+                "ERROR:elasticotel.distro.config:Invalid `use_path_as_span_name` from config `bogus`",
+                "ERROR:elasticotel.distro.config:Invalid `span_name_groups` from config `42`",
+            ],
+        )
+        self.assertEqual(self.span_name_config(), (True, ["GET /users/*"]))
+        client.update_remote_config_status.assert_called_once_with(
+            remote_config_hash=b"1234",
+            status=opamp_pb2.RemoteConfigStatuses_FAILED,
+            error_message="Invalid use_path_as_span_name bogus\nInvalid span_name_groups 42",
+        )
+        client.update_effective_config.assert_called_once_with(
+            {
+                "elastic": {
+                    "logging_level": "warn",
+                    "sampling_rate": "1.0",
+                    "deactivate_instrumentations": "",
+                    "use_path_as_span_name": "true",
+                    "span_name_groups": "GET /users/*",
+                }
+            },
+            content_type="application/json",
+        )
