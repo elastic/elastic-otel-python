@@ -449,11 +449,9 @@ EDOT Python can rename spans when they are exported, for example when instrument
 
 ### Use path as span name
 
-HTTP server spans are named `{method} {route}` when the instrumented framework provides a route. When it does not, for example for requests that don't match any route in Django, FastAPI, Starlette, Falcon, Tornado, or aiohttp, the span name is only the HTTP method, such as `GET`.
+HTTP server spans are named `{method} {route}` when the instrumentation provides a route. When it does not, the span name can be only the HTTP method, such as `GET`.
 
-Set `ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME` to `true` to name those spans `{method} {path}` instead, for example `GET /users/42/cart`. The path comes from the `url.path` attribute, or from the `http.target` attribute without its query string when the instrumentation uses the older HTTP semantic conventions. Spans that already have a route in their name are not modified.
-
-The WSGI and ASGI instrumentations, and Flask and Pyramid when a request doesn't match a route, already name spans `{method} {path}`. This option does not change those names.
+Set `ELASTIC_OTEL_USE_PATH_AS_SPAN_NAME` to `true` to name those spans `{method} {path}` instead, for example `GET /users/42/cart`. The path comes from the `url.path` attribute, or from the `http.target` attribute without its query string. Spans with any other name are not modified.
 
 Because paths often contain identifiers, this can create many distinct span names. Use [span name groups](#span-name-groups) to consolidate them.
 
