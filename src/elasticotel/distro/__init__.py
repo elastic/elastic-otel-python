@@ -92,40 +92,49 @@ def _http_exporter_options(signal_headers_env_var: str) -> dict[str, dict[str, s
 
 class ElasticOpenTelemetryConfigurator(_OTelSDKConfigurator):
     def _configure(self, **kwargs):
-        # override GRPC and HTTP user agent headers
-        exporter_args_map: dict[type, dict[str, Any]] = {
-            HTTPOTLPLogExporter: _http_exporter_options(OTEL_EXPORTER_OTLP_LOGS_HEADERS),
-            HTTPOTLPMetricExporter: _http_exporter_options(OTEL_EXPORTER_OTLP_METRICS_HEADERS),
-            HTTPOTLPSpanExporter: _http_exporter_options(OTEL_EXPORTER_OTLP_TRACES_HEADERS),
-        }
-        # When running in the k8s operator the bundled grpcio may not be built for the application's Python
-        # version (e.g. cp312 wheels on Python 3.13) and grpc fails to import. The operator exports via
-        # http/protobuf so we don't want to fail if we can't import the grpc exporters.
-        try:
-            from opentelemetry.exporter.otlp.proto.grpc import _USER_AGENT_HEADER_VALUE
-            from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter as GRPCOTLPLogExporter
-            from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
-                OTLPMetricExporter as GRPCOTLPMetricExporter,
-            )
-            from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter as GRPCOTLPSpanExporter
-        except ImportError:
-            pass
+        # we delegate the SDK to check if the configuration is available
+        declarative_config_env_set = os.environ.get("OTEL_CONFIG_FILE")
+        # with declarative configuration we can't configure the SDK using kwargs
+        if declarative_config_env_set:
+            sdk_kwargs = {}
         else:
-            otlp_grpc_exporter_options = {
-                "channel_options": (
-                    ("grpc.primary_user_agent", f"{EDOT_GRPC_USER_AGENT_HEADER_VALUE} {_USER_AGENT_HEADER_VALUE}"),
-                )
+            sdk_kwargs = dict(kwargs)
+            # override GRPC and HTTP user agent headers
+            exporter_args_map: dict[type, dict[str, Any]] = {
+                HTTPOTLPLogExporter: _http_exporter_options(OTEL_EXPORTER_OTLP_LOGS_HEADERS),
+                HTTPOTLPMetricExporter: _http_exporter_options(OTEL_EXPORTER_OTLP_METRICS_HEADERS),
+                HTTPOTLPSpanExporter: _http_exporter_options(OTEL_EXPORTER_OTLP_TRACES_HEADERS),
             }
-            exporter_args_map.update(
-                {
-                    GRPCOTLPLogExporter: otlp_grpc_exporter_options,
-                    GRPCOTLPMetricExporter: otlp_grpc_exporter_options,
-                    GRPCOTLPSpanExporter: otlp_grpc_exporter_options,
+            # When running in the k8s operator the bundled grpcio may not be built for the application's Python
+            # version (e.g. cp312 wheels on Python 3.13) and grpc fails to import. The operator exports via
+            # http/protobuf so we don't want to fail if we can't import the grpc exporters.
+            try:
+                from opentelemetry.exporter.otlp.proto.grpc import _USER_AGENT_HEADER_VALUE
+                from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter as GRPCOTLPLogExporter
+                from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import (
+                    OTLPMetricExporter as GRPCOTLPMetricExporter,
+                )
+                from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import (
+                    OTLPSpanExporter as GRPCOTLPSpanExporter,
+                )
+            except ImportError:
+                pass
+            else:
+                otlp_grpc_exporter_options = {
+                    "channel_options": (
+                        ("grpc.primary_user_agent", f"{EDOT_GRPC_USER_AGENT_HEADER_VALUE} {_USER_AGENT_HEADER_VALUE}"),
+                    )
                 }
-            )
-        kwargs["exporter_args_map"] = exporter_args_map
+                exporter_args_map.update(
+                    {
+                        GRPCOTLPLogExporter: otlp_grpc_exporter_options,
+                        GRPCOTLPMetricExporter: otlp_grpc_exporter_options,
+                        GRPCOTLPSpanExporter: otlp_grpc_exporter_options,
+                    }
+                )
+            sdk_kwargs["exporter_args_map"] = exporter_args_map
 
-        super()._configure(**kwargs)
+        super()._configure(**sdk_kwargs)
 
         # set our local config based on environment variables
         config = _initialize_config()

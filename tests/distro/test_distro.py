@@ -53,9 +53,10 @@ try:
     from opentelemetry.instrumentation.logging.handler import LoggingHandler
 except ImportError:
     LoggingHandler = None
-from opentelemetry.sdk._configuration import _initialize_components
+from opentelemetry.sdk._configuration import _initialize_components, _OTelSDKConfigurator
 from opentelemetry.sdk._logs import LoggingHandler as SDKLoggingHandler
 from opentelemetry.sdk.environment_variables import (
+    OTEL_CONFIG_FILE,
     OTEL_EXPERIMENTAL_RESOURCE_DETECTORS,
     OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE,
     OTEL_EXPORTER_OTLP_PROTOCOL,
@@ -176,6 +177,17 @@ class TestDistribution(TestCase):
         distro.load_instrumentor(entryPoint_mock)
 
         instrumentor_mock.assert_called_once_with()
+
+    def test_configurator_omits_sdk_kwargs_when_otel_config_file_is_nonempty(self):
+        for config_file in ("otel-config.yaml", " "):
+            with (
+                self.subTest(config_file=config_file),
+                mock.patch.dict(os.environ, {OTEL_CONFIG_FILE: config_file}, clear=True),
+                mock.patch.object(_OTelSDKConfigurator, "_configure") as sdk_configure,
+            ):
+                ElasticOpenTelemetryConfigurator().configure(auto_instrumentation_version="test-version")
+
+                sdk_configure.assert_called_once_with()
 
     @mock.patch.dict(
         "os.environ",
