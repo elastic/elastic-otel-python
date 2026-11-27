@@ -140,7 +140,7 @@ opentelemetry-instrument python app.py
 
 The example reads the endpoint and authentication headers from the environment. If no endpoint is set, the exporters use their local collector default. To change the initial sampling ratio, set `OTEL_TRACES_SAMPLER_ARG` to a number between `0.0` and `1.0`. Metric temporality values must be lowercase, for example `delta`.
 
-The file controls SDK construction. Environment settings with declarative equivalents must be represented in the file, for example through `${VAR}` or `${VAR:-default}` references. The example keeps the default gRPC exporters; changing `OTEL_EXPORTER_OTLP_PROTOCOL` alone does not switch these exporters to HTTP. The same applies to selecting a different sampler with `OTEL_TRACES_SAMPLER`: edit the sampler in the file instead.
+The file controls SDK construction. Environment settings with declarative equivalents must be represented in the file, for example through `${VAR}` or `${VAR:-default}` references. The example keeps the default gRPC exporters. To switch to HTTP or select a different sampler, edit the file instead of setting `OTEL_EXPORTER_OTLP_PROTOCOL` or `OTEL_TRACES_SAMPLER`.
 
 ### Rule-based sampling
 
@@ -247,7 +247,7 @@ Use the destination attribute your instrumentation supplies at span creation. So
 This example preserves the settings in the preceding section, with these limitations:
 
 - Cloud detector selection is manual, as earlier on this page.
-- The declarative loader creates the upstream composite sampler instead of EDOT's `DefaultSampler` wrapper. Initial sampling works, but central configuration cannot update the sampling rate.
+- The declarative loader creates the upstream composite sampler instead of the EDOT `DefaultSampler` wrapper. Initial sampling works, but central configuration cannot update the sampling rate.
 - Exporters use the upstream user-agent because declarative construction bypasses EDOT exporter customization.
 
 Continue using EDOT's `opentelemetry-instrument` startup path to retain EDOT's instrumentation setup and runtime-metric filtering. Calling the upstream `configure_sdk()` function directly does not run that setup.
@@ -311,7 +311,7 @@ product:
 
 If the OpAMP Central configuration server requires mutual TLS to encrypt data in transit you need to set the following environment variables:
 
-- `ELASTIC_OTEL_OPAMP_CERTIFICATE`: The path of the trusted certificate, in PEM format, to use when verifying a server’s TLS credentials, this may also be used if the server is using a self-signed certificate.
+- `ELASTIC_OTEL_OPAMP_CERTIFICATE`: The path to a trusted PEM certificate used to verify the server’s TLS credentials. You can also use this setting for a self-signed server certificate.
 - `ELASTIC_OTEL_OPAMP_CLIENT_CERTIFICATE`: Client certificate/chain trust for clients private key path to use in mTLS communication in PEM format.
 - `ELASTIC_OTEL_OPAMP_CLIENT_KEY`: Client private key path to use in mTLS communication in PEM format.
 
@@ -343,7 +343,7 @@ To secure the connection to the OTLP endpoint using TLS, you can configure the f
 
 | Option | Description |
 |---|---|
-| `OTEL_EXPORTER_OTLP_CERTIFICATE` | The path of the trusted certificate, in PEM format, to use when verifying a server’s TLS credentials, this may also be used if the server is using a self-signed certificate. |
+| `OTEL_EXPORTER_OTLP_CERTIFICATE` | The path to a trusted PEM certificate used to verify the server’s TLS credentials. You can also use this setting for a self-signed server certificate. |
 | `OTEL_EXPORTER_OTLP_CLIENT_CERTIFICATE` | Client certificate/chain trust for clients private key path to use in mTLS communication in PEM format. |
 | `OTEL_EXPORTER_OTLP_CLIENT_KEY` | Client private key path to use in mTLS communication in PEM format. |
 
